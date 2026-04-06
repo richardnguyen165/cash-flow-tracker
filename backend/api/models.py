@@ -51,6 +51,7 @@ class Inovice(models.Model):
   Transaction_ID = models.OneToOneField(Transaction, on_delete = models.CASCADE)
   Has_Paid = models.BooleanField(default = False)
   Policy_Description = models.CharField(max_length = 256)
+  Client_ID = Client_ID = models.ForeignKey(Client, on_delete=models.SET_NULL)
 
 class Expense_Plan(models.Model):
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE)
