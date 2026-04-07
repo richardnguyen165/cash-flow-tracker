@@ -1,0 +1,4 @@
+Operations to perform:
+  Apply all migrations: admin, api, auth, contenttypes, sessions
+Running migrations:
+  Applying api.0003_rename_client_id_contract_counterparty_id_and_more...
