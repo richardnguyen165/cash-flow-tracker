@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
+from .models import *
+from .serializers import *
 
 
 # Create your views here.
@@ -15,25 +17,30 @@ def delete_individual(request):
   return
 
 @api_view(["GET", "POST"])
-def invidual_profile(request):
+def invidual_profile(request,id):
 
   # View user profile
   if request.method == "GET":
-    return 
+    user = User.objects.get(User_ID=id)
+    user_info_serializer = UserSerializer(user)
+    return Response(user_info_serializer.data)
   
   elif request.method == "POST":
     return
 
 @api_view(["GET"])
-def view_transactions(request):
+def view_individual_transactions(request, id):
+  # all_transactions = Transaction.objects.filter(User_ID=id)
+  # indiv_transaction_serializer = TransactionSerializer(all_transactions, many=True)
+  # return Response(indiv_transaction_serializer.data)
   return
-
+  
 @api_view(["PUT"])
-def send_individual_contracts(request):
+def send_individual_contracts(request, id):
   return
   
 @api_view(["GET"])
-def view_individual_contracts(request):
+def view_individual_contracts(request, id):  
   return
 
 @api_view(["GET"])
