@@ -28,5 +28,4 @@ urlpatterns = [
     path("api/indiv/profile/get/<int:id>")
     path("api/indiv/transactions/<int:id>", ),
     path("api/indiv/contracts/<int:pk>"),
-    
 ]
