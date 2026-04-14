@@ -6,24 +6,23 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "User_ID",
-            "User_FName",
-            "User_LName",
+            "id",
+            "first_name",
+            "last_name",
+            "email",
             "User_IsSiteAdmin",
             "User_IsEmployed",
             "User_Balance",
             "User_Password",
             "User_BirthDate",
-            "User_Email",
             "User_Profile",
         ]
-
 
 class BusinessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Business
         fields = [
-            "Business_ID",
+            "id",
             "Business_Name",
             "Business_Balance",
             "Business_Profile",
@@ -75,7 +74,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = [
-          "Transaction_ID", 
+          "id", 
           "Business_ID", 
           "User_ID", 
           "Transaction_Date"
@@ -86,6 +85,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
+          "id"
           "Transaction_ID",
           "Name", 
           "Has_Paid",           
@@ -98,7 +98,7 @@ class ExpensePlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expense_Plan
         fields = [
-          "Expense_Plan_ID", 
+          "id", 
           "Business_ID", 
           "Plan_Title", 
           "Expense_Plan_Due"
@@ -111,12 +111,12 @@ class ExpenseSerializer(serializers.ModelSerializer):
         fields = [
             "Expense_Plan_ID",
             "Cost",
+            "Expense_Title",
             "Expense_Type",
             "Description",
             "Expense_Date_Issued",
             "Expense_Due_By",
         ]
-
 
 class ExpensePayOffSerializer(serializers.ModelSerializer):
     class Meta:
@@ -131,7 +131,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = [
-            "Employee_ID",
+            "id",
             "User_ID",
             "Business_ID",
             "Expense_Plan_ID",
@@ -145,7 +145,7 @@ class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
         fields = [
-            "Contract_ID",
+            "id",
             "Business_ID",
             "CounterParty_ID",
             "Expense_ID",
