@@ -146,3 +146,4 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 
 AUTH_USER_MODEL = "api.User"
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
