@@ -12,7 +12,7 @@ from .serializers import *
 
 # INDIVIDUAL CLIENT
 
-@api_view(["CREATE"])
+@api_view(["POST"])
 def create_individual(request):
   return
 
@@ -25,7 +25,7 @@ def invidual_profile(request,id):
 
   # View user profile
   if request.method == "GET":
-    user = User.objects.get(User_ID=id)
+    user = User.objects.get(id=id)
     user_info_serializer = UserSerializer(user)
     return Response(user_info_serializer.data)
   

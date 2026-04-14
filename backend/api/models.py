@@ -72,7 +72,7 @@ class Expense_Plan(models.Model):
   
 class Expense(models.Model):
   Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.SET_NULL, null = True, blank = True)
-  Cost = models.DecimalField(max_digits=10, decimal_places=2, default=0),
+  Cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
   Expense_Title = models.CharField(max_length = 256)
   Expense_Type = models.CharField(max_length = 256)
   Description = models.CharField(max_length = 256)
