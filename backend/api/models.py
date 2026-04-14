@@ -52,8 +52,8 @@ class Business_Admin(models.Model):
 class Transaction(models.Model):
   
   # Note: Foreign Key is beest used for one to many relationships
-  Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="transactions")
-  User_ID = models.ForeignKey(User, on_delete = models.CASCADE, related_name="transactions")
+  Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="transactions", null = True)
+  User_ID = models.ForeignKey(User, on_delete = models.CASCADE, related_name="transactions", null = True)
   # adds date automatically
   Transaction_Date = models.DateField(auto_now_add=True)
 

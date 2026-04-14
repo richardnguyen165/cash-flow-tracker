@@ -12,6 +12,10 @@ from .serializers import *
 
 # INDIVIDUAL CLIENT
 
+@api_view(["CREATE"])
+def create_individual(request):
+  return
+
 @api_view(["DELETE"])
 def delete_individual(request):
   return
