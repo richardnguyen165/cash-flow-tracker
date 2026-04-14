@@ -162,5 +162,27 @@ def view_expense_detail(request):
   return
 
 # Cellou's views
+@api_view(["GET"])
+def staff_profile(request, user_id):
+  return Response({"message": "staff_profile placeholder"})
 
+@api_view(["GET"])
+def staff_business_employees(request, business_id):
+  return Response({"message": "staff_business_employees placeholder"})
+
+@api_view(["GET"])
+def staff_business_transactions(request, business_id):
+  return Response({"message": "staff_business_transactions placeholder"})
+
+@api_view(["GET"])
+def staff_business_expenses(request, business_id):
+  return Response({"message": "staff_business_expenses placeholder"})
+
+@api_view(["GET"])
+def staff_business_contracts(request, business_id):
+  return Response({"message": "staff_business_contracts placeholder"})
+
+@api_view(["POST"])
+def staff_create_transaction(request, business_id):
+  return Response({"message": "staff_create_transaction placeholder"})
 # May's views
