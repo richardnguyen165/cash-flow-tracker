@@ -46,12 +46,21 @@ function SignIn() {
             >
               Sign In
             </button>
-            <p className="text-center text-sm text-black">
-              Don’t have an account?{" "}
-              <Link to="/signup" className="text-purple-500 hover:underline">
-                Sign up
-              </Link>
-            </p>
+            <div className="space-y-1 text-center">
+              <p className="text-center text-sm text-black">
+                Don’t have an account?{" "}
+                <Link to="/signup" className="text-purple-500 hover:underline">
+                  Sign up
+                </Link>
+              </p>
+              <p className="text-center text-sm text-black">
+                Site admin? Go to{" "}
+                <Link to="/siteadmin" className="text-purple-500 hover:underline">
+                  this
+                </Link>{" "}
+                sign in page
+              </p>
+            </div>
           </form>
         </div>
       </main>
