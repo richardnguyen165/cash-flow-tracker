@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Navbar from "../components/navbar/Navbar";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/navbar/Navbar";
 
 function SignInInfo() {
   const [fullName, setFullName] = useState("");
@@ -7,8 +8,9 @@ function SignInInfo() {
   const [birthday, setBirthday] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
   const [currentBalance, setCurrentBalance] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const submit = (e) => {
     e.preventDefault();
 
     console.log({
@@ -20,7 +22,9 @@ function SignInInfo() {
     });
 
     // will be navigating to the dashboard
+    navigate("/dashboard");
   };
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -30,12 +34,10 @@ function SignInInfo() {
           <h1 className="mb-2 text-3xl font-bold text-black">
             Get Started with Trillium.
           </h1>
-
           <p className="mb-8 text-base text-purple-500">
             Some additional information is required.
           </p>
-
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={submit}>
             <div>
               <label className="mb-2 block text-sm font-medium text-black">
                 Full Name <span className="text-red-500">*</span>
@@ -49,12 +51,10 @@ function SignInInfo() {
                 required
               />
             </div>
-
             <div>
               <label className="mb-2 block text-sm font-medium text-black">
                 Phone Number <span className="text-red-500">*</span>
               </label>
-
               <div className="flex w-full items-center rounded-xl bg-gray-100 px-4 py-4">
                 <span className="shrink-0 text-base text-black">+1</span>
                 <div className="mx-3 self-stretch w-px bg-gray-400" />
@@ -68,7 +68,6 @@ function SignInInfo() {
                 />
               </div>
             </div>
-
             <div>
               <label className="mb-2 block text-sm font-medium text-black">
                 Birthday <span className="text-red-500">*</span>
@@ -81,12 +80,10 @@ function SignInInfo() {
                 required
               />
             </div>
-
             <div>
               <label className="mb-2 block text-sm font-medium text-black">
                 Employment Status <span className="text-red-500">*</span>
               </label>
-
               <div className="w-full rounded-xl bg-gray-100 px-4 py-4">
                 <div className="flex items-center gap-8">
                   <label className="flex items-center gap-2 text-base text-black">
@@ -101,7 +98,6 @@ function SignInInfo() {
                     />
                     Employed
                   </label>
-
                   <label className="flex items-center gap-2 text-base text-black">
                     <input
                       type="radio"
@@ -117,7 +113,6 @@ function SignInInfo() {
                 </div>
               </div>
             </div>
-
             <div>
               <label className="mb-2 block text-sm font-medium text-black">
                 Current Balance <span className="text-red-500">*</span>
@@ -131,7 +126,6 @@ function SignInInfo() {
                 required
               />
             </div>
-
             <button
               type="submit"
               className="w-full rounded-2xl bg-black py-4 text-base font-medium text-white transition hover:opacity-90"
