@@ -55,7 +55,10 @@ function SignIn() {
               </p>
               <p className="text-center text-sm text-black">
                 Site admin? Go to{" "}
-                <Link to="/siteadmin" className="text-purple-500 hover:underline">
+                <Link
+                  to="/siteadmin"
+                  className="text-purple-500 hover:underline"
+                >
                   this
                 </Link>{" "}
                 sign in page
