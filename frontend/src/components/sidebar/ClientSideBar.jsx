@@ -11,7 +11,7 @@ import {
 function ClientSidebar() {
   return (
     // to make the side bar fits right under nav bar
-    <aside className="flex min-h-[calc(100vh-73px)] w-65 flex-col justify-between border-r-2 border-purple-200 bg-white px-6 py-8">
+    <aside className="flex min-h-[calc(100vh-73px)] w-60 flex-col justify-between border-r-2 border-purple-200 bg-white px-6 py-8">
       <div>
         <div className="mb-12">
           <h2 className="text-2xl font-semibold text-black">Jane Smith</h2>
@@ -21,28 +21,28 @@ function ClientSidebar() {
         <nav className="space-y-8">
           <Link
             to="/contracts"
-            className="flex items-center gap-3 text-xl text-black transition hover:text-purple-500"
+            className="flex items-center gap-3 text-lg text-black transition hover:text-purple-500"
           >
             <DocumentTextIcon className="h-6 w-6" />
             <span>My Contracts</span>
           </Link>
           <Link
             to="/invoices"
-            className="flex items-center gap-3 text-xl text-black transition hover:text-purple-500"
+            className="flex items-center gap-3 text-lg text-black transition hover:text-purple-500"
           >
             <ChartBarIcon className="h-6 w-6" />
             <span>My Invoices</span>
           </Link>
           <Link
             to="/payments"
-            className="flex items-center gap-3 text-xl text-black transition hover:text-purple-500"
+            className="flex items-center gap-3 text-lg text-black transition hover:text-purple-500"
           >
             <CreditCardIcon className="h-6 w-6" />
             <span>My Payments</span>
           </Link>
           <Link
             to="/business-client"
-            className="flex items-center gap-3 text-xl text-black transition hover:text-purple-500"
+            className="flex items-center gap-3 text-lg text-black transition hover:text-purple-500"
           >
             <ArrowTopRightOnSquareIcon className="h-6 w-6" />
             <span>Business Client</span>
