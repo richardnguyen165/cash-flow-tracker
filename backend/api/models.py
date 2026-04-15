@@ -112,7 +112,7 @@ class RecurringPlan(models.Model):
 
 class InvoiceLineItem(models.Model):
   Invoice_ID = models.ForeignKey(Invoice, on_delete = models.CASCADE, related_name="invoice_line_items")
-  Line_Number = models.PositiveIntegerField(unique=True)
+  Line_Number = models.PositiveIntegerField()
   Cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
   Description = models.CharField(max_length = 256)
   Quantity = models.PositiveIntegerField(default = 1)
