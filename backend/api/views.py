@@ -29,6 +29,7 @@ def invidual_profile(request,id):
     user_info_serializer = UserSerializer(user)
     return Response(user_info_serializer.data)
   
+  # Edit user profile
   elif request.method == "POST":
     return
 
