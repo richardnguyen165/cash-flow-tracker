@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Landing from "./pages/Landing";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import SiteAdmin from "./pages/SiteAdmin";
-import SignInInfo from "./pages/SignInInfo";
+import Landing from "./pages/main/Landing";
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
+import SiteAdmin from "./pages/auth/SiteAdmin";
+import SignInInfo from "./pages/auth/SignInInfo";
+import Dashboard from "./pages/main/Dashboard";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/siteadmin" element={<SiteAdmin />} />
         <Route path="/signininfo" element={<SignInInfo />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   );
