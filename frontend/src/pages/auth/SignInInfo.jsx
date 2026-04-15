@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
 
 function SignInInfo() {
-  const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [birthday, setBirthday] = useState("");
   const [employmentStatus, setEmploymentStatus] = useState("");
@@ -14,7 +13,6 @@ function SignInInfo() {
     e.preventDefault();
 
     console.log({
-      fullName,
       phoneNumber,
       birthday,
       employmentStatus,
@@ -24,7 +22,6 @@ function SignInInfo() {
     // will be navigating to the dashboard
     navigate("/dashboard");
   };
-
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,19 +35,6 @@ function SignInInfo() {
             Some additional information is required.
           </p>
           <form className="space-y-6" onSubmit={submit}>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-black">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Jane Smith"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-                required
-              />
-            </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-black">
                 Phone Number <span className="text-red-500">*</span>

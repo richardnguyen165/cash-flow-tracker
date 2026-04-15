@@ -27,12 +27,12 @@ function SignIn() {
                 <label className="block text-sm font-medium uppercase text-black">
                   Password
                 </label>
-                <a
-                  href="/forgot-password"
+                <Link
+                  to="/forgot-password"
                   className="text-sm text-purple-500 hover:underline"
                 >
                   Forgot Password?
-                </a>
+                </Link>
               </div>
               <input
                 type="password"

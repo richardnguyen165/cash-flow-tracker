@@ -8,9 +8,9 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 
-function Sidebar() {
+function ClientSidebar() {
   return (
-    // to make the side barfit right under nav bar
+    // to make the side bar fits right under nav bar
     <aside className="flex min-h-[calc(100vh-73px)] w-65 flex-col justify-between border-r-2 border-purple-200 bg-white px-6 py-8">
       <div>
         <div className="mb-12">
@@ -61,4 +61,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default ClientSidebar;
