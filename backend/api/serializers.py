@@ -81,7 +81,23 @@ class TransactionSerializer(serializers.ModelSerializer):
         ]
 
 
+
+class InvoiceLineItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceLineItem
+        fields = [
+            "Invoice_ID",
+            "Line_Number",
+            "Cost",
+            "Description",
+            "Quantity",
+            "Header",
+        ]
+
+
 class InvoiceSerializer(serializers.ModelSerializer):
+    invoice_line_items = InvoiceLineItemSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Invoice
         fields = [
@@ -171,17 +187,4 @@ class RecurringPlanSerializer(serializers.ModelSerializer):
           "Expense_Plan_ID", 
           "Plan_Frequency", 
           "Occurance_Number"
-        ]
-
-
-class InvoiceLineItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InvoiceLineItem
-        fields = [
-            "Invoice_ID",
-            "Line_Number",
-            "Cost",
-            "Description",
-            "Quantity",
-            "Header",
         ]
