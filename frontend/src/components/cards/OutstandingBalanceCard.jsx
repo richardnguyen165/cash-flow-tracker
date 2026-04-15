@@ -4,9 +4,7 @@ function OutstandingBalanceCard({ balance, onPay }) {
       <p className="text-base font-medium uppercase text-black">
         Total Outstanding Balance
       </p>
-
       <h2 className="mt-6 text-6xl font-bold text-black">{balance}</h2>
-
       <button
         onClick={onPay}
         className="mt-8 rounded-2xl bg-black px-8 py-4 text-base font-medium text-white"
