@@ -1,7 +1,14 @@
-import { Link } from "react-router-dom";
-import Navbar from "../components/navbar/Navbar";
+import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../../components/navbar/Navbar";
 
 function SignUp() {
+  const navigate = useNavigate();
+
+  const submit = (e) => {
+    e.preventDefault();
+    navigate("/signininfo");
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar isLoggedIn={false} />
@@ -12,7 +19,8 @@ function SignUp() {
           <p className="mb-8 text-base text-purple-500">
             Create your account to start managing your assets.
           </p>
-          <form className="space-y-4">
+          {/* start of card */}
+          <form className="space-y-4" onSubmit={submit}>
             <div>
               <label className="mb-2 block text-sm font-medium uppercase text-black">
                 Full Name <span className="text-red-500">*</span>
