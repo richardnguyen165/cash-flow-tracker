@@ -1,68 +1,39 @@
 import { Link } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
 
-function Landing() {
+function SiteAdmin() {
   return (
     <div className="min-h-screen bg-white">
-      <Navbar isLoggedIn={false} />
+      <Navbar
+        isLoggedIn={false}
+        buttonText="Client sign in"
+        buttonLink="/signin"
+      />
 
-      <main className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-lg rounded-[28px] bg-white p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-          <h1 className="mb-2 text-5xl font-bold text-black">Sign Up</h1>
-          <p className="mb-8 text-base text-purple-500">
-            Create your account to start managing your assets.
+      <main className="flex items-start justify-center px-8 py-16 lg:px-12">
+        <div className="w-full max-w-[520px] rounded-[32px] bg-white p-10 shadow-[0_16px_40px_rgba(15,23,42,0.10)]">
+          <h1 className="text-center text-4xl font-semibold tracking-tight text-black">
+            Admin Sign In
+          </h1>
+          <p className="mt-4 text-center text-base text-[#8b5cf6]">
+            Use your internal credentials to access the administration workspace.
           </p>
-          <form className="space-y-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="John Doe"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                placeholder="Username@gmail.com"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Password <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Re-type Password <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
+
+          <form className="mt-10 space-y-6">
+            <Field label="Work email" placeholder="admin@trillium.com" type="email" />
+            <Field label="Password" placeholder="Enter your password" type="password" />
+
             <button
               type="submit"
-              className="w-full rounded-2xl bg-black py-4 text-base font-medium text-white transition hover:opacity-90"
+              className="w-full rounded-2xl bg-[#1f1f1f] py-4 text-base font-semibold text-white transition hover:bg-black"
             >
-              Create Account
+              Sign In
             </button>
-            <p className="text-center text-sm text-black">
-              Already have an account?{" "}
-              <Link to="/signin" className="text-purple-500 hover:underline">
-                Sign in
+
+            <p className="text-center text-sm text-[#374151]">
+              Need the standard workspace?{" "}
+              <Link to="/signin" className="font-medium text-[#8b5cf6] hover:underline">
+                Return to client sign in
               </Link>
             </p>
           </form>
@@ -72,4 +43,19 @@ function Landing() {
   );
 }
 
-export default Landing;
+function Field({ label, placeholder, type }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium uppercase tracking-[0.16em] text-black">
+        {label}
+      </label>
+      <input
+        type={type}
+        placeholder={placeholder}
+        className="w-full rounded-2xl bg-[#f3f4f6] px-4 py-4 text-base text-[#111827] outline-none placeholder:text-[#94a3b8]"
+      />
+    </div>
+  );
+}
+
+export default SiteAdmin;

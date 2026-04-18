@@ -1,75 +1,103 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import Navbar from "../../components/navbar/Navbar";
 
 function SignUp() {
   const navigate = useNavigate();
+  const [selectedType, setSelectedType] = useState("business-client");
+
+  const accountTypes = [
+    {
+      id: "business-client",
+      title: "Business Client",
+      description:
+        "Register a business on the platform and create its first business admin workspace.",
+    },
+    {
+      id: "individual-client",
+      title: "Individual Client",
+      description:
+        "Review your contracts, invoice details, balances, and payment history.",
+    },
+    {
+      id: "site-admin",
+      title: "Site Admin",
+      description:
+        "Restricted platform access used for moderation, approvals, and global controls.",
+    },
+    {
+      id: "business-admin",
+      title: "Business Admin",
+      description:
+        "Join or finish setting up an existing business workspace with administrator access.",
+    },
+  ];
 
   const submit = (e) => {
     e.preventDefault();
-    navigate("/signininfo");
+    navigate("/signininfo", { state: { accountType: selectedType } });
   };
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar isLoggedIn={false} />
+      <Navbar isLoggedIn={false} buttonText="Sign in" buttonLink="/signin" />
 
-      <main className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-lg rounded-[28px] bg-white p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-          <h1 className="mb-2 text-3xl font-bold text-black">Sign Up</h1>
-          <p className="mb-8 text-base text-purple-500">
-            Create your account to start managing your assets.
+      <main className="flex items-start justify-center px-8 py-16 lg:px-12">
+        <div className="w-full max-w-[620px] rounded-[32px] bg-white p-10 shadow-[0_16px_40px_rgba(15,23,42,0.10)]">
+          <h1 className="text-center text-4xl font-semibold tracking-tight text-black">
+            Sign Up
+          </h1>
+          <p className="mt-3 text-center text-base text-[#8b5cf6]">
+            Select your account type.
           </p>
-          {/* start of card */}
-          <form className="space-y-4" onSubmit={submit}>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="John Doe"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                placeholder="Username@gmail.com"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Password <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Re-type Password <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="password"
-                placeholder="••••••••••"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
+
+          <form className="mt-8 space-y-4" onSubmit={submit}>
+            {accountTypes.map((item) => {
+              const isSelected = selectedType === item.id;
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setSelectedType(item.id)}
+                  className={`flex w-full items-start justify-between rounded-2xl border px-5 py-5 text-left transition ${
+                    isSelected
+                      ? "border-[#c9b2ff] bg-[#f3efff]"
+                      : "border-[#ececf2] bg-[#fafafa] hover:border-[#d8d8e4]"
+                  }`}
+                >
+                  <div>
+                    <p className="text-lg font-semibold text-[#111827]">
+                      {item.title}
+                    </p>
+                    <p className="mt-1 max-w-xl text-sm leading-6 text-[#6b7280]">
+                      {item.description}
+                    </p>
+                  </div>
+                  <CheckCircleIcon
+                    className={`mt-1 h-5 w-5 ${
+                      isSelected ? "text-[#8b5cf6]" : "text-transparent"
+                    }`}
+                  />
+                </button>
+              );
+            })}
+
             <button
               type="submit"
-              className="w-full rounded-2xl bg-black py-4 text-base font-medium text-white transition hover:opacity-90"
+              className="mt-4 w-full rounded-2xl bg-[#1f1f1f] py-4 text-base font-semibold text-white transition hover:bg-black"
             >
-              Create Account
+              Continue
             </button>
-            <p className="text-center text-sm text-black">
+
+            <p className="text-center text-sm text-[#6b7280]">
+              Employee accounts are added by a business admin and use the sign in flow instead of public signup.
+            </p>
+
+            <p className="text-center text-sm text-[#374151]">
               Already have an account?{" "}
-              <Link to="/signin" className="text-purple-500 hover:underline">
+              <Link to="/signin" className="font-medium text-[#8b5cf6] hover:underline">
                 Sign in
               </Link>
             </p>

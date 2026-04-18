@@ -1,31 +1,39 @@
 import { Link, NavLink } from "react-router-dom";
 
-function LoggedInNav() {
+function LoggedInNav({
+  brandLink = "/dashboard",
+  navItems = [],
+  actionLabel = "Sign Out",
+  actionLink = "/signin",
+}) {
   const navClass = ({ isActive }) =>
-    `transition ${
-      isActive ? "text-purple-500" : "text-black hover:text-purple-500"
+    `border-b-2 pb-1 text-sm font-medium transition ${
+      isActive
+        ? "border-[#8b5cf6] text-black"
+        : "border-transparent text-[#6b7280] hover:text-black"
     }`;
 
   return (
-    <header className="w-full border-b border-gray-200 hover:shadow-md bg-white px-10 py-4">
-      <div className="flex items-center justify-between">
-        <Link to="/" className="text-4xl font-bold">
+    <header className="sticky top-0 z-20 w-full border-b border-[#ececf2] bg-white/95 px-6 py-4 backdrop-blur">
+      <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-8">
+        <Link to={brandLink} className="text-xl font-semibold tracking-tight text-black">
           Trillium
         </Link>
-        <div className="flex items-center gap-10">
-          <NavLink to="/dashboard" className={navClass}>
-            Dashboard
-          </NavLink>
-          <NavLink to="/analytics" className={navClass}>
-            Analytics
-          </NavLink>
-          <NavLink to="/profile" className={navClass}>
-            Profile
-          </NavLink>
-          <button className="rounded-full border border-purple-400 px-4 py-1 text-sm text-black">
-            Sign Out
-          </button>
-        </div>
+
+        <nav className="flex items-center gap-8">
+          {navItems.map((item) => (
+            <NavLink key={item.to} to={item.to} className={navClass}>
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <Link
+          to={actionLink}
+          className="rounded-full border border-[#9f67ff] px-4 py-2 text-sm font-medium text-[#8b5cf6] transition hover:bg-[#f7f1ff]"
+        >
+          {actionLabel}
+        </Link>
       </div>
     </header>
   );
