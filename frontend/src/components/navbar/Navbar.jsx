@@ -6,11 +6,16 @@ function Navbar({
   buttonText = "Sign in",
   buttonLink = "/signin",
   currentPage = "",
+  showLinks = false,
 }) {
   return isLoggedIn ? (
     <LoggedInNav currentPage={currentPage} />
   ) : (
-    <LoggedOutNav buttonText={buttonText} buttonLink={buttonLink} />
+    <LoggedOutNav
+      buttonText={buttonText}
+      buttonLink={buttonLink}
+      showLinks={showLinks}
+    />
   );
 }
 
