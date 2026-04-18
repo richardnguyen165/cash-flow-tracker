@@ -1,72 +1,138 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { signinRedirects } from "../../config/workspaceNav";
 import Navbar from "../../components/navbar/Navbar";
-import { Link } from "react-router-dom";
 
 function SignIn() {
+  const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState("individual-client");
+
+  const signInRoles = [
+    {
+      id: "individual-client",
+      title: "Individual Client",
+      description: "Access your contracts, invoices, balances, and payment history.",
+    },
+    {
+      id: "business-admin",
+      title: "Business Admin",
+      description: "Sign in on behalf of a business to manage contracts, billing, and staff.",
+    },
+    {
+      id: "employee",
+      title: "Employee / Staff",
+      description: "Use the workspace your business admin assigned to you for tasks and expenses.",
+    },
+    {
+      id: "site-admin",
+      title: "Site Admin",
+      description: "Use restricted platform administration access.",
+    },
+  ];
+
+  const submit = (event) => {
+    event.preventDefault();
+    navigate(signinRedirects[selectedRole]);
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      <Navbar isLoggedIn={false} buttonText="Sign up" buttonLink="/signup" />
-      <main className="flex items-center justify-center px-6 py-28">
-        <div className="w-full max-w-lg rounded-[28px] bg-white p-10 shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-          <h1 className="mb-2 text-3xl font-bold text-black">Sign In</h1>
-          <p className="mb-8 text-base text-purple-500">
-            Enter your credentials to manage your assets.
+      <Navbar
+        isLoggedIn={false}
+        buttonText="Create account"
+        buttonLink="/signup"
+      />
+
+      <main className="flex items-start justify-center px-8 py-16 lg:px-12">
+        <div className="w-full max-w-[520px] rounded-[32px] bg-white p-10 shadow-[0_16px_40px_rgba(15,23,42,0.10)]">
+          <h1 className="text-center text-4xl font-semibold tracking-tight text-black">
+            Sign In
+          </h1>
+          <p className="mt-4 text-center text-base text-[#8b5cf6]">
+            Choose how you&apos;re accessing Trillium, then sign in to the right workspace.
           </p>
-          <form className="space-y-6">
-            <div>
-              <label className="mb-2 block text-sm font-medium uppercase text-black">
-                Email
-              </label>
-              <input
-                type="email"
-                placeholder="Username@gmail.com"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
-              />
-            </div>
+
+          <div className="mt-8 grid gap-3">
+            {signInRoles.map((role) => {
+              const isSelected = selectedRole === role.id;
+
+              return (
+                <button
+                  key={role.id}
+                  type="button"
+                  onClick={() => setSelectedRole(role.id)}
+                  className={`rounded-2xl border px-4 py-4 text-left transition ${
+                    isSelected
+                      ? "border-[#c9b2ff] bg-[#f3efff]"
+                      : "border-[#ececf2] bg-[#fafafa] hover:border-[#d8d8e4]"
+                  }`}
+                >
+                  <p className="text-sm font-semibold text-[#111827]">{role.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-[#6b7280]">
+                    {role.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          <form className="mt-8 space-y-6" onSubmit={submit}>
+            <Field label="Email" placeholder="Username@gmail.com" type="email" />
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <label className="block text-sm font-medium uppercase text-black">
+                <label className="text-sm font-medium uppercase tracking-[0.16em] text-black">
                   Password
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-purple-500 hover:underline"
+                  className="text-sm text-[#8b5cf6] hover:underline"
                 >
                   Forgot Password?
                 </Link>
               </div>
               <input
                 type="password"
-                placeholder="••••••••••"
-                className="w-full rounded-xl bg-gray-100 px-4 py-4 text-base outline-none placeholder:text-gray-500"
+                placeholder="Enter your password"
+                className="w-full rounded-2xl bg-[#f3f4f6] px-4 py-4 text-base text-[#111827] outline-none placeholder:text-[#94a3b8]"
               />
             </div>
+
             <button
               type="submit"
-              className="w-full rounded-2xl bg-black py-4 text-base font-medium text-white transition hover:opacity-90"
+              className="w-full rounded-2xl bg-[#1f1f1f] py-4 text-base font-semibold text-white transition hover:bg-black"
             >
               Sign In
             </button>
-            <div className="space-y-1 text-center">
-              <p className="text-center text-sm text-black">
-                Don’t have an account?{" "}
-                <Link to="/signup" className="text-purple-500 hover:underline">
+
+            <div className="space-y-2 text-center text-sm text-[#374151]">
+              <p className="text-[#6b7280]">
+                Employee access is assigned by a business admin after your account is created.
+              </p>
+              <p>
+                Don&apos;t have an account?{" "}
+                <Link to="/signup" className="font-medium text-[#8b5cf6] hover:underline">
                   Sign up
                 </Link>
-              </p>
-              <p className="text-center text-sm text-black">
-                Site admin? Go to{" "}
-                <Link
-                  to="/siteadmin"
-                  className="text-purple-500 hover:underline"
-                >
-                  this
-                </Link>{" "}
-                sign in page
               </p>
             </div>
           </form>
         </div>
       </main>
+    </div>
+  );
+}
+
+function Field({ label, placeholder, type }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-medium uppercase tracking-[0.16em] text-black">
+        {label}
+      </label>
+      <input
+        type={type}
+        placeholder={placeholder}
+        className="w-full rounded-2xl bg-[#f3f4f6] px-4 py-4 text-base text-[#111827] outline-none placeholder:text-[#94a3b8]"
+      />
     </div>
   );
 }
