@@ -1,0 +1,66 @@
+import EmployeeSideBar from "../../components/sidebar/EmployeeSideBar";
+import MainLayout from "../../layout/MainLayout";
+import { employeeNav } from "../../config/workspaceNav";
+
+function Expenses() {
+  const tasks = [
+    ["Receipt batch #212", "Verify submitted reimbursement documents", "Today"],
+    ["Expense Plan Q2", "Match entries to plan categories", "Apr 20, 2026"],
+    ["Vendor Payment Review", "Attach notes before admin approval", "Apr 22, 2026"],
+  ];
+
+  return (
+    <MainLayout
+      sidebar={<EmployeeSideBar />}
+      navItems={employeeNav}
+      brandLink="/employee/dashboard"
+    >
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8b5cf6]">
+          Expense Workflow
+        </p>
+        <h1 className="mt-3 text-5xl font-semibold tracking-tight text-[#0f172a]">
+          Expense Tasks
+        </h1>
+        <p className="mt-3 max-w-3xl text-lg text-[#64748b]">
+          Review the expense items and pay-off tasks that your business admin has assigned to your account.
+        </p>
+      </section>
+
+      <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
+        <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
+          Assigned Expense Work
+        </h2>
+        <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
+          <table className="min-w-full divide-y divide-[#eef2f6]">
+            <thead className="bg-[#f8fafc]">
+              <tr className="text-left text-xs uppercase tracking-[0.18em] text-[#94a3b8]">
+                {["Task", "Action", "Due"].map((header) => (
+                  <th key={header} className="px-6 py-4 font-semibold">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#eef2f6] bg-white">
+              {tasks.map((row) => (
+                <tr key={row[0]} className="text-sm text-[#0f172a]">
+                  {row.map((cell, index) => (
+                    <td
+                      key={`${row[0]}-${index}`}
+                      className={`px-6 py-5 ${index === 0 ? "font-medium" : "text-[#475569]"}`}
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </MainLayout>
+  );
+}
+
+export default Expenses;
