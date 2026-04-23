@@ -198,30 +198,54 @@ def staff_create_transaction(request, business_id):
 
 # BUSINESS ADMIN
 
-@api_view(["GET"])
+@api_view(["GET", "PUT"])
 def business_admin_profile(request, business_id):
-  return Response({"message": "business_admin_profile placeholder"})
-
-# edit business profile
-@api_view(["PUT"])
-def business_admin_edit_profile(request, business_id):
-  return Response({"message": "business_admin_edit_profile placeholder"})
+    if request.method == "GET":
+        business = Business.objects.get(id=business_id)
+        business_info_serializer = BusinessSerializer(business)
+        return Response(business_info_serializer.data)
+    
+    # edit business profile as business admin
+    elif request.method == "PUT":
+        business = Business.objects.get(id=business_id)
+        business_info_serializer = BusinessSerializer(business, data=request.data)
+        if business_info_serializer.is_valid():
+            business_info_serializer.save()
+            return Response(business_info_serializer.data)
+        return Response(business_info_serializer.errors, status=400)
 
 @api_view(["GET"])
 def business_admin_contracts(request, business_id):
-  return Response({"message": "business_admin_contracts placeholder"})
+  all_contracts = Contract.objects.filter(Business_ID=business_id)
+  contract_serializer = ContractSerializer(all_contracts, many=True)
+  return Response(contract_serializer.data)
 
 @api_view(["POST"])
 def business_admin_send_contract(request, business_id):
-  return Response({"message": "business_admin_send_contract placeholder"})
+  contract_data = request.data.copy()
+  contract_data["Business_ID"] = business_id
+  contract_serializer = ContractSerializer(data=contract_data)
+
+  if contract_serializer.is_valid():
+    contract_serializer.save()
+    return Response(contract_serializer.data, status=201))
+  return Response(contract_serializer.errors, status=400)
 
 @api_view(["PUT"])
 def business_admin_accept_contract(request, business_id, contract_id):
-  return Response({"message": "business_admin_accept_contract placeholder"})
+  contract = get_object_or_404(Contract, Business_ID=business_id, id=contract_id)
+  contract.Contract_Status = "accepted"
+  contract.save()
+  contract_serializer = ContractSerializer(contract)
+  return Response(contract_serializer.data)
 
 @api_view(["PUT"])
 def business_admin_reject_contract(request, business_id, contract_id):
-  return Response({"message": "business_admin_reject_contract placeholder"})
+  contract = get_object_or_404(Contract, Business_ID=business_id, id=contract_id)
+  contract.Contract_Status = "rejected"
+  contract.save()
+  contract_serializer = ContractSerializer(contract)
+  return Response(contract_serializer.data)
 
 @api_view(["GET"])
 def business_admin_invoices(request, business_id):

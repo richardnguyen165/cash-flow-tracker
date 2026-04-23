@@ -25,8 +25,6 @@ urlpatterns = [
     # May - Business Admin
 
     path("business/admin/<int:business_id>/profile/", views.business_admin_profile),
-    path("business/admin/<int:business_id>/profile/edit/", views.business_admin_edit_profile),
-    # contracts
     path("business/admin/<int:business_id>/contracts/", views.business_admin_contracts),
     path("business/admin/<int:business_id>/contracts/send/", views.business_admin_send_contract),
     path("business/admin/<int:business_id>/contracts/<int:contract_id>/accept/", views.business_admin_accept_contract),
