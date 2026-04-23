@@ -193,4 +193,90 @@ def staff_business_contracts(request, business_id):
 @api_view(["POST"])
 def staff_create_transaction(request, business_id):
   return Response({"message": "staff_create_transaction placeholder"})
+
 # May's views
+
+# BUSINESS ADMIN
+
+@api_view(["GET"])
+def business_admin_profile(request, business_id):
+  return Response({"message": "business_admin_profile placeholder"})
+
+# edit business profile
+@api_view(["PUT"])
+def business_admin_edit_profile(request, business_id):
+  return Response({"message": "business_admin_edit_profile placeholder"})
+
+@api_view(["GET"])
+def business_admin_contracts(request, business_id):
+  return Response({"message": "business_admin_contracts placeholder"})
+
+@api_view(["POST"])
+def business_admin_send_contract(request, business_id):
+  return Response({"message": "business_admin_send_contract placeholder"})
+
+@api_view(["PUT"])
+def business_admin_accept_contract(request, business_id, contract_id):
+  return Response({"message": "business_admin_accept_contract placeholder"})
+
+@api_view(["PUT"])
+def business_admin_reject_contract(request, business_id, contract_id):
+  return Response({"message": "business_admin_reject_contract placeholder"})
+
+@api_view(["GET"])
+def business_admin_invoices(request, business_id):
+  return Response({"message": "business_admin_invoices placeholder"})
+
+@api_view(["GET"])
+def business_admin_payments(request, business_id):
+  return Response({"message": "business_admin_payments placeholder"})
+
+@api_view(["GET"])
+def business_admin_employees(request, business_id):
+  return Response({"message": "business_admin_employees placeholder"})
+
+@api_view(["POST"])
+def business_admin_add_employee(request, business_id):
+  return Response({"message": "business_admin_add_employee placeholder"})
+
+@api_view(["DELETE"])
+def business_admin_remove_employee(request, business_id, employee_id):
+  return Response({"message": "business_admin_remove_employee placeholder"})
+
+@api_view(["PUT"])
+def business_admin_assign_contracts(request, business_id, employee_id):
+  return Response({"message": "business_admin_assign_contracts placeholder"})
+
+# SITE ADMIN
+
+@api_view(["GET"])
+def site_admin_businesses(request):
+  return Response({"message": "site_admin_businesses placeholder"})
+
+@api_view(["DELETE"])
+def site_admin_remove_business(request, business_id):
+  return Response({"message": "site_admin_remove_business placeholder"})
+
+@api_view(["GET"])
+def site_admin_users(request):
+  return Response({"message": "site_admin_users placeholder"})
+
+@api_view(["DELETE"])
+def site_admin_remove_user(request, user_id):
+  return Response({"message": "site_admin_remove_user placeholder"})
+
+@api_view(["GET"])
+def site_admin_profile(request, user_id):
+  return Response({"message": "site_admin_profile placeholder"})
+
+@api_view(["GET"])
+def site_admin_privileges(request):
+  return Response({"message": "site_admin_privileges placeholder"})
+
+@api_view(["PUT"])
+def site_admin_grant_privileges(request, user_id):
+  return Response({"message": "site_admin_grant_privileges placeholder"})
+
+@api_view(["PUT"])
+def site_admin_withdraw_privileges(request, user_id):
+  return Response({"message": "site_admin_withdraw_privileges placeholder"})
