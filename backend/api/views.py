@@ -65,11 +65,22 @@ def view_individual_transactions(_, user_id):
 def send_individual_contracts(request, id):
   return
   
-@api_view(["GET"])
-def view_individual_contracts(_, user_id):  
-  all_contracts = Contract.objects.filter(CounterParty_ID=user_id)
+@api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
+def view_individual_contracts(_, individual_id):  
+  all_contracts = Contract.objects.filter(CounterParty_ID=individual_id)
   contract_serializer = ContractSerializer(all_contracts, many = True)
   return Response(contract_serializer.data)
+
+# Assuming we are updating the contract
+@api_view(["DELETE"])
+def individual_contracts_reject(request):
+  return
+
+# Assuming we are  updating the contract
+@api_view(["PUT"])
+def individual_contracts_accept(request):
+  return
 
 @api_view(["GET"])
 def view_individual_contracts_details(_, user_id, contract_id):
@@ -94,19 +105,9 @@ def view_individual_specific_invoice(_, user_id, invoice_id):
   invoice_serializer = InvoiceSerializer(specific_invoice, many = False)
   return Response(invoice_serializer.data)
 
-@api_view(["PUT"])
-def receive_individual_invoice(request):
-  return
-
-# Assuming we are updating the contract
-@api_view(["DELETE"])
-def individual_contracts_reject(request):
-  return
-
-# Assuming we are  updating the contract
-@api_view(["PUT"])
-def individual_contracts_accept(request):
-  return
+# @api_view(["PUT"])
+# def receive_individual_invoice(request):
+#   return
 
 @api_view(["PUT"])
 def individual_contracts_payment(request):
@@ -280,7 +281,7 @@ def business_admin_send_contract(request, business_id):
 
   if contract_serializer.is_valid():
     contract_serializer.save()
-    return Response(contract_serializer.data, status=201))
+    return Response(contract_serializer.data, status=201)
   return Response(contract_serializer.errors, status=400)
 
 @api_view(["PUT"])

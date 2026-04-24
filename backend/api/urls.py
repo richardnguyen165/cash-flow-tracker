@@ -7,7 +7,7 @@ urlpatterns = [
     path("indiv/get/user/<int:user_id>", views.get_individual),
     path("indiv/profile/get/<int:user_id>", views.individual_profile),
     path("indiv/transactions/get/<int:user_id>", views.view_individual_transactions),
-    path("indiv/contracts/get/<int:user_id>", views.view_individual_contracts),
+    path("indiv/contracts/get/<int:individual_id>", views.view_individual_contracts),
     path("indiv/contracts/get/<int:user_id>/<int:contract_id>", views.view_individual_contracts_details),
     path("indiv/invoices/get/<int:user_id>", views.view_individual_invoices),
     path("indiv/invoices/get/<int:user_id>/<int:invoice_id>", views.view_individual_specific_invoice),

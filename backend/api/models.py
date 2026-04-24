@@ -54,7 +54,6 @@ class Business(models.Model):
           
     super().save(*args, **kwargs)
   
-
 class Site_Admin(models.Model):
   # Site admin alreadt has their id added
   User_ID = models.OneToOneField(User, on_delete = models.CASCADE, null = True, blank = True, related_name="site_admin")
@@ -68,7 +67,6 @@ class Business_Admin(models.Model):
   BusinessAdmin_BirthDate = models.DateField()
   BusinessAdmin_Profile = models.CharField(max_length = 256)
   BusinessAdmin_PhoneNumber = models.CharField(max_length=20)
-  
   
 # THIS IS FOR CONTRACTS 
 
@@ -84,7 +82,7 @@ class Business_Client(models.Model):
 
 class Individual_Client(models.Model):
   CounterParty_ID = models.OneToOneField(CounterParty, on_delete=models.CASCADE, null = True, blank = True, related_name="indiv_client")
-  User_ID = models.OneToOneField(User, on_delete = models.CASCADE, related_name="indiv_client")
+  Individual_ID = models.OneToOneField(Individual, on_delete = models.CASCADE, related_name="indiv_client")
   
 class Transaction(models.Model):
   
@@ -132,11 +130,12 @@ class Employee(models.Model):
 class Contract(models.Model):
   # User_ID = models.ForeignKey(User, on_delete = models.CASCADE)
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="contracts")
-  CounterParty_ID = models.ForeignKey(CounterParty, on_delete=models.CASCADE, related_name="contracts")
-  Expense_ID = models.ForeignKey(Expense, on_delete = models.SET_NULL, null = True, blank = True, related_name="contracts")
-  Completion_Date = models.DateField()
-  Name = models.CharField(max_length=64)
-  Terms = models.CharField(max_length=5000)
+  Contract_CounterParty_ID = models.ForeignKey(CounterParty, on_delete=models.CASCADE, related_name="contracts")
+  Contract_Expense_ID = models.ForeignKey(Expense, on_delete = models.SET_NULL, null = True, blank = True, related_name="contracts")
+  Contract_Completion_Date = models.DateField()
+  Contract_Name = models.CharField(max_length=64)
+  Contract_Terms = models.CharField(max_length=5000)
+  Contract_Status = models.BooleanField()
   
 class Moderates(models.Model):
   Site_Admin_ID = models.ForeignKey(Site_Admin, on_delete = models.CASCADE, related_name="moderates")

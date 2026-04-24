@@ -193,12 +193,25 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
         
         return finalized_site_admin
         
-        
-
 class CounterPartySerializer(serializers.ModelSerializer):
     class Meta:
         model = CounterParty
         fields = ["CounterParty_ID"]
+            
+class ContractSerializer(serializers.ModelSerializer):
+    businessReference = BusinessSerializer()
+    counterPartyReference = CounterPartySerializer();
+    class Meta:
+        model = Contract
+        fields = [
+            "id",
+            "Business_ID",
+            "CounterParty_ID",
+            "Expense_ID",
+            "Duration",
+            "Name",
+            "Terms",
+        ]
 
 
 class BusinessClientSerializer(serializers.ModelSerializer):
@@ -301,20 +314,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "Pay",
             "Role",
         ]
-
-class ContractSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contract
-        fields = [
-            "id",
-            "Business_ID",
-            "CounterParty_ID",
-            "Expense_ID",
-            "Duration",
-            "Name",
-            "Terms",
-        ]
-
+        
 class ModeratesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Moderates

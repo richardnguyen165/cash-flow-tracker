@@ -14,32 +14,29 @@ function ClientSidebar() {
   const [role, setRole] = useState(null);
   const [name, setName] = useState(null);
 
-  async function getData(link, role) {
-    const send = await api.get(link);
-    const all_data = send.data;
-    // console.log(all_data);
-    // console.log(all_data.Individual_Name);
-    if (role === "INDIVIDUAL"){
-      setName(all_data.Individual_Name);
-    }
-  }
-
   useEffect(() => {
-    const decodedToken = decodeTokens();
-    const { user_id, User_Role } = decodedToken;
-    setID(user_id);
-    setRole(User_Role);
+    async function getData() {
+      const decodedToken = decodeTokens();
+      const { user_id, User_Role } = decodedToken;
+      let link;
 
-    // console.log(User_Role);
-    // console.log(role);
+      if (User_Role === "INDIVIDUAL") {
+        link = `api/indiv/get/user/${user_id}`
+      }
 
-    if (User_Role === "INDIVIDUAL") {
-      const link = `api/indiv/get/user/${user_id}`
-      getData(link, User_Role);
+      const send = await api.get(link);
+      const all_data = send.data;
+
+      if (User_Role === "INDIVIDUAL"){
+        setID(user_id);
+        setRole(User_Role);
+        setName(all_data.Individual_Name);
+      }
+      // else if (side_role === "BUSINESS") {
+
+      // }
     }
-    // else if (side_role === "BUSINESS") {
-
-    // }
+    getData();
   }, []);
 
 
