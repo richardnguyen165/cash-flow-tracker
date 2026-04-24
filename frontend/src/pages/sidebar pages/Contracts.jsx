@@ -2,11 +2,7 @@ import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
 
-const defaultAgreements = [
-    ["Capital Advisory Master Agreement", "Active", "Jan 12, 2024"],
-    ["Venture Capital Rider", "Pending Signature", "Pending"],
-    ["Trust & Estate Planning Services", "Completed", "Jun 04, 2023"],
-];
+const defaultAgreements = [];
 
 function Contracts({
   sidebar = <ClientSidebar />,

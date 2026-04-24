@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # Richard - Invdividual Client
     path("indiv/put/create_user", views.create_individual),
+    path("indiv/get/user/<int:user_id>", views.get_individual),
     path("indiv/profile/get/<int:user_id>", views.individual_profile),
     path("indiv/transactions/get/<int:user_id>", views.view_individual_transactions),
     path("indiv/contracts/get/<int:user_id>", views.view_individual_contracts),

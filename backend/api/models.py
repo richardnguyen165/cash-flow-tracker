@@ -134,7 +134,7 @@ class Contract(models.Model):
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="contracts")
   CounterParty_ID = models.ForeignKey(CounterParty, on_delete=models.CASCADE, related_name="contracts")
   Expense_ID = models.ForeignKey(Expense, on_delete = models.SET_NULL, null = True, blank = True, related_name="contracts")
-  Duration = models.PositiveIntegerField(default = 1)
+  Completion_Date = models.DateField()
   Name = models.CharField(max_length=64)
   Terms = models.CharField(max_length=5000)
   

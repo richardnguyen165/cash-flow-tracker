@@ -2,7 +2,7 @@ from django.shortcuts import *
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import *
 from .serializers import *
@@ -30,11 +30,17 @@ def create_individual(request):
       "access": str(token.access_token)
     }, status=status.HTTP_201_CREATED)
   return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  
 
-@api_view(["DELETE"])
-def delete_individual(request):
-  return
+@api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
+def get_individual(request, user_id):
+  individual = Individual.objects.get(id=user_id)
+  indiv_info_serializer = IndividualSerializer(individual)
+  return Response(indiv_info_serializer.data)
+  
+# @api_view(["DELETE"])
+# def delete_individual(request):
+#   return
 
 @api_view(["GET", "POST"])
 def individual_profile(request, user_id):

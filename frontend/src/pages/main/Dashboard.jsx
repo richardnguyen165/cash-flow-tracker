@@ -1,34 +1,22 @@
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import MetricCard from "../../components/cards/MetricCard";
+import decodeTokens from "../../services/decode-tokens";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
-  const activeContracts = [
-    {
-      name: "Capital Advisory Master Agreement",
-      nextAction: "Awaiting billing approval",
-      dueDate: "Apr 22, 2026",
-      amount: "$84,210.00",
-      status: "In Review",
-      statusClass: "bg-[#fef3c7] text-[#92400e]",
-    },
-    {
-      name: "Equity Participation Clause",
-      nextAction: "Pending client signature",
-      dueDate: "Apr 25, 2026",
-      amount: "$250,000.00",
-      status: "Pending Signature",
-      statusClass: "bg-[#fee2e2] text-[#b91c1c]",
-    },
-    {
-      name: "Commercial Escrow Agreement",
-      nextAction: "Payment scheduled",
-      dueDate: "Apr 30, 2026",
-      amount: "$42,500.00",
-      status: "Scheduled",
-      statusClass: "bg-[#ede9fe] text-[#7c3aed]",
-    },
-  ];
+  
+  const [indivID, setIndivID] = useState(null);
+  const [indivRole, setIndivRole] = useState(null);
+
+  useEffect(() => {
+    const decodedToken = decodeTokens();
+    const { indiv_id, indiv_role } = decodedToken;
+    setIndivID(indiv_id);
+    setIndivRole(indiv_role);
+  }, []);
+
+  const activeContracts = [];
 
   return (
     <MainLayout sidebar={<ClientSidebar />}>
@@ -51,14 +39,14 @@ function Dashboard() {
             $412,450.00
           </h2>
 
-          <div className="mt-8 flex flex-wrap gap-4">
+          {/* <div className="mt-8 flex flex-wrap gap-4">
             <button className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black">
               Pay Outstanding
             </button>
-          </div>
+          </div> */}
         </div>
 
-        <div className="rounded-[28px] border border-[#ececf2] bg-white p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        {/* <div className="rounded-[28px] border border-[#ececf2] bg-white p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
             Pending Review
           </p>
@@ -69,7 +57,7 @@ function Dashboard() {
           <p className="mt-8 text-xs uppercase tracking-[0.16em] text-[#9ca3af]">
             Last synced today at 9:24 AM
           </p>
-        </div>
+        </div> */}
       </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -80,18 +68,18 @@ function Dashboard() {
           compact
         />
         <MetricCard
-          label="Open Invoices"
+          label="Total Invoices Received"
           value="11"
-          subtitle="Across current clients and retained services"
+          subtitle="Invoices received from outgoing contracts"
           compact
         />
-        <MetricCard
+        {/* <MetricCard
           label="Recent Payments"
           value="$96.4K"
           subtitle="Settled in the last 30 days"
           compact
           accent="text-[#8b5cf6]"
-        />
+        /> */}
       </section>
 
       <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
@@ -104,9 +92,9 @@ function Dashboard() {
               Keep track of agreements that are active, in review, or waiting on action.
             </p>
           </div>
-          <button className="rounded-2xl bg-[#111827] px-5 py-3 text-sm font-semibold text-white transition hover:bg-black">
+          {/* <button className="rounded-2xl bg-[#111827] px-5 py-3 text-sm font-semibold text-white transition hover:bg-black">
             New Contract
-          </button>
+          </button> */}
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
