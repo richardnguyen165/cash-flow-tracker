@@ -106,7 +106,7 @@ function SignIn() {
 
             <div className="space-y-2 text-center text-sm text-[#374151]">
               <p className="text-[#6b7280]">
-                Employee access is assigned by a business admin after your account is created.
+                { selectedRole ? displayInformationText(signInRoles, selectedRole) : "Please pick a role!"}
               </p>
               <p>
                 Don&apos;t have an account?{" "}
@@ -120,6 +120,14 @@ function SignIn() {
       </main>
     </div>
   );
+}
+
+function displayInformationText(signInRoles, selectedRole) {
+  for (const role of signInRoles){
+    if (role.id === selectedRole){
+      return role.description;
+    }
+  }
 }
 
 function Field({ label, placeholder, type }) {

@@ -21,8 +21,9 @@ class Individual(models.Model):
   User_ID = models.OneToOneField(User, on_delete=models.CASCADE)
   Individual_Balance = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
   Individual_BirthDate = models.DateField()
-  Individual_Profile = models.CharField(max_length = 256)
+  Individual_Profile = models.CharField(max_length = 256, blank = True)
   Individual_PhoneNumber = models.CharField(max_length=20)
+  Individual_Name = models.CharField(max_length=256)
   
 class Business(models.Model):
   def __str__(self):
@@ -85,7 +86,6 @@ class Individual_Client(models.Model):
   CounterParty_ID = models.OneToOneField(CounterParty, on_delete=models.CASCADE, null = True, blank = True, related_name="indiv_client")
   User_ID = models.OneToOneField(User, on_delete = models.CASCADE, related_name="indiv_client")
   
-
 class Transaction(models.Model):
   
   # Note: Foreign Key is beest used for one to many relationships

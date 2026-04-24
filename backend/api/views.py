@@ -1,20 +1,36 @@
 from django.shortcuts import *
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
+from rest_framework import authentication, permissions, status
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import *
 from .serializers import *
-
 
 # Create your views here.
 
 # Richard's views
 
+# Since we are using a view for the serializer
+class CustomTokenCreator(TokenObtainPairView):
+    serializer_class = TokenSerializer 
+
 # INDIVIDUAL CLIENT
 
-@api_view(["POST"])
+@api_view(["POST", "OPTIONS"])
+@permission_classes([AllowAny])
 def create_individual(request):
-  return
+  print("Received request")
+  user_serializer = IndividualSerializer(data=request.data)
+  if user_serializer.is_valid():
+    new_user = user_serializer.save()
+    token = TokenSerializer.get_token(new_user.User_ID)
+    return Response({
+      "refresh": str(token),
+      "access": str(token.access_token)
+    }, status=status.HTTP_201_CREATED)
+  return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
 
 @api_view(["DELETE"])
 def delete_individual(request):
@@ -96,7 +112,11 @@ BUSINESS CLIENT
 
 @api_view(["PUT"])
 def create_business(request):
-  return
+  business_serializer = BusinessClientSerializer(data=request.data)
+  if business_serializer.is_valid():
+    business_serializer.save()
+    return Response(business_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(business_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["DELETE"])
 def delete_business(request):
@@ -160,6 +180,32 @@ def receive_business_invoice(request):
 @api_view(["GET"])
 def business_view_expense_plans(request):
   return
+
+# When a business hires an employee
+@api_view(["PUT"])
+def create_staff(request):
+  staff_serializer = EmployeeSerializer(data=request.data)
+  if staff_serializer.is_valid():
+    staff_serializer.save()
+    return Response(staff_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(staff_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["PUT"])
+def create_site_admin(request):
+  site_admin_serializer = SiteAdminSerializer(data=request.data)
+  if site_admin_serializer.is_valid():
+    site_admin_serializer.save()
+    return Response(site_admin_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(site_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["PUT"])
+def create_business_admin(request):
+  business_admin_serializer = BusinessAdminSerializer(data=request.data)
+  if business_admin_serializer.is_valid():
+    business_admin_serializer.save()
+    return Response(business_admin_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(business_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["GET"])
 def business_view_expense(request):

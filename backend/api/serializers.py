@@ -1,7 +1,16 @@
 from rest_framework import serializers
 from .models import *
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-
+# https://www.freecodecamp.org/news/how-to-create-a-json-web-token-in-the-django-rest-framework/
+class TokenSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['User_Role'] = user.User_Role
+        token['id'] = user.id
+        return token
+    
 class UserSerializer(serializers.ModelSerializer):
     # Cannot read password
     password = serializers.CharField(write_only=True)
@@ -11,14 +20,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "username",
             "password",
-            "email",
             "User_Role"
         ]
     
     # https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation
     
     def validate(self, data):
-        if User.objects.filter(username=data["username"], password=data["password"], email=data["email"]).exists():
+        if User.objects.filter(username=data["username"], User_Role=data["User_Role"]).exists():
             raise serializers.ValidationError(f"Account already registered under {data["User_Role"]}")
         return data
         
@@ -27,20 +35,21 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(
             username = data["username"],
             password = data["password"],
-            email = data["email"],
             User_Role= data["User_Role"]
         )
             
 class IndividualSerializer(serializers.ModelSerializer):
-    userReference = UserSerializer()
+    User_ID = UserSerializer()
     
     class Meta:
         model = Individual
         fields = [
-            "userReference",
+            "User_ID",
+            "Individual_Balance",
             "Individual_BirthDate",
             "Individual_Profile",
-            "Individual_PhoneNumber"
+            "Individual_PhoneNumber",
+            "Individual_Name"
         ]
     
     def validate(self, data):
@@ -51,7 +60,7 @@ class IndividualSerializer(serializers.ModelSerializer):
 
     def create(self, data):
         # Extracts user data from consideration
-        indiv_data = data.pop("user")
+        indiv_data = data.pop("User_ID")
         # Sets it to individual client
         indiv_data["User_Role"] = User.Role.INDIVIDUAL_CLIENT
         
@@ -79,7 +88,6 @@ class BusinessSerializer(serializers.ModelSerializer):
             "Business_Balance",
             "Business_Profile",
             "Business_PhoneNumber",
-            # "Business_AdminEmail",
             "Business_AccessCode"
         ]
     
@@ -131,7 +139,7 @@ class SiteAdminSerializer(serializers.ModelSerializer):
         # Extracts user data from consideration
         site_admin_data = data.pop("user")
         # Sets it to business client
-        site_admin_data["User_Role"] = User.Role.BUSINESS_CLIENT
+        site_admin_data["User_Role"] = User.Role.SITE_ADMIN
         
         # Check if user data is valid
         verify_user = UserSerializer(data=site_admin_data)
@@ -170,7 +178,7 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
         # Extracts user data from consideration
         business_user_data = data.pop("user")
         # Sets it to business client
-        business_user_data["User_Role"] = User.Role.BUSINESS_CLIENT
+        business_user_data["User_Role"] = User.Role.BUSINESS_ADMIN
         
         # Check if user data is valid
         verify_user = UserSerializer(data=business_user_data)

@@ -20,6 +20,8 @@ import Employees from "./pages/sidebar pages/Employees";
 import Expenses from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
+import { Toaster } from 'react-hot-toast';
+
 import {
   businessAdminNav,
   clientNav,
@@ -30,6 +32,7 @@ import {
 function App() {
   return (
     <BrowserRouter>
+      <Toaster />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signin" element={<SignIn />} />

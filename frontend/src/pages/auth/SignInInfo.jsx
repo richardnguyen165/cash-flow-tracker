@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signupRedirects } from "../../config/workspaceNav";
 import Navbar from "../../components/navbar/Navbar";
 import axios from 'axios';
+import api from "../../services/api"
+import toast, { Toaster } from 'react-hot-toast';
 
 const ACCOUNT_SETUP_CONFIG = {
   "individual-client": {
@@ -28,11 +30,23 @@ const ACCOUNT_SETUP_CONFIG = {
         placeholder: "",
         type: "date",
       },
+      // {
+      //   name: "employmentStatus",
+      //   label: "Employment Status*",
+      //   type: "radio-group",
+      //   options: ["Employed", "Unemployed"],
+      // },
       {
-        name: "employmentStatus",
-        label: "Employment Status*",
-        type: "radio-group",
-        options: ["Employed", "Unemployed"],
+        name: "password",
+        label: "Password*",
+        placeholder: "Create a password",
+        type: "password",
+      },
+      {
+        name: "email",
+        label: "Email*",
+        placeholder: "individual@domain.com",
+        type: "email",
       },
       {
         name: "currentBalance",
@@ -148,20 +162,58 @@ function SignInInfo() {
     setFormValues((current) => ({ ...current, [name]: value }));
   };
 
-  const submit = (e) => {
+  const createEntity = async (link, payload) => {
+    const send = await api.post(link, payload);
+    const tokens = send.data
+    const status = send.status;
+
+    if (status !== 201){
+      // Error message
+      toast.error(send.data);
+    }
+
+    return { status, tokens }
+  }
+
+  const submit = async (e) => {
     e.preventDefault();
     console.log({ accountType, ...formValues });
     // Ok, this is where I create a user, buiness client
+    let payload;
+    let link;
 
     // Individual Client
     if (accountType == "individual-client") {
-      console.log("hi");
-      const { birthday, currentBalance, employmentStatus, fullName, phoneNumber } = formValues;
-
+      const { password, birthday, currentBalance, fullName, phoneNumber, email } = formValues;
+      payload = {
+        User_ID: {
+          username: email,
+          password: password,
+          User_Role: "INDIVIDUAL",
+        },
+        Individual_BirthDate: birthday,
+        Individual_Profile: "",
+        Individual_PhoneNumber: phoneNumber,
+        Individual_Balance: currentBalance,
+        Individual_Name: fullName,
+      }
+      link = "api/indiv/put/create_user"
     }
 
+    const { status, tokens } = await createEntity(link, payload);
+
     // Business Client
-    navigate(signupRedirects[accountType]);
+    // else if (accountType == "business-client") {
+
+    // }
+
+    // Set the acces and refresh tokens, if the creation was good.
+    if (status === 201) {
+      toast.success('Logged in!');
+      localStorage.setItem("access", tokens.access);
+      localStorage.setItem("refresh", tokens.refresh);
+      navigate(signupRedirects[accountType]);
+    }
   };
 
   return (
