@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signupRedirects } from "../../config/workspaceNav";
 import Navbar from "../../components/navbar/Navbar";
+import axios from 'axios';
 
 const ACCOUNT_SETUP_CONFIG = {
   "individual-client": {
@@ -150,6 +151,16 @@ function SignInInfo() {
   const submit = (e) => {
     e.preventDefault();
     console.log({ accountType, ...formValues });
+    // Ok, this is where I create a user, buiness client
+
+    // Individual Client
+    if (accountType == "individual-client") {
+      console.log("hi");
+      const { birthday, currentBalance, employmentStatus, fullName, phoneNumber } = formValues;
+
+    }
+
+    // Business Client
     navigate(signupRedirects[accountType]);
   };
 
