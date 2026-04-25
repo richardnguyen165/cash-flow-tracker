@@ -228,7 +228,7 @@ function SignInInfo() {
           User_Role: "INDIVIDUAL",
         },
         Individual_BirthDate: birthday,
-        Individual_Profile: "",
+        // Individual_Profile: "",
         Individual_PhoneNumber: phoneNumber,
         Individual_Balance: currentBalance,
         Individual_Name: fullName,
@@ -245,7 +245,7 @@ function SignInInfo() {
           User_Role: "BUSINESS",
         },
         Business_Balance: currentBalance,
-        Business_Profile: "",
+        // Business_Profile: "",
         Business_PhoneNumber: businessPhoneNumber,
         Business_Name: businessName,
         // Business_ID: businessId
@@ -263,7 +263,7 @@ function SignInInfo() {
         },
         BusinessAdmin_Name: name,
         BusinessAdmin_BirthDate: birthday,
-        BusinessAdmin_Profile : "",
+        // BusinessAdmin_Profile : "",
         BusinessAdmin_PhoneNumber: phoneNumber,
         businessAccessCode
       }
@@ -279,7 +279,7 @@ function SignInInfo() {
         },
         SiteAdmin_Name: name,
         SiteAdmin_BirthDate: birthday,
-        SiteAdmin_Profile: "",
+        // SiteAdmin_Profile: "",
         SiteAdmin_PhoneNumber: phoneNumber,
         authorizationCode
       }

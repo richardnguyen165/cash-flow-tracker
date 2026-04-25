@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ContractDetailsModal from "../../modals/ContractDetailsModal";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
 import CreateContractModal from "../../modals/CreateContractModal";
 import ContractsCard from "../../components/cards/ContractsCard";
+import decodeTokens from "../../services/decode-tokens";
+import api from "../../services/api";
 
 const defaultAgreements = [
   {
@@ -40,35 +42,78 @@ function Contracts({
   sidebar = <ClientSidebar />,
   navItems = clientNav,
   brandLink = "/dashboard",
-  agreements = defaultAgreements,
+  agreements = [],
   tableTitle = "My Contracts",
 }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
-  const [agreementList, setAgreementList] = useState(agreements);
+  const [agreementList, setAgreementList] = useState([]);
+
+  const [userID, setID] = useState(null);
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+
+    async function getContracts() {
+      const decodedToken = decodeTokens();
+      const { id, User_Role  } = decodedToken;
+      let link;
+      setID(id);
+      setRole(User_Role);
+
+      if (User_Role === "INDIVIDUAL") {
+        link = `api/indiv/contracts/get/${userID}`
+      } else if (User_Role === "BUSINESS") {
+        link = `api/business/contracts/get/${userID}`
+      } else if (User_Role === "BUSINESS_ADMIN") {
+        console.log("BUSINESS_ADMIN");
+      } else if (User_Role === "EMPLOYEE") {
+        console.log("Employee");
+      }
+
+      const response = await api.get(link);
+      console.log(response);
+
+      setAgreementList(response.data);
+    }
+
+    getContracts();
+
+  }, []);
+
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
-      <ContractsCard
+      {role !== "BUSINESS_ADMIN" ? <ContractsCard
         title={tableTitle}
         contracts={agreementList}
         onRowClick={(contract) =>
           setSelectedContract({
             ...contract,
-            date: contract.dueDate,
+            date: contract.Contract_Completion_Date,
             authMethod: "Digital Signature",
           })
-        }
-        actionButton={
-          <button
-            type="button"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
-          >
-            + New Contract
-          </button>
-        }
-      />
+        } /> :
+        <ContractsCard
+          title={tableTitle}
+          contracts={agreementList}
+          onRowClick={(contract) =>
+            setSelectedContract({
+              ...contract,
+              date: contract.Contract_Completion_Date,
+              authMethod: "Digital Signature",
+            })
+          }
+          actionButton={
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
+            >
+              + New Contract
+            </button>
+          }
+        />}
 
       <CreateContractModal
         isOpen={isCreateModalOpen}

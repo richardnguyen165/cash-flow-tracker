@@ -2,7 +2,7 @@ import StatusBadge from "../components/cards/StatusBadge";
 
 function ContractDetailsModal({ isOpen, onClose, contract }) {
   if (!isOpen) return null;
-  const status = contract?.status || "In Review";
+  const status = contract?.Contract_Status || "In Review";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -15,11 +15,11 @@ function ContractDetailsModal({ isOpen, onClose, contract }) {
               </p>
 
               <h2 className="mt-5 text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[#111827]">
-                {contract?.name || "Contract Agreement"}
+                {contract?.Contract_Name || "Contract Agreement"}
               </h2>
 
               <p className="mt-2 text-[15px] text-[#9ca3af]">
-                Agreement ID: {contract?.agreementId || "TR-8842-AXL-003"}
+                Agreement ID: {contract?.id || "N/A"}
               </p>
             </div>
 
@@ -35,17 +35,17 @@ function ContractDetailsModal({ isOpen, onClose, contract }) {
             <div className="grid grid-cols-1 gap-x-16 gap-y-8 md:grid-cols-2">
               <InfoBlock
                 label="Contract Name"
-                value={contract?.name || "Asset Allocation Master v2.4"}
+                value={contract?.Contract_Name || "N/A"}
               />
 
               <InfoBlock
                 label="Due Date"
                 value={
-                  contract?.dueDate || contract?.date || "October 24, 2023"
+                  contract?.Contract_Completion_Date | "N/A"
                 }
               />
 
-              <InfoBlock label="Amount" value={contract?.amount || "$0.00"} />
+              <InfoBlock label="Amount" value={contract?.Contract_Cost ? `$${contract.Contract_Cost}` : "$0.00"} />
 
               <div className="flex flex-col">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
@@ -57,20 +57,20 @@ function ContractDetailsModal({ isOpen, onClose, contract }) {
                 </div>
               </div>
 
-              <InfoBlock
+              {/* <InfoBlock
                 label="Auth Method"
                 value={contract?.authMethod || "Digital Signature"}
-              />
+              /> */}
             </div>
           </div>
 
           <div className="mt-2 border-t border-[#edf1f5] pt-8">
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-              Contract Description
+              Contract Terms
             </p>
 
             <div className="mt-4 rounded-2xl bg-[#f8fafc] px-6 py-5 text-[15px] leading-8 text-[#5b6472]">
-              {contract?.description ||
+              {contract?.Contract_Terms ||
                 "This agreement sets forth the terms and conditions under which the business will provide services to the client, including the scope of work, payment obligations, approval procedures, and ongoing responsibilities of both parties. It outlines the timing of deliverables, billing and collection expectations, requirements for written authorization, and the procedures for handling amendments, delays, disputes, or termination. Both parties acknowledge that all services, communications, and payments made under this agreement must comply with the agreed commercial terms and any supporting schedules or documents incorporated into the contract."}
             </div>
           </div>

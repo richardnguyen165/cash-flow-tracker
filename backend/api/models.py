@@ -1,4 +1,5 @@
-from django.db import models, Q
+from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import AbstractUser
 import random
 import string
@@ -21,7 +22,7 @@ class Individual(models.Model):
   User_ID = models.OneToOneField(User, on_delete=models.CASCADE)
   Individual_Balance = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
   Individual_BirthDate = models.DateField()
-  Individual_Profile = models.CharField(max_length = 256, blank = True)
+  # Individual_Profile = models.CharField(max_length = 256, blank = True)
   Individual_PhoneNumber = models.CharField(max_length=20)
   Individual_Name = models.CharField(max_length=256)
   
@@ -34,7 +35,7 @@ class Business(models.Model):
   # Business_ID = models.CharField(max_length=64)
   Business_Name = models.CharField(max_length = 256)
   Business_Balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-  Business_Profile = models.CharField(max_length = 256, blank = True)
+  # Business_Profile = models.CharField(max_length = 256, blank = True)
   Business_PhoneNumber = models.CharField(max_length=20)
   Business_AccessCode = models.CharField(max_length=6, unique = True, blank = True)
   
@@ -57,7 +58,7 @@ class Site_Admin(models.Model):
   User_ID = models.OneToOneField(User, on_delete = models.CASCADE, null = True, blank = True, related_name="site_admin")
   SiteAdmin_Name = models.CharField(max_length=256)
   SiteAdmin_BirthDate = models.DateField()
-  SiteAdmin_Profile = models.CharField(max_length = 256)
+  # SiteAdmin_Profile = models.CharField(max_length = 256)
   SiteAdmin_PhoneNumber = models.CharField(max_length=20)
 
 class Business_Admin(models.Model):
@@ -65,7 +66,7 @@ class Business_Admin(models.Model):
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="business_admin")
   BusinessAdmin_Name = models.CharField(max_length = 256)
   BusinessAdmin_BirthDate = models.DateField()
-  BusinessAdmin_Profile = models.CharField(max_length = 256)
+  # BusinessAdmin_Profile = models.CharField(max_length = 256)
   BusinessAdmin_PhoneNumber = models.CharField(max_length=20)
   
 # THIS IS FOR CONTRACTS 
@@ -81,7 +82,7 @@ class Transaction(models.Model):
   
   # Note: Foreign Key is beest used for one to many relationships
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="transactions", null = True)
-  User_ID = models.ForeignKey(User, on_delete = models.CASCADE, related_name="transactions", null = True)
+  Individual_ID = models.ForeignKey(Individual, on_delete = models.CASCADE, related_name="transactions", null = True)
   # adds date automatically
   Transaction_Date = models.DateField(auto_now_add=True)
 
@@ -128,7 +129,7 @@ class Contract(models.Model):
   Contract_Completion_Date = models.DateField()
   Contract_Name = models.CharField(max_length=64)
   Contract_Terms = models.CharField(max_length=5000)
-  Contract_Status = models.BooleanField()
+  Contract_Status = models.CharField(max_length = 64)
   Contract_Type = models.CharField(max_length=64)
   Contract_Cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
   

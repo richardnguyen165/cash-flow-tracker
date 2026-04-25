@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import *
 from .serializers import *
+from django.db.models import Q
 
 # Create your views here.
 
@@ -42,10 +43,6 @@ def get_individual(request, user_id):
   indiv_info_serializer = IndividualSerializer(individual)
   return Response(indiv_info_serializer.data)
   
-# @api_view(["DELETE"])
-# def delete_individual(request):
-#   return
-
 @api_view(["GET", "POST"])
 def individual_profile(request, user_id):
 
@@ -59,38 +56,32 @@ def individual_profile(request, user_id):
   elif request.method == "POST":
     return
 
-@api_view(["GET"])
+@api_view(["GET", "OPTIONS"])
+
 def view_individual_transactions(_, user_id):
   all_transactions = Transaction.objects.filter(User_ID=user_id)
   indiv_transaction_serializer = TransactionSerializer(all_transactions, many=True)
   return Response(indiv_transaction_serializer.data)
   
-@api_view(["PUT"])
-def send_individual_contracts(request, id):
-  return
-  
 @api_view(["GET", "OPTIONS"])
 @permission_classes([IsAuthenticated])
 def view_individual_contracts(_, individual_id):  
-  all_contracts = Contract.objects.filter(CounterParty_ID=individual_id)
-  contract_serializer = ContractSerializer(all_contracts, many = True)
+  individual = Individual.objects.get(id=individual_id)
+  
+  individual_email = individual.User_ID.username 
+  
+  all_business_contracts = Contract.objects.filter(
+ Q(Contract_CounterParty_ID__CounterParty_Type="INDIVIDUAL", Contract_CounterParty_ID__CounterParty_Email=individual_email)
+  )
+  contract_serializer = ContractSerializer(all_business_contracts, many=True)
+  print(contract_serializer)
   return Response(contract_serializer.data)
 
-# Assuming we are updating the contract
-@api_view(["DELETE"])
-def individual_contracts_reject(request):
-  return
-
-# Assuming we are  updating the contract
-@api_view(["PUT"])
-def individual_contracts_accept(request):
-  return
-
-@api_view(["GET"])
-def view_individual_contracts_details(_, user_id, contract_id):
-  specific_contract = Contract.objects.filter(CounterParty_ID=user_id, id = contract_id)
-  contract_serializer = ContractSerializer(specific_contract, many = False)
-  return Response(contract_serializer.data)
+# # @api_view(["GET"])
+# # def view_individual_contracts_details(_, user_id, contract_id):
+#   specific_contract = Contract.objects.filter(CounterParty_ID=user_id, id = contract_id)
+#   contract_serializer = ContractSerializer(specific_contract, many = False)
+#   return Response(contract_serializer.data)
 
 @api_view(["GET"])
 def view_individual_invoices(_, user_id):
@@ -108,10 +99,6 @@ def view_individual_specific_invoice(_, user_id, invoice_id):
   specific_invoice = get_object_or_404(Invoice, Invoice.objects.prefetch_related("invoice_line_items"), Transaction_ID__User_ID=user_id, id = invoice_id)
   invoice_serializer = InvoiceSerializer(specific_invoice, many = False)
   return Response(invoice_serializer.data)
-
-# @api_view(["PUT"])
-# def receive_individual_invoice(request):
-#   return
 
 @api_view(["PUT"])
 def individual_contracts_payment(request):
@@ -151,28 +138,39 @@ def business_expenses_payment(request):
   return
 
 @api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
 def business_view_transactions(_, business_id):
-  all_transactions = Transaction.objects.filter(Buiness_id=business_id)
-  indiv_transaction_serializer = TransactionSerializer(all_transactions, many=True)
-  return Response(indiv_transaction_serializer.data)
+  all_business_transactions = Transaction.objects.filter(
+    Q(Business_ID=business_id)
+  )
+  business_transaction_serializer = TransactionSerializer(all_business_transactions, many=True)
+  return Response(business_transaction_serializer.data)
 
-@api_view(["GET"])
-def business_view_contracts(request):
+@api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
+def business_view_contracts(_, business_id):
+  # gets business instance
+  business = Business.objects.get(id=business_id)
+  
+  # gets bsiness email associated with this account
+  business_email = business.User_ID.username 
+  
+  # .distinct() because of or which could cause duplicates
+  all_business_contracts = Contract.objects.filter(
+    Q(Business_ID=business_id) | Q(Contract_CounterParty_ID__CounterParty_Type="BUSINESS", Contract_CounterParty_ID__CounterParty_Email=business_email)
+  ).distinct()
+  contract_serializer = ContractSerializer(all_business_contracts, many=True)
+  return Response(contract_serializer.data)
+
+@api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
+def business_view_expense_plans(request, business_id):
   return
 
-# @api_view(["GET"])
-# def business_view_contracts_details(request):
-#   return
-
-# Assuming we are updating the contract
-# @api_view(["PUT"])
-# def business_contracts_reject(request):
-#   return
-
-# Assuming we are  updating the contract
-# @api_view(["PUT"])
-# def business_contracts_accept(request):
-#   return
+@api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
+def business_view_expenses(request, business_id, expense_plan_id):
+  return
 
 @api_view(["PUT"])
 def business_contracts_payment(request):
@@ -200,10 +198,6 @@ def business_view_invoice_line(request):
 def receive_business_invoice(request):
   return
 
-@api_view(["GET"])
-def business_view_expense_plans(request):
-  return
-
 # When a business hires an employee
 @api_view(["PUT", "OPTIONS"])
 @permission_classes([AllowAny])
@@ -214,7 +208,7 @@ def create_staff(request):
     return Response(staff_serializer.data, status=status.HTTP_201_CREATED)
   return Response(staff_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["PUT", "OPTIONS"])
+@api_view(["POST", "OPTIONS"])
 @permission_classes([AllowAny])
 def create_site_admin(request):
   site_admin_serializer = SiteAdminSerializer(data=request.data)
@@ -223,7 +217,7 @@ def create_site_admin(request):
     return Response(site_admin_serializer.data, status=status.HTTP_201_CREATED)
   return Response(site_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["PUT", "OPTIONS"])
+@api_view(["POST", "OPTIONS"])
 @permission_classes([AllowAny])
 def create_business_admin(request):
   business_admin_serializer = BusinessAdminSerializer(data=request.data)
@@ -241,6 +235,7 @@ def business_view_expense_detail(request):
   return
 
 # Cellou's views
+
 @api_view(["GET"])
 def staff_profile(request, user_id):
   return Response({"message": "staff_profile placeholder"})

@@ -3,7 +3,7 @@ import StatusBadge from "./StatusBadge";
 function ContractsCard({
   title = "My Contracts",
   subtitle,
-  contracts = [],
+  contracts,
   columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
   onRowClick,
   actionButton,
@@ -47,11 +47,11 @@ function ContractsCard({
                   onRowClick ? "cursor-pointer hover:bg-[#f8fafc]" : ""
                 }`}
               >
-                <td className="px-6 py-6 font-semibold">{contract.name}</td>
-                <td className="px-6 py-6 text-[#475569]">{contract.dueDate}</td>
-                <td className="px-6 py-6 font-semibold">{contract.amount}</td>
+                <td className="px-6 py-6 font-semibold">{contract.Contract_Name}</td>
+                <td className="px-6 py-6 text-[#475569]">{contract.Contract_Completion_Date}</td>
+                <td className="px-6 py-6 font-semibold">{contract.Contract_Cost}</td>
                 <td className="px-6 py-6">
-                  <StatusBadge status={contract.status} />
+                  <StatusBadge status={contract.Contract_Status} />
                 </td>
               </tr>
             ))}

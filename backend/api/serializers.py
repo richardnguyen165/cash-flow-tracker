@@ -69,7 +69,7 @@ class IndividualSerializer(serializers.ModelSerializer):
             "User_ID",
             "Individual_Balance",
             "Individual_BirthDate",
-            "Individual_Profile",
+            # "Individual_Profile",
             "Individual_PhoneNumber",
             "Individual_Name"
         ]
@@ -109,7 +109,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             # "Business_ID",
             "Business_Name",
             "Business_Balance",
-            "Business_Profile",
+            # "Business_Profile",
             "Business_PhoneNumber",
             "Business_AccessCode"
         ]
@@ -149,7 +149,7 @@ class SiteAdminSerializer(serializers.ModelSerializer):
             "User_ID",
             "SiteAdmin_Name",
             "SiteAdmin_BirthDate",
-            "SiteAdmin_Profile",
+            # "SiteAdmin_Profile",
             "SiteAdmin_PhoneNumber",
             # this is serializer only
             "authorizationCode"
@@ -194,7 +194,7 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
           "userReference", 
           "BusinessAdmin_Name",
           "BusinessAdmin_BirthDate",
-          "BusinessAdmin_Profile",
+        #   "BusinessAdmin_Profile",
           "BusinessAdmin_PhoneNumber",
           "businessAccessCode"
         ]
