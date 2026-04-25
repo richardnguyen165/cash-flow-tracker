@@ -1,4 +1,5 @@
 from django.shortcuts import *
+from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import authentication, permissions, status
@@ -235,25 +236,117 @@ def business_view_expense_detail(request):
   return
 
 # Cellou's views
+def _get_employee_for_user(user_id, business_id=None):
+  employee_query = Employee.objects.select_related("User_ID", "Business_ID")
+
+  if business_id is not None:
+    employee_query = employee_query.filter(Business_ID=business_id)
+
+  return get_object_or_404(employee_query, User_ID=user_id)
+
+
+def _require_staff_access(request, business_id):
+  employee = _get_employee_for_user(request.user.id, business_id)
+
+  if request.user.User_Role != User.Role.EMPLOYEE:
+    return None, Response(
+      {"detail": "Only employee accounts can use staff endpoints."},
+      status=status.HTTP_403_FORBIDDEN,
+    )
+
+  return employee, None
+
+
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def staff_profile(request, user_id):
-  return Response({"message": "staff_profile placeholder"})
+  employee = _get_employee_for_user(user_id)
+
+  if request.user.id != employee.User_ID.id:
+    return Response(
+      {"detail": "You can only view your own staff profile."},
+      status=status.HTTP_403_FORBIDDEN,
+    )
+
+  employee_data = EmployeeSerializer(employee).data
+  business_data = BusinessSerializer(employee.Business_ID).data
+
+  return Response({
+    "employee": employee_data,
+    "business": {
+      "id": business_data["id"],
+      "Business_Name": business_data["Business_Name"],
+      "Business_Profile": business_data["Business_Profile"],
+      "Business_PhoneNumber": business_data["Business_PhoneNumber"],
+      "Business_Balance": business_data["Business_Balance"],
+    },
+    "user": {
+      "id": employee.User_ID.id,
+      "username": employee.User_ID.username,
+      "User_Role": employee.User_ID.User_Role,
+    },
+  })
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def staff_business_employees(request, business_id):
-  return Response({"message": "staff_business_employees placeholder"})
+  employee, permission_error = _require_staff_access(request, business_id)
+  if permission_error:
+    return permission_error
+
+  coworker_records = Employee.objects.filter(Business_ID=employee.Business_ID).select_related("User_ID")
+  coworker_data = []
+
+  for coworker in coworker_records:
+    coworker_data.append({
+      "id": coworker.id,
+      "User_ID": coworker.User_ID.id if coworker.User_ID else None,
+      "username": coworker.User_ID.username if coworker.User_ID else None,
+      "Role": coworker.Role,
+      "Pay": coworker.Pay,
+    })
+
+  return Response(coworker_data)
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def staff_business_transactions(request, business_id):
-  return Response({"message": "staff_business_transactions placeholder"})
+  employee, permission_error = _require_staff_access(request, business_id)
+  if permission_error:
+    return permission_error
+
+  employee_transactions = Transaction.objects.filter(
+    Business_ID=employee.Business_ID,
+    User_ID=employee.User_ID,
+  ).order_by("-Transaction_Date")
+
+  transaction_serializer = TransactionSerializer(employee_transactions, many=True)
+  return Response(transaction_serializer.data)
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def staff_business_expenses(request, business_id):
-  return Response({"message": "staff_business_expenses placeholder"})
+  employee, permission_error = _require_staff_access(request, business_id)
+  if permission_error:
+    return permission_error
+
+  staff_expenses = Expense.objects.filter(
+    Q(employees=employee) | Q(Expense_Plan_ID=employee.Expense_Plan_ID)
+  ).distinct().order_by("-Expense_Due_By")
+
+  expense_serializer = ExpenseSerializer(staff_expenses, many=True)
+  return Response(expense_serializer.data)
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def staff_business_contracts(request, business_id):
-  return Response({"message": "staff_business_contracts placeholder"})
+  employee, permission_error = _require_staff_access(request, business_id)
+  if permission_error:
+    return permission_error
+
+  staff_contracts = Contract.objects.filter(Business_ID=employee.Business_ID).order_by("Contract_Completion_Date")
+  contract_serializer = ContractSerializer(staff_contracts, many=True)
+  return Response(contract_serializer.data)
 
 @api_view(["POST"])
 def staff_create_transaction(request, business_id):
