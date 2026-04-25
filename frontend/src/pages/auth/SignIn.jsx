@@ -32,6 +32,17 @@ function SignIn() {
 
   const submit = (event) => {
     event.preventDefault();
+    if (selectedRole === "individual-client"){
+      console.log("individual-client");
+    }
+    else if (selectedRole === "business-admin"){
+      console.log("business-admin");
+    } 
+    else if (selectedRole === "employee"){
+      console.log("employee");
+    }else{
+      console.log("site-admin");
+    }
     navigate(signinRedirects[selectedRole]);
   };
 
