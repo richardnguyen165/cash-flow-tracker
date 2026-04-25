@@ -3,6 +3,7 @@ import ContractDetailsModal from "../../modals/ContractDetailsModal";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
+import decodeTokens from "../../services/decode-tokens";
 
 const defaultAgreements = [
   {

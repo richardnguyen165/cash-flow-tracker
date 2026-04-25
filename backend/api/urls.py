@@ -37,7 +37,7 @@ urlpatterns = [
     path("business/admin/<int:business_id>/payments/", views.business_admin_payments),
     #employees
     path("business/admin/<int:business_id>/employees/", views.business_admin_employees),
-    path("business/admin/<int:business_id>/employees/add/", views.business_admin_add_employee),
+    # path("business/admin/<int:business_id>/employees/add/", views.business_admin_add_employee),
     path("business/admin/<int:business_id>/employees/<int:employee_id>/remove/", views.business_admin_remove_employee),
     path("business/admin/<int:business_id>/employees/<int:employee_id>/assign-contracts/", views.business_admin_assign_contracts),
 
