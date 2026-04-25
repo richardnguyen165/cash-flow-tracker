@@ -1,6 +1,7 @@
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import MetricCard from "../../components/cards/MetricCard";
+import ContractsCard from "../../components/cards/ContractsCard";
 import decodeTokens from "../../services/decode-tokens";
 import { useEffect, useState } from "react";
 
@@ -82,54 +83,11 @@ function Dashboard() {
         /> */}
       </section>
 
-      <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
-              My Contracts
-            </h2>
-            <p className="mt-1 text-sm text-[#64748b]">
-              Keep track of agreements that are active, in review, or waiting on action.
-            </p>
-          </div>
-          {/* <button className="rounded-2xl bg-[#111827] px-5 py-3 text-sm font-semibold text-white transition hover:bg-black">
-            New Contract
-          </button> */}
-        </div>
-
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
-          <table className="min-w-full divide-y divide-[#eef2f6]">
-            <thead className="bg-[#f8fafc]">
-              <tr className="text-left text-xs uppercase tracking-[0.18em] text-[#94a3b8]">
-                <th className="px-6 py-4 font-semibold">Agreement</th>
-                <th className="px-6 py-4 font-semibold">Next Action</th>
-                <th className="px-6 py-4 font-semibold">Due Date</th>
-                <th className="px-6 py-4 font-semibold">Amount</th>
-                <th className="px-6 py-4 font-semibold">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#eef2f6] bg-white">
-              {activeContracts.map((contract) => (
-                <tr key={contract.name} className="text-sm text-[#0f172a]">
-                  <td className="px-6 py-5 font-medium">{contract.name}</td>
-                  <td className="px-6 py-5 text-[#475569]">
-                    {contract.nextAction}
-                  </td>
-                  <td className="px-6 py-5 text-[#475569]">{contract.dueDate}</td>
-                  <td className="px-6 py-5 font-semibold">{contract.amount}</td>
-                  <td className="px-6 py-5">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${contract.statusClass}`}
-                    >
-                      {contract.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <ContractsCard
+        title="My Contracts"
+        subtitle="Keep track of agreements that are active, in review, or completed."
+        contracts={activeContracts}
+      />
     </MainLayout>
   );
 }
