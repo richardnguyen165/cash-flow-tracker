@@ -228,7 +228,7 @@ def business_admin_send_contract(request, business_id):
 
   if contract_serializer.is_valid():
     contract_serializer.save()
-    return Response(contract_serializer.data, status=201))
+    return Response(contract_serializer.data, status=201)
   return Response(contract_serializer.errors, status=400)
 
 @api_view(["PUT"])
@@ -249,23 +249,38 @@ def business_admin_reject_contract(request, business_id, contract_id):
 
 @api_view(["GET"])
 def business_admin_invoices(request, business_id):
-  return Response({"message": "business_admin_invoices placeholder"})
+  all_invoices = Invoice.objects.filter(Transaction_ID__Business_ID=business_id)
+  invoice_serializer = InvoiceSerializer(all_invoices, many=True)
+  return Response(invoice_serializer.data)
 
 @api_view(["GET"])
 def business_admin_payments(request, business_id):
-  return Response({"message": "business_admin_payments placeholder"})
+  all_transactions = Transaction.objects.filter(Business_ID=business_id)
+  transaction_serializer = TransactionSerializer(all_transactions, many=True)
+  return Response(transaction_serializer.data)
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def business_admin_employees(request, business_id):
-  return Response({"message": "business_admin_employees placeholder"})
+  if request.method == "GET":
+    all_employees = Employee.objects.filter(Business_ID=business_id)
+    employee_serializer = EmployeeSerializer(all_employees, many=True)
+    return Response(employee_serializer.data)
+  
+  elif request.method == "POST":
+    employee_data = request.data.copy()
+    employee_data["Business_ID"] = business_id
+    employee_serializer = EmployeeSerializer(data=employee_data)
 
-@api_view(["POST"])
-def business_admin_add_employee(request, business_id):
-  return Response({"message": "business_admin_add_employee placeholder"})
+    if employee_serializer.is_valid():
+      employee_serializer.save()
+      return Response(employee_serializer.data, status=201)
+    return Response(employee_serializer.errors, status=400)
 
 @api_view(["DELETE"])
 def business_admin_remove_employee(request, business_id, employee_id):
-  return Response({"message": "business_admin_remove_employee placeholder"})
+    employee = get_object_or_404(Employee, Business_ID=business_id, id=employee_id)
+    employee.delete()
+    return Response({"message": "Employee has been removed successfully"})
 
 @api_view(["PUT"])
 def business_admin_assign_contracts(request, business_id, employee_id):
