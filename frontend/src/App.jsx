@@ -22,7 +22,6 @@ import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import {
   businessAdminNav,
-  clientNav,
   employeeNav,
   siteAdminNav,
 } from "./config/workspaceNav";
@@ -78,9 +77,17 @@ function App() {
               title="Business Invoices"
               description="Track invoices issued to counterparties, amounts collected, and approvals still waiting on action."
               summaryCards={[
-                ["Outstanding Receivables", "$412,000.00", "Across open invoices"],
+                [
+                  "Outstanding Receivables",
+                  "$412,000.00",
+                  "Across open invoices",
+                ],
                 ["Pending Approval", "06", "Items waiting on business review"],
-                ["Collected This Month", "$126,800.00", "Processed settlements"],
+                [
+                  "Collected This Month",
+                  "$126,800.00",
+                  "Processed settlements",
+                ],
               ]}
               invoices={[
                 ["INV-2401", "Apr 01, 2026", "$84,210.00", "Processing"],
@@ -107,9 +114,24 @@ function App() {
               actionCopy="Approve, schedule, or investigate payments that affect company cash flow."
               actionButton="Open Review Queue"
               transactions={[
-                ["Apr 10, 2026", "Client Settlement - INV-2401", "Wire Transfer", "+$24,500.00"],
-                ["Apr 08, 2026", "Recurring Vendor Payout", "ACH Transfer", "-$5,200.00"],
-                ["Apr 03, 2026", "Expense Plan Pay-Off", "Bank Transfer", "-$12,800.00"],
+                [
+                  "Apr 10, 2026",
+                  "Client Settlement - INV-2401",
+                  "Wire Transfer",
+                  "+$24,500.00",
+                ],
+                [
+                  "Apr 08, 2026",
+                  "Recurring Vendor Payout",
+                  "ACH Transfer",
+                  "-$5,200.00",
+                ],
+                [
+                  "Apr 03, 2026",
+                  "Expense Plan Pay-Off",
+                  "Bank Transfer",
+                  "-$12,800.00",
+                ],
               ]}
             />
           }
@@ -134,12 +156,14 @@ function App() {
               preferenceRows={[
                 {
                   title: "Approval alerts",
-                  description: "Notify admins when contracts, invoices, or expenses require approval.",
+                  description:
+                    "Notify admins when contracts, invoices, or expenses require approval.",
                   enabled: true,
                 },
                 {
                   title: "Employee updates",
-                  description: "Receive changes to assigned staff, invites, and task completions.",
+                  description:
+                    "Receive changes to assigned staff, invites, and task completions.",
                   enabled: true,
                 },
               ]}
@@ -199,9 +223,24 @@ function App() {
               actionCopy="See the latest pay status, reimbursement notes, and related approvals."
               actionButton="Open Payroll Detail"
               transactions={[
-                ["Apr 01, 2026", "Monthly Wage", "Direct Deposit", "+$2,100.00"],
-                ["Mar 18, 2026", "Expense Reimbursement", "ACH Transfer", "+$640.00"],
-                ["Mar 01, 2026", "Monthly Wage", "Direct Deposit", "+$2,100.00"],
+                [
+                  "Apr 01, 2026",
+                  "Monthly Wage",
+                  "Direct Deposit",
+                  "+$2,100.00",
+                ],
+                [
+                  "Mar 18, 2026",
+                  "Expense Reimbursement",
+                  "ACH Transfer",
+                  "+$640.00",
+                ],
+                [
+                  "Mar 01, 2026",
+                  "Monthly Wage",
+                  "Direct Deposit",
+                  "+$2,100.00",
+                ],
               ]}
             />
           }
@@ -225,12 +264,14 @@ function App() {
               preferenceRows={[
                 {
                   title: "Task alerts",
-                  description: "Notify me when a business admin assigns or updates work.",
+                  description:
+                    "Notify me when a business admin assigns or updates work.",
                   enabled: true,
                 },
                 {
                   title: "Payroll summaries",
-                  description: "Send notifications when wage or reimbursement records are added.",
+                  description:
+                    "Send notifications when wage or reimbursement records are added.",
                   enabled: true,
                 },
               ]}
@@ -268,12 +309,14 @@ function App() {
               preferenceRows={[
                 {
                   title: "Moderation alerts",
-                  description: "Send notifications for flagged users, businesses, and privilege requests.",
+                  description:
+                    "Send notifications for flagged users, businesses, and privilege requests.",
                   enabled: true,
                 },
                 {
                   title: "System status summaries",
-                  description: "Receive daily platform health and moderation queue recaps.",
+                  description:
+                    "Receive daily platform health and moderation queue recaps.",
                   enabled: true,
                 },
               ]}
