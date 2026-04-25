@@ -41,9 +41,6 @@ function BusinessSideBar() {
         setRole(User_Role);
         setName(all_data.Business_Name);
       }
-      // else if (side_role === "BUSINESS") {
-
-      // }
     }
     getData();
   }, []);

@@ -72,15 +72,17 @@ class Business_Admin(models.Model):
 # https://dev.to/zachtylr21/model-inheritance-in-django-m0j
 class CounterParty(models.Model):
   CounterParty_ID = models.AutoField(primary_key=True)
+  CounterParty_Type = models.CharField(max_length=64)
+  CounterParty_Email = models.EmailField(max_length=64)
   
-class Business_Client(models.Model):
-  CounterParty_ID = models.OneToOneField(CounterParty, on_delete=models.CASCADE, null = True, blank = True, related_name="business_client")
-  Business_ID = models.OneToOneField(Business, on_delete = models.CASCADE, null = True, blank = True, related_name="business_client")
-  # User_ID = models.ForeignKey(User, on_delete = models.CASCADE)
+# class Business_Client(models.Model):
+#   CounterParty_ID = models.OneToOneField(CounterParty, on_delete=models.CASCADE, null = True, blank = True, related_name="business_client")
+#   Business_ID = models.OneToOneField(Business, on_delete = models.CASCADE, null = True, blank = True, related_name="business_client")
+#   # User_ID = models.ForeignKey(User, on_delete = models.CASCADE)
 
-class Individual_Client(models.Model):
-  CounterParty_ID = models.OneToOneField(CounterParty, on_delete=models.CASCADE, null = True, blank = True, related_name="indiv_client")
-  Individual_ID = models.OneToOneField(Individual, on_delete = models.CASCADE, related_name="indiv_client")
+# class Individual_Client(models.Model):
+#   CounterParty_ID = models.OneToOneField(CounterParty, on_delete=models.CASCADE, null = True, blank = True, related_name="indiv_client")
+#   Individual_ID = models.OneToOneField(Individual, on_delete = models.CASCADE, related_name="indiv_client")
   
 class Transaction(models.Model):
   

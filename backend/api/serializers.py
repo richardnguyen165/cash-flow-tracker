@@ -198,7 +198,11 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
 class CounterPartySerializer(serializers.ModelSerializer):
     class Meta:
         model = CounterParty
-        fields = ["CounterParty_ID"]
+        fields = [
+            "CounterParty_ID",
+            "CounterParty_Type",
+            "CounterPaty_Email"
+            ]
             
 class ContractSerializer(serializers.ModelSerializer):
     businessReference = BusinessSerializer()
@@ -208,30 +212,35 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "Business_ID",
-            "CounterParty_ID",
-            "Expense_ID",
-            "Duration",
-            "Name",
-            "Terms",
+            "Contract_CounterParty_ID",
+            "Contract_Expense_ID",
+            "Contract_Completion_Date",
+            "Contract_Name",
+            "Contract_Terms",
+            "Contract_Status",
+            "Contract_Type",
         ]
 
-
-class BusinessClientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Business_Client
-        fields = [
-          "CounterParty_ID", 
-          "Business_ID"
-        ]
+    def create(self, validated_data):
+        return Contract.objects.create(**validated_data)
 
 
-class IndividualClientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Individual_Client
-        fields = [
-          "CounterParty_ID", 
-          "User_ID"
-        ]
+# class BusinessClientSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Business_Client
+#         fields = [
+#           "CounterParty_ID", 
+#           "Business_ID"
+#         ]
+
+
+# class IndividualClientSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Individual_Client
+#         fields = [
+#           "CounterParty_ID", 
+#           "User_ID"
+#         ]
 
 
 class TransactionSerializer(serializers.ModelSerializer):
