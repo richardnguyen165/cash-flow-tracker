@@ -32,7 +32,6 @@ class TokenSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError("Wrong password / account")
 
         return data
-        
     
 class UserSerializer(serializers.ModelSerializer):
     # Cannot read password
@@ -244,10 +243,10 @@ class CounterPartySerializer(serializers.ModelSerializer):
     def validate(self, data):
         email = data.get('CounterParty_Email')
         counterparty_type = data.get('CounterParty_Type')
-        if counterparty_type == 'individual':
+        if counterparty_type == 'INDIVIDUAL':
             if not User.objects.filter(email=email, User_Role=User.Role.INDIVIDUAL_CLIENT).exists():
                 raise serializers.ValidationError("Individual with this email does not exist.")
-        elif counterparty_type == 'business':
+        elif counterparty_type == 'BUSINESS':
             if not User.objects.filter(email=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
                 raise serializers.ValidationError("Business with this email does not exist.")
         else:
@@ -326,7 +325,6 @@ class ContractSerializer(serializers.ModelSerializer):
         )
         
         return contract
-
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

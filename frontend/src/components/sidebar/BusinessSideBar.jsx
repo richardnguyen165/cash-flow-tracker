@@ -29,14 +29,14 @@ function BusinessSideBar() {
       const { user_id, User_Role } = decodedToken;
       let link;
 
-      if (User_Role === "BUSINESS") {
+      if (User_Role === "BUSINESS" || User_Role === "BUSINESS_ADMIN") {
         link = `api/business/get/${user_id}`
       }
 
       const send = await api.get(link);
       const all_data = send.data;
 
-      if (User_Role === "BUSINESS"){
+      if (User_Role === "BUSINESS" || User_Role === "BUSINESS_ADMIN"){
         setID(user_id);
         setRole(User_Role);
         setName(all_data.Business_Name);

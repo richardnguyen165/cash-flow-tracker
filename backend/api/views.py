@@ -117,7 +117,7 @@ def individual_contracts_payment(request):
 BUSINESS CLIENT
 '''
 
-@api_view(["PUT", "OPTIONS"])
+@api_view(["POST", "OPTIONS"])
 @permission_classes([AllowAny])
 def create_business(request):
   business_serializer = BusinessSerializer(data=request.data)
@@ -137,6 +137,7 @@ def get_business(request, business_id):
   bsuiness_info_serializer = BusinessSerializer(business)
   return Response(bsuiness_info_serializer.data)
 
+# For website moderator
 @api_view(["DELETE"])
 def delete_business(request):
   return
@@ -145,7 +146,7 @@ def delete_business(request):
 def business_expenses_payment(request):
   return
 
-@api_view(["GET"])
+@api_view(["GET", "OPTIONS"])
 def business_view_transactions(_, business_id):
   all_transactions = Transaction.objects.filter(Buiness_id=business_id)
   indiv_transaction_serializer = TransactionSerializer(all_transactions, many=True)
@@ -153,7 +154,6 @@ def business_view_transactions(_, business_id):
 
 @api_view(["GET"])
 def business_view_contracts(request):
-  
   return
 
 @api_view(["GET"])
@@ -263,7 +263,7 @@ def staff_create_transaction(request, business_id):
 
 # BUSINESS ADMIN
 
-@api_view(["PUT", "OPTIONS"])
+@api_view(["POST", "OPTIONS"])
 @permission_classes([AllowAny])
 def create_business_admin(request):
   business_admin_serializer = BusinessAdminSerializer(data=request.data)
@@ -367,7 +367,7 @@ def business_admin_assign_contracts(request, business_id, employee_id):
 
 # SITE ADMIN
 
-@api_view(["PUT", "OPTIONS"])
+@api_view(["POST", "OPTIONS"])
 @permission_classes([AllowAny])
 def create_site_admin(request):
   site_admin_serializer = SiteAdminSerializer(data=request.data)
