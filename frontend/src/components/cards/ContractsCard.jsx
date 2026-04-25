@@ -4,7 +4,7 @@ function ContractsCard({
   title = "My Contracts",
   subtitle,
   contracts = [],
-  columns = ["Agreement", "Due Date", "Amount", "Status"],
+  columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
   onRowClick,
   actionButton,
 }) {

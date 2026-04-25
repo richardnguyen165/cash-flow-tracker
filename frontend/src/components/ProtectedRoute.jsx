@@ -3,8 +3,8 @@
 // Use this for ANY ROUTE that needs a user to be logged in (in this case, anything NOT sign up, log in, and landing page)
 
 import { Navigate } from "react-router-dom";
-import { jwtDecode, jwtdecode } from "jwt-decode";
-import { api } from "../services/api";
+import { jwtDecode } from "jwt-decode";
+import api from "../services/api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants/constants";
 import { useState, useEffect } from "react";
 
@@ -50,7 +50,7 @@ export function ProtectedRoute({ children }) {
     }
 
     const accessTokenDecoded = jwtDecode(accessToken);
-    const tokenExpirationDate = accessTokenDecoded.accessTokenDecoded;
+    const tokenExpirationDate = accessTokenDecoded.exp;
     const current_date = Date.now() / 1000;
 
     // We use the refresh token to refresh the access token
@@ -66,5 +66,10 @@ export function ProtectedRoute({ children }) {
   if (authorizedState === null) return <div>Loading...</div>;
 
   // If we are authorized, we return the page we are trying to return, else we go to the sign in page
+  if (!authorizedState){
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+  }
+  
   return authorizedState ? children : <Navigate to="/signin"/>
 }

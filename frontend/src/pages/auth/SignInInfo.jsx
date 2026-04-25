@@ -199,7 +199,7 @@ function SignInInfo() {
   };
 
   const createEntity = async (link, payload) => {
-    const send = await api.put(link, payload);
+    const send = await api.post(link, payload);
     const tokens = send.data
     const status = send.status;
 

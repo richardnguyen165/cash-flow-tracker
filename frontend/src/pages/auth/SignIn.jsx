@@ -1,11 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signinRedirects } from "../../config/workspaceNav";
 import Navbar from "../../components/navbar/Navbar";
+import decodeTokens from "../../services/decode-tokens";
+import api from "../../services/api";
+import toast from "react-hot-toast";
 
 function SignIn() {
+
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState("individual-client");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  // If the user already has refresh and access tokens, no need to sign them in 
+  // https://stackoverflow.com/questions/44133536/is-it-safe-to-store-a-jwt-in-localstorage-with-reactjs
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("access");
+    // The user left the application without signing out on their computer
+    if (accessToken) {
+      try{
+      const decodedToken = decodeTokens();
+      const { User_Role } = decodedToken;
+
+      if (User_Role === "INDIVIDUAL") {
+        navigate("/dashboard");
+      }
+      else if (User_Role === "SITE_ADMIN") {
+        navigate("/admin/dashboard");
+      }
+      else if (User_Role === "BUSINESS_ADMIN"){
+        navigate("/business/dashboard");
+      } else if (User_Role === "EMPLOYEE") {
+        navigate("/employee/dashboard");
+      } else {
+        // Could be apart of business - we dont want to log in, business admin handles that 
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+      }
+      } catch (_) {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+      }
+    }
+  }, [])
 
   const signInRoles = [
     {
@@ -30,20 +69,26 @@ function SignIn() {
     },
   ];
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-    if (selectedRole === "individual-client"){
-      console.log("individual-client");
+    try {
+      const logInAttempt =  await api.post("api/token/", {
+        username: username,
+        password: password,
+        User_Role: selectedRole
+      })
+      setUsername("");
+      setPassword("");
+
+      const { access, refresh } = logInAttempt.data;
+
+      localStorage.setItem("access", access);
+      localStorage.setItem("refresh", refresh);
+
+      navigate(signinRedirects[selectedRole]);
+    } catch (error) {
+      toast.error("Failed to sign in.")
     }
-    else if (selectedRole === "business-admin"){
-      console.log("business-admin");
-    } 
-    else if (selectedRole === "employee"){
-      console.log("employee");
-    }else{
-      console.log("site-admin");
-    }
-    navigate(signinRedirects[selectedRole]);
   };
 
   return (
@@ -88,7 +133,8 @@ function SignIn() {
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={submit}>
-            <Field label="Email" placeholder="Username@gmail.com" type="email" />
+            <Field label="Email" placeholder="Username@gmail.com" type="email" value={username}
+            onChange={(e)=> setUsername(e.target.value)}/>
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-medium uppercase tracking-[0.16em] text-black">
@@ -105,6 +151,8 @@ function SignIn() {
                 type="password"
                 placeholder="Enter your password"
                 className="w-full rounded-2xl bg-[#f3f4f6] px-4 py-4 text-base text-[#111827] outline-none placeholder:text-[#94a3b8]"
+                value={password}
+                onChange={(e)=> setPassword(e.target.value)}
               />
             </div>
 
@@ -141,7 +189,7 @@ function displayInformationText(signInRoles, selectedRole) {
   }
 }
 
-function Field({ label, placeholder, type }) {
+function Field({ label, placeholder, type, value, onChange }) {
   return (
     <div>
       <label className="mb-2 block text-sm font-medium uppercase tracking-[0.16em] text-black">
@@ -151,6 +199,8 @@ function Field({ label, placeholder, type }) {
         type={type}
         placeholder={placeholder}
         className="w-full rounded-2xl bg-[#f3f4f6] px-4 py-4 text-base text-[#111827] outline-none placeholder:text-[#94a3b8]"
+        value={value}
+        onChange={onChange}
       />
     </div>
   );

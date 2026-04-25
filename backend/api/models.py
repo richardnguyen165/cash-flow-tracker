@@ -139,6 +139,7 @@ class Contract(models.Model):
   Contract_Terms = models.CharField(max_length=5000)
   Contract_Status = models.BooleanField()
   Contract_Type = models.CharField(max_length=64)
+  Contract_Cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
   
 class Moderates(models.Model):
   Site_Admin_ID = models.ForeignKey(Site_Admin, on_delete = models.CASCADE, related_name="moderates")

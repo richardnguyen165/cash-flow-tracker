@@ -21,6 +21,7 @@ import Expenses from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import { Toaster } from 'react-hot-toast';
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import {
   businessAdminNav,
@@ -38,40 +39,43 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/siteadmin" element={<SiteAdmin />} />
         <Route path="/signininfo" element={<SignInInfo />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/contracts" element={<Contracts />} />
-        <Route path="/invoices" element={<Invoices />} />
-        <Route path="/payments" element={<Payments />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/contracts" element={<ProtectedRoute><Contracts /></ProtectedRoute>} />
+        <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
+        <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
 
         <Route path="/business/dashboard" element={<BusinessDashboard />} />
         <Route
           path="/business/contracts"
           element={
-            <Contracts
-              sidebar={<BusinessSideBar />}
-              navItems={businessAdminNav}
-              brandLink="/business/dashboard"
-              eyebrow="Business Contracts"
-              title="Business Contracts"
-              description="Review the client and partner agreements your business is responsible for maintaining."
-              summaryCards={[
-                ["Active Contracts", "12", "Across current counterparties"],
-                ["Awaiting Approval", "03", "Pending admin review"],
-                ["Projected Contract Value", "$1.8M", "Based on active terms"],
-              ]}
-              agreements={[
-                ["Capital Management Agreement", "Active", "May 23, 2025"],
-                ["Budgeting Agreement", "Active", "Aug 30, 2025"],
-                ["Forecasting Clause", "Pending", "Aug 30, 2026"],
-              ]}
-            />
+            <ProtectedRoute>
+              <Contracts
+                sidebar={<BusinessSideBar />}
+                navItems={businessAdminNav}
+                brandLink="/business/dashboard"
+                eyebrow="Business Contracts"
+                title="Business Contracts"
+                description="Review the client and partner agreements your business is responsible for maintaining."
+                summaryCards={[
+                  ["Active Contracts", "12", "Across current counterparties"],
+                  ["Awaiting Approval", "03", "Pending admin review"],
+                  ["Projected Contract Value", "$1.8M", "Based on active terms"],
+                ]}
+                agreements={[
+                  ["Capital Management Agreement", "Active", "May 23, 2025"],
+                  ["Budgeting Agreement", "Active", "Aug 30, 2025"],
+                  ["Forecasting Clause", "Pending", "Aug 30, 2026"],
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/business/invoices"
           element={
+          <ProtectedRoute>
             <Invoices
               sidebar={<BusinessSideBar />}
               navItems={businessAdminNav}
@@ -98,11 +102,13 @@ function App() {
                 ["INV-2384", "Mar 15, 2026", "$120,000.00", "Paid"],
               ]}
             />
+          </ProtectedRoute>
           }
         />
         <Route
           path="/business/payments"
           element={
+          <ProtectedRoute>
             <Payments
               sidebar={<BusinessSideBar />}
               navItems={businessAdminNav}
@@ -137,48 +143,51 @@ function App() {
                 ],
               ]}
             />
+          </ProtectedRoute>
           }
         />
         <Route path="/business/employees" element={<Employees />} />
         <Route
           path="/business/profile"
           element={
-            <Profile
-              sidebar={<BusinessSideBar />}
-              navItems={businessAdminNav}
-              brandLink="/business/dashboard"
-              eyebrow="Business Profile"
-              title="Business Settings"
-              description="Manage organization contact information, billing preferences, and workspace administration details."
-              infoFields={[
-                ["Business Name", "Northshore Capital"],
-                ["Admin Email", "ops@northshorecapital.com"],
-                ["Phone Number", "+1 (555) 288-4000"],
-                ["Head Office", "Calgary, Alberta"],
-              ]}
-              preferenceRows={[
-                {
-                  title: "Approval alerts",
-                  description:
-                    "Notify admins when contracts, invoices, or expenses require approval.",
-                  enabled: true,
-                },
-                {
-                  title: "Employee updates",
-                  description:
-                    "Receive changes to assigned staff, invites, and task completions.",
-                  enabled: true,
-                },
-              ]}
-              securityTitle="Admin Access"
-              securityDescription="Control sign-in credentials and security settings for this business workspace."
-              statusTitle="Business Status"
-              statusItems={[
-                "Business workspace verified",
-                "Primary admin access active",
-                "Employee assignments synced",
-              ]}
-            />
+            <ProtectedRoute>
+              <Profile
+                sidebar={<BusinessSideBar />}
+                navItems={businessAdminNav}
+                brandLink="/business/dashboard"
+                eyebrow="Business Profile"
+                title="Business Settings"
+                description="Manage organization contact information, billing preferences, and workspace administration details."
+                infoFields={[
+                  ["Business Name", "Northshore Capital"],
+                  ["Admin Email", "ops@northshorecapital.com"],
+                  ["Phone Number", "+1 (555) 288-4000"],
+                  ["Head Office", "Calgary, Alberta"],
+                ]}
+                preferenceRows={[
+                  {
+                    title: "Approval alerts",
+                    description:
+                      "Notify admins when contracts, invoices, or expenses require approval.",
+                    enabled: true,
+                  },
+                  {
+                    title: "Employee updates",
+                    description:
+                      "Receive changes to assigned staff, invites, and task completions.",
+                    enabled: true,
+                  },
+                ]}
+                securityTitle="Admin Access"
+                securityDescription="Control sign-in credentials and security settings for this business workspace."
+                statusTitle="Business Status"
+                statusItems={[
+                  "Business workspace verified",
+                  "Primary admin access active",
+                  "Employee assignments synced",
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
 
@@ -186,116 +195,123 @@ function App() {
         <Route
           path="/employee/contracts"
           element={
-            <Contracts
-              sidebar={<EmployeeSideBar />}
-              navItems={employeeNav}
-              brandLink="/employee/dashboard"
-              eyebrow="Assigned Work"
-              title="Assigned Contracts"
-              description="Review the contracts and operational tasks your business admin has assigned to your account."
-              summaryCards={[
-                ["Assigned Contracts", "04", "Current work queue"],
-                ["Pending Actions", "03", "Need review or completion"],
-                ["Upcoming Deadlines", "02", "Due this week"],
-              ]}
-              agreements={[
-                ["Global Custody Rider", "Needs line items", "Apr 18, 2026"],
-                ["Forecasting Clause", "Expense review", "Apr 20, 2026"],
-                ["Quarterly Audit Support", "Awaiting notes", "Apr 23, 2026"],
-              ]}
-              columns={["Contract", "Task Status", "Due Date"]}
-              tableTitle="Contract Tasks"
-            />
+            <ProtectedRoute>
+              <Contracts
+                sidebar={<EmployeeSideBar />}
+                navItems={employeeNav}
+                brandLink="/employee/dashboard"
+                eyebrow="Assigned Work"
+                title="Assigned Contracts"
+                description="Review the contracts and operational tasks your business admin has assigned to your account."
+                summaryCards={[
+                  ["Assigned Contracts", "04", "Current work queue"],
+                  ["Pending Actions", "03", "Need review or completion"],
+                  ["Upcoming Deadlines", "02", "Due this week"],
+                ]}
+                agreements={[
+                  ["Global Custody Rider", "Needs line items", "Apr 18, 2026"],
+                  ["Forecasting Clause", "Expense review", "Apr 20, 2026"],
+                  ["Quarterly Audit Support", "Awaiting notes", "Apr 23, 2026"],
+                ]}
+                columns={["Contract", "Task Status", "Due Date"]}
+                tableTitle="Contract Tasks"
+              />
+            </ProtectedRoute>
           }
         />
         <Route path="/employee/expenses" element={<Expenses />} />
         <Route
           path="/employee/payments"
           element={
-            <Payments
-              sidebar={<EmployeeSideBar />}
-              navItems={employeeNav}
-              brandLink="/employee/dashboard"
-              eyebrow="Compensation"
-              title="Payment History"
-              description="Review wages, reimbursements, and payment records attached to your employee account."
-              totalOutstanding="$4,200.00"
-              nextDueDate="Apr 30, 2026"
-              lastPayment="$2,100.00"
-              actionTitle="View Payroll Notes"
-              actionCopy="See the latest pay status, reimbursement notes, and related approvals."
-              actionButton="Open Payroll Detail"
-              transactions={[
-                [
-                  "Apr 01, 2026",
-                  "Monthly Wage",
-                  "Direct Deposit",
-                  "+$2,100.00",
-                ],
-                [
-                  "Mar 18, 2026",
-                  "Expense Reimbursement",
-                  "ACH Transfer",
-                  "+$640.00",
-                ],
-                [
-                  "Mar 01, 2026",
-                  "Monthly Wage",
-                  "Direct Deposit",
-                  "+$2,100.00",
-                ],
-              ]}
-            />
+            <ProtectedRoute>
+              <Payments
+                sidebar={<EmployeeSideBar />}
+                navItems={employeeNav}
+                brandLink="/employee/dashboard"
+                eyebrow="Compensation"
+                title="Payment History"
+                description="Review wages, reimbursements, and payment records attached to your employee account."
+                totalOutstanding="$4,200.00"
+                nextDueDate="Apr 30, 2026"
+                lastPayment="$2,100.00"
+                actionTitle="View Payroll Notes"
+                actionCopy="See the latest pay status, reimbursement notes, and related approvals."
+                actionButton="Open Payroll Detail"
+                transactions={[
+                  [
+                    "Apr 01, 2026",
+                    "Monthly Wage",
+                    "Direct Deposit",
+                    "+$2,100.00",
+                  ],
+                  [
+                    "Mar 18, 2026",
+                    "Expense Reimbursement",
+                    "ACH Transfer",
+                    "+$640.00",
+                  ],
+                  [
+                    "Mar 01, 2026",
+                    "Monthly Wage",
+                    "Direct Deposit",
+                    "+$2,100.00",
+                  ],
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/employee/profile"
           element={
-            <Profile
-              sidebar={<EmployeeSideBar />}
-              navItems={employeeNav}
-              brandLink="/employee/dashboard"
-              eyebrow="Employee Profile"
-              title="Employee Settings"
-              description="Review the contact information, alerts, and security details attached to your employee account."
-              infoFields={[
-                ["Full Name", "Maya Torres"],
-                ["Email Address", "maya.torres@northshorecapital.com"],
-                ["Phone Number", "+1 (555) 928-3001"],
-                ["Role", "Operations Analyst"],
-              ]}
-              preferenceRows={[
-                {
-                  title: "Task alerts",
-                  description:
-                    "Notify me when a business admin assigns or updates work.",
-                  enabled: true,
-                },
-                {
-                  title: "Payroll summaries",
-                  description:
-                    "Send notifications when wage or reimbursement records are added.",
-                  enabled: true,
-                },
-              ]}
-              securityTitle="Employee Access"
-              securityDescription="Update your sign-in details and keep your employee account secure."
-              statusTitle="Employee Status"
-              statusItems={[
-                "Assigned to Northshore Capital",
-                "Operations role active",
-                "Expense task notifications enabled",
-              ]}
-            />
+            <ProtectedRoute>
+              <Profile
+                sidebar={<EmployeeSideBar />}
+                navItems={employeeNav}
+                brandLink="/employee/dashboard"
+                eyebrow="Employee Profile"
+                title="Employee Settings"
+                description="Review the contact information, alerts, and security details attached to your employee account."
+                infoFields={[
+                  ["Full Name", "Maya Torres"],
+                  ["Email Address", "maya.torres@northshorecapital.com"],
+                  ["Phone Number", "+1 (555) 928-3001"],
+                  ["Role", "Operations Analyst"],
+                ]}
+                preferenceRows={[
+                  {
+                    title: "Task alerts",
+                    description:
+                      "Notify me when a business admin assigns or updates work.",
+                    enabled: true,
+                  },
+                  {
+                    title: "Payroll summaries",
+                    description:
+                      "Send notifications when wage or reimbursement records are added.",
+                    enabled: true,
+                  },
+                ]}
+                securityTitle="Employee Access"
+                securityDescription="Update your sign-in details and keep your employee account secure."
+                statusTitle="Employee Status"
+                statusItems={[
+                  "Assigned to Northshore Capital",
+                  "Operations role active",
+                  "Expense task notifications enabled",
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
 
-        <Route path="/admin/dashboard" element={<SiteAdminDashboard />} />
-        <Route path="/admin/users" element={<ManageUsers />} />
-        <Route path="/admin/businesses" element={<ManageBusinesses />} />
+        <Route path="/admin/dashboard" element={<ProtectedRoute><SiteAdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute><ManageUsers /></ProtectedRoute>} />
+        <Route path="/admin/businesses" element={<ProtectedRoute><ManageBusinesses /></ProtectedRoute>} />
         <Route
           path="/admin/profile"
           element={
+          <ProtectedRoute>
             <Profile
               sidebar={<AdminSideBar />}
               navItems={siteAdminNav}
@@ -332,6 +348,7 @@ function App() {
                 "Business verification queue synced",
               ]}
             />
+          </ProtectedRoute>
           }
         />
       </Routes>

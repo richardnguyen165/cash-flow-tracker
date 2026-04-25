@@ -3,13 +3,36 @@ from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # https://www.freecodecamp.org/news/how-to-create-a-json-web-token-in-the-django-rest-framework/
+
+# https://www.django-rest-framework.org/api-guide/serializers/#writable-nested-representations (for nested serializer such as contract)
+
 class TokenSerializer(TokenObtainPairSerializer):
+    User_Role = serializers.CharField(write_only=True)
+    
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
         token['User_Role'] = user.User_Role
         token['id'] = user.id
         return token
+
+    # For logging in (https://dev.to/koladev/django-rest-authentication-cmh)
+    def validate(self, attrs):
+        
+        sign_in_mapping = {
+            "individual-client": "INDIVIDUAL",
+            "business-admin":    "BUSINESS_ADMIN",
+            "employee":          "EMPLOYEE",
+            "site-admin":        "SITE_ADMIN",
+        }
+        
+        data = super().validate(attrs)
+        
+        if self.user.User_Role != sign_in_mapping.get(attrs["User_Role"]):
+            raise serializers.ValidationError("Wrong password / account")
+
+        return data
+        
     
 class UserSerializer(serializers.ModelSerializer):
     # Cannot read password
@@ -162,7 +185,6 @@ class SiteAdminSerializer(serializers.ModelSerializer):
         
         return finalized_site_admin
         
-
 class BusinessAdminSerializer(serializers.ModelSerializer):
     userReference = UserSerializer()
     businessAccessCode = serializers.CharField(write_only=True)
@@ -216,12 +238,64 @@ class CounterPartySerializer(serializers.ModelSerializer):
         fields = [
             "CounterParty_ID",
             "CounterParty_Type",
-            "CounterPaty_Email"
+            "CounterParty_Email"
             ]
-            
+    
+    def validate(self, data):
+        email = data.get('CounterParty_Email')
+        counterparty_type = data.get('CounterParty_Type')
+        if counterparty_type == 'individual':
+            if not User.objects.filter(email=email, User_Role=User.Role.INDIVIDUAL_CLIENT).exists():
+                raise serializers.ValidationError("Individual with this email does not exist.")
+        elif counterparty_type == 'business':
+            if not User.objects.filter(email=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
+                raise serializers.ValidationError("Business with this email does not exist.")
+        else:
+            raise serializers.ValidationError("Invalid CounterParty_Type.")
+        return data
+    
+    def create(self, validated_data):
+        return CounterParty.objects.create(**validated_data)
+
+class ExpensePlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Expense_Plan
+        fields = [
+          "id", 
+          "Business_ID", 
+          "Plan_Title", 
+          "Expense_Plan_Due"
+        ]
+    
+    def create(self, data):
+        return Expense_Plan.objects.create(**data)
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    Expense_Plan_ID = ExpensePlanSerializer()
+    
+    class Meta:
+        model = Expense
+        fields = [
+            "id",
+            "Expense_Plan_ID",
+            "Cost",
+            "Expense_Title",
+            "Expense_Type",
+            "Description",
+            "Expense_Date_Issued",
+            "Expense_Due_By",
+        ]
+    
+    def create(self, data):
+        expense_plan_data = data.pop('Expense_Plan_ID')
+        expense_plan = ExpensePlanSerializer().create(expense_plan_data)
+        expense = Expense.objects.create(Expense_Plan_ID=expense_plan, **data)
+        return expense
+
 class ContractSerializer(serializers.ModelSerializer):
-    businessReference = BusinessSerializer()
-    counterPartyReference = CounterPartySerializer();
+    Contract_CounterParty_ID = CounterPartySerializer()
+    Contract_Expense_ID = ExpenseSerializer()
+    
     class Meta:
         model = Contract
         fields = [
@@ -234,28 +308,24 @@ class ContractSerializer(serializers.ModelSerializer):
             "Contract_Terms",
             "Contract_Status",
             "Contract_Type",
+            "Contract_Cost"
         ]
 
-    def create(self, validated_data):
-        return Contract.objects.create(**validated_data)
-
-
-# class BusinessClientSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Business_Client
-#         fields = [
-#           "CounterParty_ID", 
-#           "Business_ID"
-#         ]
-
-
-# class IndividualClientSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Individual_Client
-#         fields = [
-#           "CounterParty_ID", 
-#           "User_ID"
-#         ]
+    def create(self, data):
+        counter_party_data = data.pop('Contract_CounterParty_ID')
+        counter_party = CounterPartySerializer().create(counter_party_data)
+        
+        expense_data = data.pop('Contract_Expense_ID')
+        expense_data['Expense_Plan_ID']['Business_ID'] = data['Business_ID']
+        expense = ExpenseSerializer().create(expense_data)
+        
+        contract = Contract.objects.create(
+            Contract_CounterParty_ID=counter_party,
+            Contract_Expense_ID=expense,
+            **data
+        )
+        
+        return contract
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -280,7 +350,6 @@ class InvoiceLineItemSerializer(serializers.ModelSerializer):
             "Header",
         ]
 
-
 class InvoiceSerializer(serializers.ModelSerializer):
     invoice_line_items = InvoiceLineItemSerializer(many=True, read_only=True)
     
@@ -293,31 +362,6 @@ class InvoiceSerializer(serializers.ModelSerializer):
           "Has_Paid",           
           "Policy_Description", 
           "CounterParty_ID"
-        ]
-
-
-class ExpensePlanSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Expense_Plan
-        fields = [
-          "id", 
-          "Business_ID", 
-          "Plan_Title", 
-          "Expense_Plan_Due"
-        ]
-
-
-class ExpenseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Expense
-        fields = [
-            "Expense_Plan_ID",
-            "Cost",
-            "Expense_Title",
-            "Expense_Type",
-            "Description",
-            "Expense_Date_Issued",
-            "Expense_Due_By",
         ]
 
 class ExpensePayOffSerializer(serializers.ModelSerializer):
