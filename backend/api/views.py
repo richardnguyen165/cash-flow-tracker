@@ -9,6 +9,10 @@ from .serializers import *
 
 # Create your views here.
 
+# Sources
+# https://docs.djangoproject.com/en/5.2/topics/db/queries/#complex-lookups-with-q-objects (Queries in django)
+# https://www.freecodecamp.org/news/what-is-q-in-django-and-why-its-super-useful/
+
 # Richard's views
 
 # Since we are using a view for the serializer
@@ -156,19 +160,19 @@ def business_view_transactions(_, business_id):
 def business_view_contracts(request):
   return
 
-@api_view(["GET"])
-def business_view_contracts_details(request):
-  return
+# @api_view(["GET"])
+# def business_view_contracts_details(request):
+#   return
 
 # Assuming we are updating the contract
-@api_view(["PUT"])
-def business_contracts_reject(request):
-  return
+# @api_view(["PUT"])
+# def business_contracts_reject(request):
+#   return
 
 # Assuming we are  updating the contract
-@api_view(["PUT"])
-def business_contracts_accept(request):
-  return
+# @api_view(["PUT"])
+# def business_contracts_accept(request):
+#   return
 
 @api_view(["PUT"])
 def business_contracts_payment(request):
@@ -181,8 +185,8 @@ def business_profile(request):
   if request.method == "GET":
     return 
   
-  elif request.method == "POST":
-    return
+  # elif request.method == "POST":
+  #   return
 
 @api_view(["GET"])
 def business_view_specific_invoice(request):
@@ -201,7 +205,8 @@ def business_view_expense_plans(request):
   return
 
 # When a business hires an employee
-@api_view(["PUT"])
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
 def create_staff(request):
   staff_serializer = EmployeeSerializer(data=request.data)
   if staff_serializer.is_valid():
@@ -209,7 +214,8 @@ def create_staff(request):
     return Response(staff_serializer.data, status=status.HTTP_201_CREATED)
   return Response(staff_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["PUT"])
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
 def create_site_admin(request):
   site_admin_serializer = SiteAdminSerializer(data=request.data)
   if site_admin_serializer.is_valid():
@@ -217,14 +223,14 @@ def create_site_admin(request):
     return Response(site_admin_serializer.data, status=status.HTTP_201_CREATED)
   return Response(site_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(["PUT"])
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
 def create_business_admin(request):
   business_admin_serializer = BusinessAdminSerializer(data=request.data)
   if business_admin_serializer.is_valid():
     business_admin_serializer.save()
     return Response(business_admin_serializer.data, status=status.HTTP_201_CREATED)
   return Response(business_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(["GET"])
 def business_view_expense(request):
