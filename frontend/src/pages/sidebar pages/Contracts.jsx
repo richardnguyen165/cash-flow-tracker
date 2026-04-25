@@ -54,8 +54,7 @@ function Contracts({
   ];
 
 
-  return ( loading ? <>Loading Contracts...</> : 
-    <>
+  return (
       <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
         <section>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#8b5cf6]">
@@ -113,7 +112,6 @@ function Contracts({
           </div>
         </section>
       </MainLayout>
-    </>
   );
 }
 

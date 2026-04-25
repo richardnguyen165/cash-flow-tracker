@@ -78,13 +78,14 @@ class IndividualSerializer(serializers.ModelSerializer):
         return finalized_individual
     
 class BusinessSerializer(serializers.ModelSerializer):
-    userReference = UserSerializer()
+    User_ID = UserSerializer()
     
     class Meta:
         model = Business
         fields = [
-            "userReference",
-            "Business_ID",
+            "User_ID",
+            # "Business_ID",
+            "Business_Name",
             "Business_Balance",
             "Business_Profile",
             "Business_PhoneNumber",
@@ -98,8 +99,9 @@ class BusinessSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, data):
+        print(data)
         # Extracts user data from consideration
-        business_data = data.pop("user")
+        business_data = data.pop("User_ID")
         # Sets it to business client
         business_data["User_Role"] = User.Role.BUSINESS_CLIENT
         

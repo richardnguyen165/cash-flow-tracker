@@ -13,6 +13,8 @@ urlpatterns = [
     path("indiv/invoices/get/<int:user_id>/<int:invoice_id>", views.view_individual_specific_invoice),
     
     # Richard - Business Client
+    path("business/put/create_business", views.create_business),
+    path("business/get/<int:business_id>", views.get_business),
     path("bus/transactions/get/<int:business_id>", views.business_view_transactions),
     
     # Cellou - Staff Client 

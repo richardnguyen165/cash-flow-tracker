@@ -68,15 +68,21 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "text",
       },
       {
-        name: "businessId",
-        label: "Business ID*",
-        placeholder: "Tax ID or Registration Number",
+        name: "businessPhoneNumber",
+        label: "Business Phone Number*",
+        placeholder: "+1 123-456-7890",
         type: "text",
       },
+      // {
+      //   name: "businessId",
+      //   label: "Business ID*",
+      //   placeholder: "Tax ID or Registration Number",
+      //   type: "text",
+      // },
       {
-        name: "adminEmail",
-        label: "Admin Email*",
-        placeholder: "ops@yourbusiness.com",
+        name: "businessEmail",
+        label: "Bsuiness Email*",
+        placeholder: "ops@domain.com",
         type: "email",
       },
       {
@@ -84,6 +90,12 @@ const ACCOUNT_SETUP_CONFIG = {
         label: "Password*",
         placeholder: "Create a password",
         type: "password",
+      },
+      {
+        name: "currentBalance",
+        label: "Current Balance (in $)*",
+        placeholder: "$12000",
+        type: "text",
       },
     ],
   },
@@ -163,7 +175,7 @@ function SignInInfo() {
   };
 
   const createEntity = async (link, payload) => {
-    const send = await api.post(link, payload);
+    const send = await api.put(link, payload);
     const tokens = send.data
     const status = send.status;
 
@@ -199,13 +211,25 @@ function SignInInfo() {
       }
       link = "api/indiv/put/create_user"
     }
+    // Business Client
+    else if (accountType == "business-client") {
+      const { businessName, businessPhoneNumber, businessId, businessEmail, password, currentBalance } = formValues;
+      payload = {
+        User_ID: {
+          username: businessEmail,
+          password: password,
+          User_Role: "BUSINESS",
+        },
+        Business_Balance: currentBalance,
+        Business_Profile: "",
+        Business_PhoneNumber: businessPhoneNumber,
+        Business_Name: businessName,
+        // Business_ID: businessId
+      }
+      link = "api/business/put/create_business"
+    }
 
     const { status, tokens } = await createEntity(link, payload);
-
-    // Business Client
-    // else if (accountType == "business-client") {
-
-    // }
 
     // Set the acces and refresh tokens, if the creation was good.
     if (status === 201) {

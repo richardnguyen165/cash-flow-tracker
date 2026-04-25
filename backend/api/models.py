@@ -31,13 +31,11 @@ class Business(models.Model):
   
   User_ID = models.OneToOneField(User, on_delete=models.CASCADE)
   # User needs to add their own primary key
-  Business_ID = models.CharField(max_length=64, primary_key=True)
-  # Business_Name = models.CharField(max_length = 256)
+  # Business_ID = models.CharField(max_length=64)
+  Business_Name = models.CharField(max_length = 256)
   Business_Balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
   Business_Profile = models.CharField(max_length = 256, blank = True)
   Business_PhoneNumber = models.CharField(max_length=20)
-  Business_AdminEmail = models.CharField(max_length=256)
-  # Business_Password = models.CharField(max_length=256)
   Business_AccessCode = models.CharField(max_length=6, unique = True, blank = True)
   
   # https://stackoverflow.com/questions/72371106/how-to-auto-generate-a-field-value-with-the-input-field-value-in-django-model
@@ -48,7 +46,7 @@ class Business(models.Model):
       # https://stackoverflow.com/questions/22516805/random-six-letter-string-in-python
       while (not code_created):
         join_code = ''.join(random.sample(string.ascii_uppercase, 6))
-        if Business.objects.filter(Business_AccessCode = join_code):
+        if not Business.objects.filter(Business_AccessCode = join_code):
           self.Business_AccessCode = join_code
           code_created = True
           
@@ -136,6 +134,7 @@ class Contract(models.Model):
   Contract_Name = models.CharField(max_length=64)
   Contract_Terms = models.CharField(max_length=5000)
   Contract_Status = models.BooleanField()
+  Contract_Type = models.CharField(max_length=64)
   
 class Moderates(models.Model):
   Site_Admin_ID = models.ForeignKey(Site_Admin, on_delete = models.CASCADE, related_name="moderates")

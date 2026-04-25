@@ -117,13 +117,25 @@ def individual_contracts_payment(request):
 BUSINESS CLIENT
 '''
 
-@api_view(["PUT"])
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
 def create_business(request):
-  business_serializer = BusinessClientSerializer(data=request.data)
+  business_serializer = BusinessSerializer(data=request.data)
   if business_serializer.is_valid():
-    business_serializer.save()
-    return Response(business_serializer.data, status=status.HTTP_201_CREATED)
+    new_business = business_serializer.save()
+    token = TokenSerializer.get_token(new_business.User_ID)
+    return Response({
+      "refresh": str(token),
+      "access": str(token.access_token)
+    }, status=status.HTTP_201_CREATED)
   return Response(business_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET", "OPTIONS"])
+@permission_classes([IsAuthenticated])
+def get_business(request, business_id):
+  business = Business.objects.get(id=business_id)
+  bsuiness_info_serializer = BusinessSerializer(business)
+  return Response(bsuiness_info_serializer.data)
 
 @api_view(["DELETE"])
 def delete_business(request):
