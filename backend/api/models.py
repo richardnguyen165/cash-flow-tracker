@@ -55,6 +55,7 @@ class Business(models.Model):
 class Site_Admin(models.Model):
   # Site admin alreadt has their id added
   User_ID = models.OneToOneField(User, on_delete = models.CASCADE, null = True, blank = True, related_name="site_admin")
+  SiteAdmin_Name = models.CharField(max_length=256)
   SiteAdmin_BirthDate = models.DateField()
   SiteAdmin_Profile = models.CharField(max_length = 256)
   SiteAdmin_PhoneNumber = models.CharField(max_length=20)
@@ -62,6 +63,7 @@ class Site_Admin(models.Model):
 class Business_Admin(models.Model):
   User_ID = models.OneToOneField(User, on_delete = models.CASCADE, null = True, blank = True, related_name="business_admin")
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="business_admin")
+  BusinessAdmin_Name = models.CharField(max_length = 256)
   BusinessAdmin_BirthDate = models.DateField()
   BusinessAdmin_Profile = models.CharField(max_length = 256)
   BusinessAdmin_PhoneNumber = models.CharField(max_length=20)

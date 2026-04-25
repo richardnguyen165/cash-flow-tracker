@@ -118,33 +118,39 @@ class BusinessSerializer(serializers.ModelSerializer):
         
         return finalized_business
         
-
 class SiteAdminSerializer(serializers.ModelSerializer):
-    userReference = UserSerializer()
+    User_ID = UserSerializer()
     
     class Meta:
         model = Site_Admin
         fields = [
-            "userReference",
+            "User_ID",
+            "SiteAdmin_Name",
             "SiteAdmin_BirthDate",
             "SiteAdmin_Profile",
-            "SiteAdmin_PhoneNumber"
+            "SiteAdmin_PhoneNumber",
+            # this is serializer only
+            "authorizationCode"
         ]
         
     def validate(self, data):
         # There is an account registered under the same phone number
         if Site_Admin.objects.filter(SiteAdmin_PhoneNumber=data["SiteAdmin_PhoneNumber"]).exists():
             raise serializers.ValidationError(f"Site Admin already registered under the same phone number.")            
+        elif data["authorizationCode"] != "123456":
+            raise serializers.ValidationError(f"Unauthroized to become site admin.")     
         return data
 
     def create(self, data):
+        # discards authroization code
+        data.pop("authorizationCode", None)
         # Extracts user data from consideration
-        site_admin_data = data.pop("user")
+        user_data = data.pop("User_ID")
         # Sets it to business client
-        site_admin_data["User_Role"] = User.Role.SITE_ADMIN
+        user_data["User_Role"] = User.Role.SITE_ADMIN
         
         # Check if user data is valid
-        verify_user = UserSerializer(data=site_admin_data)
+        verify_user = UserSerializer(data=user_data)
         verify_user.is_valid(raise_exception=True)
         user_indiv = verify_user.save()
         
@@ -159,27 +165,35 @@ class SiteAdminSerializer(serializers.ModelSerializer):
 
 class BusinessAdminSerializer(serializers.ModelSerializer):
     userReference = UserSerializer()
-    businessReference = BusinessSerializer()
+    businessAccessCode = serializers.CharField(write_only=True)
     
     class Meta:
         model = Business_Admin
         fields = [
           "userReference", 
+          "BusinessAdmin_Name",
           "BusinessAdmin_BirthDate",
           "BusinessAdmin_Profile",
-          "BusinessAdmin_PhoneNumber"
+          "BusinessAdmin_PhoneNumber",
+          "businessAccessCode"
         ]
     
     def validate(self, data):
         # There is an account registered under the same phone number
         if Business_Admin.objects.filter(BusinessAdmin_PhoneNumber=data["BusinessAdmin_PhoneNumber"]).exists():
-            raise serializers.ValidationError(f"Business Admin already registered under the same phone number.")            
+            raise serializers.ValidationError("Business Admin already registered under the same phone number.")
         return data
     
     def create(self, data):
-        # Extracts user data from consideration
-        business_user_data = data.pop("user")
-        # Sets it to business client
+        access_code = data.pop("businessAccessCode")
+        try:
+            # Connect it to an existing business
+            business = Business.objects.get(Business_AccessCode=access_code)
+        except Business.DoesNotExist:
+            raise serializers.ValidationError({"businessAccessCode": "Invalid business access code."})
+
+        # Extract user data
+        business_user_data = data.pop("userReference")
         business_user_data["User_Role"] = User.Role.BUSINESS_ADMIN
         
         # Check if user data is valid
@@ -187,13 +201,14 @@ class BusinessAdminSerializer(serializers.ModelSerializer):
         verify_user.is_valid(raise_exception=True)
         user_indiv = verify_user.save()
         
-        # Create business object, with reference to user object, and return the business object
-        finalized_site_admin = Business_Admin.objects.create(
-            User_ID = user_indiv,
+        # Create business admin
+        finalized_business_admin = Business_Admin.objects.create(
+            User_ID=user_indiv,
+            Business_ID=business,
             **data
         )
         
-        return finalized_site_admin
+        return finalized_business_admin
         
 class CounterPartySerializer(serializers.ModelSerializer):
     class Meta:

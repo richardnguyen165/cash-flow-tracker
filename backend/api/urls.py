@@ -27,7 +27,7 @@ urlpatterns = [
     path("staff/business/<int:business_id>/transactions/create/", views.staff_create_transaction),
 
     # May - Business Admin
-
+    path("business/admin/put/create_business_admin", views.create_business_admin),
     path("business/admin/<int:business_id>/profile/", views.business_admin_profile),
     path("business/admin/<int:business_id>/contracts/", views.business_admin_contracts),
     path("business/admin/<int:business_id>/contracts/send/", views.business_admin_send_contract),
@@ -42,7 +42,8 @@ urlpatterns = [
     path("business/admin/<int:business_id>/employees/<int:employee_id>/assign-contracts/", views.business_admin_assign_contracts),
 
     # May - Site Admin
-     path("site/admin/users/<int:user_id>/profile/", views.site_admin_profile),
+    path("site/admin/put/create_site_admin", views.create_site_admin),
+    path("site/admin/users/<int:user_id>/profile/", views.site_admin_profile),
     path("site/admin/businesses/", views.site_admin_businesses),
     path("site/admin/businesses/<int:business_id>/remove/", views.site_admin_remove_business),
     path("site/admin/users/", views.site_admin_users),

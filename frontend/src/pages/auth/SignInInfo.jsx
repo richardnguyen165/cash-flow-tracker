@@ -19,6 +19,12 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "text",
       },
       {
+        name: "email",
+        label: "Email*",
+        placeholder: "individual@domain.com",
+        type: "email",
+      },
+      {
         name: "phoneNumber",
         label: "Phone Number*",
         placeholder: "+1 123-456-7890",
@@ -43,12 +49,6 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "password",
       },
       {
-        name: "email",
-        label: "Email*",
-        placeholder: "individual@domain.com",
-        type: "email",
-      },
-      {
         name: "currentBalance",
         label: "Current Balance (in $)*",
         placeholder: "$12000",
@@ -68,8 +68,14 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "text",
       },
       {
+        name: "businessEmail",
+        label: "Email*",
+        placeholder: "ops@domain.com",
+        type: "email",
+      },
+      {
         name: "businessPhoneNumber",
-        label: "Business Phone Number*",
+        label: "Phone Number*",
         placeholder: "+1 123-456-7890",
         type: "text",
       },
@@ -79,12 +85,6 @@ const ACCOUNT_SETUP_CONFIG = {
       //   placeholder: "Tax ID or Registration Number",
       //   type: "text",
       // },
-      {
-        name: "businessEmail",
-        label: "Bsuiness Email*",
-        placeholder: "ops@domain.com",
-        type: "email",
-      },
       {
         name: "password",
         label: "Password*",
@@ -117,6 +117,18 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "email",
       },
       {
+        name: "phoneNumber",
+        label: "Phone Number*",
+        placeholder: "+1 123-456-7890",
+        type: "text",
+      },
+      {
+        name: "birthday",
+        label: "Birthday*",
+        placeholder: "",
+        type: "date",
+      },
+      {
         name: "password",
         label: "Password*",
         placeholder: "Create a password",
@@ -146,6 +158,18 @@ const ACCOUNT_SETUP_CONFIG = {
         label: "Email*",
         placeholder: "admin@yourbusiness.com",
         type: "email",
+      },
+      {
+        name: "phoneNumber",
+        label: "Phone Number*",
+        placeholder: "+1 123-456-7890",
+        type: "text",
+      },
+      {
+        name: "birthday",
+        label: "Birthday*",
+        placeholder: "",
+        type: "date",
       },
       {
         name: "password",
@@ -195,7 +219,7 @@ function SignInInfo() {
     let link;
 
     // Individual Client
-    if (accountType == "individual-client") {
+    if (accountType === "individual-client") {
       const { password, birthday, currentBalance, fullName, phoneNumber, email } = formValues;
       payload = {
         User_ID: {
@@ -212,8 +236,8 @@ function SignInInfo() {
       link = "api/indiv/put/create_user"
     }
     // Business Client
-    else if (accountType == "business-client") {
-      const { businessName, businessPhoneNumber, businessId, businessEmail, password, currentBalance } = formValues;
+    else if (accountType === "business-client") {
+      const { businessName, businessPhoneNumber, businessEmail, password, currentBalance } = formValues;
       payload = {
         User_ID: {
           username: businessEmail,
@@ -227,6 +251,39 @@ function SignInInfo() {
         // Business_ID: businessId
       }
       link = "api/business/put/create_business"
+    }
+    // Business admin
+    else if (accountType === "business-admin"){
+      const { name, email, phoneNumber, password, businessAccessCode, birthday } = formValues;
+      payload = {
+        User_ID : {
+          username: email,
+          password: password,
+          User_Role: "BUSINESS_ADMIN"
+        },
+        BusinessAdmin_Name: name,
+        BusinessAdmin_BirthDate: birthday,
+        BusinessAdmin_Profile : "",
+        BusinessAdmin_PhoneNumber: phoneNumber,
+        businessAccessCode
+      }
+      link = "api/business/admin/put/create_business_admin"
+    }
+    else {
+      const { name, email, phoneNumber, password, birthday, authorizationCode } = formValues;
+      payload = {
+        User_ID : {
+          username: email,
+          password: password,
+          User_Role: "SITE_ADMIN"
+        },
+        SiteAdmin_Name: name,
+        SiteAdmin_BirthDate: birthday,
+        SiteAdmin_Profile: "",
+        SiteAdmin_PhoneNumber: phoneNumber,
+        authorizationCode
+      }
+      link = "api/site/admin/put/create_site_admin"
     }
 
     const { status, tokens } = await createEntity(link, payload);

@@ -263,6 +263,20 @@ def staff_create_transaction(request, business_id):
 
 # BUSINESS ADMIN
 
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
+def create_business_admin(request):
+  business_admin_serializer = BusinessAdminSerializer(data=request.data)
+  if business_admin_serializer.is_valid():
+    business_admin = business_admin_serializer.save()
+    token = TokenSerializer.get_token(business_admin.User_ID)
+    return Response({
+      "refresh": str(token),
+      "access": str(token.access_token)
+    }, status=status.HTTP_201_CREATED)
+  return Response(business_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(["GET", "PUT"])
 def business_admin_profile(request, business_id):
     if request.method == "GET":
@@ -337,6 +351,20 @@ def business_admin_assign_contracts(request, business_id, employee_id):
   return Response({"message": "business_admin_assign_contracts placeholder"})
 
 # SITE ADMIN
+
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
+def create_site_admin(request):
+  site_admin_serializer = SiteAdminSerializer(data=request.data)
+  if site_admin_serializer.is_valid():
+    site_admin = site_admin_serializer.save()
+    token = TokenSerializer.get_token(site_admin.User_ID)
+    return Response({
+      "refresh": str(token),
+      "access": str(token.access_token)
+    }, status=status.HTTP_201_CREATED)
+  return Response(site_admin_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(["GET"])
 def site_admin_businesses(request):
