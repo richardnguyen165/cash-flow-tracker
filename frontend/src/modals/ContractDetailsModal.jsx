@@ -1,17 +1,8 @@
+import StatusBadge from "../components/cards/StatusBadge";
+
 function ContractDetailsModal({ isOpen, onClose, contract }) {
   if (!isOpen) return null;
-
-  const status = contract?.status || "Pending";
-
-  const statusStyles = {
-    "In Review": "bg-yellow-100 text-yellow-700",
-    "Pending Signature": "bg-red-100 text-red-700",
-    Scheduled: "bg-purple-100 text-purple-700",
-    Active: "bg-green-100 text-green-700",
-    Completed: "bg-gray-100 text-gray-600",
-  };
-
-  const statusClass = statusStyles[status] || "bg-gray-100 text-gray-600";
+  const status = contract?.status || "In Review";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -49,18 +40,12 @@ function ContractDetailsModal({ isOpen, onClose, contract }) {
 
               <InfoBlock
                 label="Due Date"
-                value={contract?.dueDate || contract?.date || "October 24, 2023"}
+                value={
+                  contract?.dueDate || contract?.date || "October 24, 2023"
+                }
               />
 
-              <InfoBlock
-                label="Next Action"
-                value={contract?.nextAction || "Awaiting approval"}
-              />
-
-              <InfoBlock
-                label="Amount"
-                value={contract?.amount || "$0.00"}
-              />
+              <InfoBlock label="Amount" value={contract?.amount || "$0.00"} />
 
               <div className="flex flex-col">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
@@ -68,11 +53,7 @@ function ContractDetailsModal({ isOpen, onClose, contract }) {
                 </p>
 
                 <div className="mt-3">
-                  <span
-                    className={`inline-flex items-center rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.04em] ${statusClass}`}
-                  >
-                    {status}
-                  </span>
+                  <StatusBadge status={status} />
                 </div>
               </div>
 

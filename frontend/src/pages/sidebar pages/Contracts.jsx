@@ -3,11 +3,12 @@ import ContractDetailsModal from "../../modals/ContractDetailsModal";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
+import CreateContractModal from "../../modals/CreateContractModal";
+import ContractsCard from "../../components/cards/ContractsCard";
 
 const defaultAgreements = [
   {
     name: "Capital Advisory Master Agreement",
-    nextAction: "Awaiting billing approval",
     dueDate: "Apr 22, 2026",
     amount: "$84,210.00",
     status: "In Review",
@@ -17,107 +18,65 @@ const defaultAgreements = [
   },
   {
     name: "Equity Participation Clause",
-    nextAction: "Pending client signature",
     dueDate: "Apr 25, 2026",
     amount: "$250,000.00",
-    status: "Pending Signature",
+    status: "In Review",
     description:
       "This Equity Participation Clause describes the terms under which the client may participate in an equity-based financial arrangement with the business. The clause defines ownership expectations, approval requirements, payment obligations, vesting or participation conditions, and the responsibilities of each party before the agreement becomes active. It also explains how changes to the participation structure, missed approvals, incomplete documentation, or delayed signatures may affect the enforceability of the clause. This contract will not be considered fully executed until all required parties have reviewed, approved, and signed the final agreement.",
     agreementId: "TR-8842-AXL-002",
   },
   {
     name: "Commercial Escrow Agreement",
-    nextAction: "Payment scheduled",
     dueDate: "Apr 30, 2026",
     amount: "$42,500.00",
-    status: "Scheduled",
+    status: "Active",
     description:
       "This Commercial Escrow Agreement establishes the terms under which funds will be held, released, and documented during the transaction between the business and the client. The agreement outlines the escrow amount, scheduled payment timing, release conditions, client obligations, business responsibilities, and documentation required before funds may be transferred. It also describes how delays, disputes, incomplete payments, or changes to the transaction may be managed. All parties agree that the escrowed funds must be handled according to the stated conditions and may only be released once the required approvals and contractual obligations have been satisfied.",
     agreementId: "TR-8842-AXL-003",
   },
 ];
 
-function StatusBadge({ status }) {
-  const styles = {
-    "In Review": "bg-yellow-100 text-yellow-700",
-    "Pending Signature": "bg-red-100 text-red-700",
-    Scheduled: "bg-purple-100 text-purple-700",
-    Active: "bg-green-100 text-green-700",
-    Completed: "bg-gray-100 text-gray-600",
-  };
-
-  return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        styles[status] || "bg-gray-100 text-gray-600"
-      }`}
-    >
-      {status}
-    </span>
-  );
-}
-
 function Contracts({
   sidebar = <ClientSidebar />,
   navItems = clientNav,
   brandLink = "/dashboard",
   agreements = defaultAgreements,
-  tableTitle = "Current Agreements",
-  columns = ["Agreement", "Next Action", "Due Date", "Amount", "Status"],
+  tableTitle = "My Contracts",
 }) {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
+  const [agreementList, setAgreementList] = useState(agreements);
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
-      {/* keep your top sections the same */}
+      <ContractsCard
+        title={tableTitle}
+        contracts={agreementList}
+        onRowClick={(contract) =>
+          setSelectedContract({
+            ...contract,
+            date: contract.dueDate,
+            authMethod: "Digital Signature",
+          })
+        }
+        actionButton={
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
+          >
+            + New Contract
+          </button>
+        }
+      />
 
-      <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
-        <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
-          {tableTitle}
-        </h2>
-
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
-          <table className="min-w-full divide-y divide-[#eef2f6]">
-            <thead className="bg-[#f8fafc]">
-              <tr className="text-left text-xs uppercase tracking-[0.18em] text-[#94a3b8]">
-                {columns.map((column) => (
-                  <th key={column} className="px-6 py-4 font-semibold">
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-[#eef2f6] bg-white">
-              {agreements.map((contract) => (
-                <tr
-                  key={contract.name}
-                  onClick={() =>
-                    setSelectedContract({
-                      ...contract,
-                      date: contract.dueDate,
-                      authMethod: "Digital Signature",
-                    })
-                  }
-                  className="cursor-pointer text-sm text-[#0f172a] transition hover:bg-[#f8fafc]"
-                >
-                  <td className="px-6 py-6 font-semibold">{contract.name}</td>
-                  <td className="px-6 py-6 text-[#475569]">
-                    {contract.nextAction}
-                  </td>
-                  <td className="px-6 py-6 text-[#475569]">
-                    {contract.dueDate}
-                  </td>
-                  <td className="px-6 py-6 font-semibold">{contract.amount}</td>
-                  <td className="px-6 py-6">
-                    <StatusBadge status={contract.status} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <CreateContractModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={(newContract) => {
+          setAgreementList((prev) => [newContract, ...prev]);
+        }}
+      />
 
       <ContractDetailsModal
         isOpen={!!selectedContract}
