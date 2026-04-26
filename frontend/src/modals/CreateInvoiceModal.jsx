@@ -1,5 +1,6 @@
 import { useState } from "react";
 import decodeTokens from "../services/decode-tokens";
+import api from "../services/api";
 
 const emptyInvoice = {
   name: "",
@@ -61,7 +62,7 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       0
     );
 
-    const { id, User_ID, User_Role } = decodeTokens();
+    const all_info = decodeTokens();
 
     const newInvoice = {
       ...formData,
@@ -70,8 +71,8 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       lineItems,
     };
 
-    let Business_ID_Insert = User_Role === "BUSINESS_ADMIN" ? id : null;
-    let User_ID_Insert =  User_Role === "INDIVIDUAL" ? id : null;
+    let Business_ID_Insert = all_info.User_Role === "BUSINESS_ADMIN" ? all_info.business_id : null;
+    let User_ID_Insert = all_info.User_Role === "INDIVIDUAL" ? all_info.id : null;
 
     const newModifiedInvoice = {
       Transaction_ID: {
@@ -88,11 +89,7 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       invoice_line_items: newInvoice.lineItems,
     }
 
-    if (User_Role === "INDIVIDUAL"){
-
-    } else if (User_Role === "Business")
-    let result;
-
+    const response = api.
 
     onSubmit(newModifiedInvoice);
     setFormData(emptyInvoice);
