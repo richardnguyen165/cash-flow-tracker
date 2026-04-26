@@ -1,0 +1,63 @@
+import { useEffect, useState } from "react";
+import EmployeeSideBar from "../../components/sidebar/EmployeeSideBar";
+import Contracts from "./Contracts";
+import { clientNav } from "../../config/workspaceNav";
+import { fetchBusinessContracts } from "../../services/businessWorkspace";
+import ClientSidebar from "../../components/sidebar/ClientSideBar";
+import decodeTokens from "../../services/decode-tokens";
+
+function BusinessContracts() {
+  const [agreements, setAgreements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    async function loadBusinessContracts() {
+      try {
+        const decodedToken = decodeTokens();
+        const { id, User_Role  } = decodedToken;
+
+        setRole(User_Role);
+
+        const contractData = await fetchBusinessContracts(id);
+
+        const normalizedContracts = contractData.map((contract) => ({
+          agreementId: `CONTRACT-${contract.id}`,
+          name: contract.Contract_Name,
+          dueDate: contract.Contract_Completion_Date,
+          amount: `$${contract.Contract_Cost}`,
+          status: contract.Contract_Status ? "Active" : "Pending",
+          description: contract.Contract_Terms,
+        }));
+
+        setAgreements(normalizedContracts);
+      } catch (error) {
+        console.error("Could not load individual contracts.", error);
+        setAgreements([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBusinessContracts();
+  }, []);
+
+  return (
+    <Contracts
+      sidebar={<ClientSidebar />}
+      navItems={clientNav}
+      brandLink="/business/dashboard"
+      tableTitle="Business Contracts"
+      agreements={agreements}
+      allowCreateContract={role !== "BUSINESS"}
+      columns={["Contract", "Finish Date", "Amount", "Status"]}
+      subtitle={
+        loading
+          ? "Loading the contracts available in your business workspace..."
+          : "These are the contracts currently visible to your business workspace."
+      }
+    />
+  );
+}
+
+export default BusinessContracts;

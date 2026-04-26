@@ -16,7 +16,7 @@ function BusinessSideBar() {
     { to: "/business/contracts", label: "Contracts", Icon: DocumentTextIcon },
     { to: "/business/invoices", label: "Invoices", Icon: ReceiptPercentIcon },
     { to: "/business/payments", label: "Payments", Icon: CreditCardIcon },
-    { to: "/expenses", label: "Expenses", Icon: ClipboardDocumentListIcon},
+    { to: "/business/expenses", label: "Expenses", Icon: ClipboardDocumentListIcon},
     { to: "/business/employees", label: "Employees", Icon: UsersIcon },
     { to: "/business/profile", label: "Profile", Icon: UserCircleIcon },
   ];

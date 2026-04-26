@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ContractDetailsModal from "../../modals/ContractDetailsModal";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
 import CreateContractModal from "../../modals/CreateContractModal";
 import ContractsCard from "../../components/cards/ContractsCard";
-import decodeTokens from "../../services/decode-tokens";
-import api from "../../services/api";
 
 const defaultAgreements = [
   {
@@ -14,8 +12,6 @@ const defaultAgreements = [
     dueDate: "Apr 22, 2026",
     amount: "$84,210.00",
     status: "In Review",
-    clientEmail: "client@northshore.com",
-    clientType: "Individual",
     description:
       "This Master Agreement sets forth the terms and conditions under which Northshore Capital will provide advisory, financial planning, and account management services to the client. The agreement outlines the scope of advisory work, billing expectations, approval procedures, reporting obligations, and the responsibilities of both parties during the contract period. It also defines how invoices, client communications, payment adjustments, outstanding balances, and service changes will be handled. Any amendments, renewals, or modifications to this agreement must be reviewed and approved by the appropriate parties before becoming effective.",
     agreementId: "TR-8842-AXL-001",
@@ -25,8 +21,6 @@ const defaultAgreements = [
     dueDate: "Apr 25, 2026",
     amount: "$250,000.00",
     status: "In Review",
-    clientEmail: "equity@atlasventures.com",
-    clientType: "Business",
     description:
       "This Equity Participation Clause describes the terms under which the client may participate in an equity-based financial arrangement with the business. The clause defines ownership expectations, approval requirements, payment obligations, vesting or participation conditions, and the responsibilities of each party before the agreement becomes active. It also explains how changes to the participation structure, missed approvals, incomplete documentation, or delayed signatures may affect the enforceability of the clause. This contract will not be considered fully executed until all required parties have reviewed, approved, and signed the final agreement.",
     agreementId: "TR-8842-AXL-002",
@@ -36,8 +30,6 @@ const defaultAgreements = [
     dueDate: "Apr 30, 2026",
     amount: "$42,500.00",
     status: "Active",
-    clientEmail: "escrow@marinerholdings.com",
-    clientType: "Business",
     description:
       "This Commercial Escrow Agreement establishes the terms under which funds will be held, released, and documented during the transaction between the business and the client. The agreement outlines the escrow amount, scheduled payment timing, release conditions, client obligations, business responsibilities, and documentation required before funds may be transferred. It also describes how delays, disputes, incomplete payments, or changes to the transaction may be managed. All parties agree that the escrowed funds must be handled according to the stated conditions and may only be released once the required approvals and contractual obligations have been satisfied.",
     agreementId: "TR-8842-AXL-003",
@@ -48,7 +40,7 @@ function Contracts({
   sidebar = <ClientSidebar />,
   navItems = clientNav,
   brandLink = "/dashboard",
-  agreements = [],
+  agreements = defaultAgreements,
   tableTitle = "My Contracts",
   subtitle = "Keep track of agreements that are active, in review, or completed.",
   columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
@@ -56,44 +48,11 @@ function Contracts({
 }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
-  const [agreementList, setAgreementList] = useState([]);
-
-  const [id, setID] = useState(null);
-  const [role, setRole] = useState(null);
-
-  useEffect(() => {
-
-    async function getContracts() {
-      const decodedToken = decodeTokens();
-      const { id, User_Role  } = decodedToken;
-      let link;
-      setID(id);
-      setRole(User_Role);
-
-      if (User_Role === "INDIVIDUAL") {
-        link = `api/indiv/contracts/get/${id}`
-      } else if (User_Role === "BUSINESS") {
-        link = `api/business/contracts/get/${id}`
-      } else if (User_Role === "BUSINESS_ADMIN") {
-        console.log("BUSINESS_ADMIN");
-      } else if (User_Role === "EMPLOYEE") {
-        console.log("Employee");
-      }
-
-      const response = await api.get(link);
-      console.log(response);
-
-      setAgreementList(response.data);
-    }
-
-    getContracts();
-
-  }, []);
-
+  const [agreementList, setAgreementList] = useState(agreements);
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
-      {(role === "INDIVIDUAL" || role === "BUSINESS") ? <ContractsCard
+      <ContractsCard
         title={tableTitle}
         subtitle={subtitle}
         columns={columns}
@@ -130,17 +89,6 @@ function Contracts({
         isOpen={!!selectedContract}
         onClose={() => setSelectedContract(null)}
         contract={selectedContract}
-        onStatusChange={(contractKey, status) => {
-          setAgreementList((prev) =>
-            prev.map((contract) => {
-              const key = contract.agreementId || contract.id || contract.name;
-
-              return key === contractKey ? { ...contract, status } : contract;
-            })
-          );
-
-          setSelectedContract((prev) => (prev ? { ...prev, status } : prev));
-        }}
       />
     </MainLayout>
   );

@@ -31,7 +31,7 @@ function Dashboard() {
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      {/* <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-[28px] border border-[#efeafc] bg-[#f6efff] p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
             Total Outstanding Balance
@@ -40,14 +40,14 @@ function Dashboard() {
             $412,450.00
           </h2>
 
-          {/* <div className="mt-8 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-wrap gap-4">
             <button className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black">
               Pay Outstanding
             </button>
-          </div> */}
+          </div>
         </div>
 
-        {/* <div className="rounded-[28px] border border-[#ececf2] bg-white p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+        <div className="rounded-[28px] border border-[#ececf2] bg-white p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
             Pending Review
           </p>
@@ -58,10 +58,10 @@ function Dashboard() {
           <p className="mt-8 text-xs uppercase tracking-[0.16em] text-[#9ca3af]">
             Last synced today at 9:24 AM
           </p>
-        </div> */}
-      </section>
+        </div>
+      </section> */}
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-3">
+      {/* <section className="mt-6 grid gap-6 lg:grid-cols-3">
         <MetricCard
           label="Active Contracts"
           value="04"
@@ -74,14 +74,14 @@ function Dashboard() {
           subtitle="Invoices received from outgoing contracts"
           compact
         />
-        {/* <MetricCard
+        <MetricCard
           label="Recent Payments"
           value="$96.4K"
           subtitle="Settled in the last 30 days"
           compact
           accent="text-[#8b5cf6]"
-        /> */}
-      </section>
+        />
+      </section> */}
 
       <ContractsCard
         title="My Contracts"

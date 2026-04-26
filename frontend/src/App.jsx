@@ -18,7 +18,7 @@ import BusinessSideBar from "./components/sidebar/BusinessSideBar";
 import EmployeeSideBar from "./components/sidebar/EmployeeSideBar";
 import AdminSideBar from "./components/sidebar/AdminSideBar";
 import Employees from "./pages/sidebar pages/Employees";
-import Expenses, { ClientExpenses } from "./pages/sidebar pages/Expenses";
+import Expenses from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import EmployeeContracts from "./pages/sidebar pages/EmployeeContracts";
@@ -31,6 +31,7 @@ import {
   employeeNav,
   siteAdminNav,
 } from "./config/workspaceNav";
+import IndividualContracts from "./pages/sidebar pages/IndividualContracts";
 
 function App() {
   return (
@@ -42,14 +43,28 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/siteadmin" element={<SiteAdmin />} />
         <Route path="/signininfo" element={<SignInInfo />} />
+        
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/contracts" element={<ProtectedRoute><Contracts /></ProtectedRoute>} />
+        <Route path="/contracts" element={<ProtectedRoute><IndividualContracts /></ProtectedRoute>} />
         <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
         <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
-        <Route path="/expenses" element={<ProtectedRoute><Expenses/></ProtectedRoute>} />
+        <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+
         <Route path="/business/dashboard" element={<ProtectedRoute><BusinessDashboard /></ProtectedRoute>} />
+        <Route
+          path="/business/expenses"
+          element={
+            <ProtectedRoute>
+              <Expenses
+                sidebar={<BusinessSideBar />}
+                navItems={businessAdminNav}
+                brandLink="/business/dashboard"
+              />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/business/contracts"
           element={
@@ -78,75 +93,75 @@ function App() {
         <Route
           path="/business/invoices"
           element={
-          <ProtectedRoute>
-            <Invoices
-              sidebar={<BusinessSideBar />}
-              navItems={businessAdminNav}
-              brandLink="/business/dashboard"
-              eyebrow="Business Billing"
-              title="Business Invoices"
-              description="Track invoices issued to counterparties, amounts collected, and approvals still waiting on action."
-              summaryCards={[
-                [
-                  "Outstanding Receivables",
-                  "$412,000.00",
-                  "Across open invoices",
-                ],
-                ["Pending Approval", "06", "Items waiting on business review"],
-                [
-                  "Collected This Month",
-                  "$126,800.00",
-                  "Processed settlements",
-                ],
-              ]}
-              invoices={[
-                ["INV-2401", "Apr 01, 2026", "$84,210.00", "Processing"],
-                ["INV-2398", "Mar 28, 2026", "$185,290.00", "Overdue"],
-                ["INV-2384", "Mar 15, 2026", "$120,000.00", "Paid"],
-              ]}
-            />
-          </ProtectedRoute>
+            <ProtectedRoute>
+              <Invoices
+                sidebar={<BusinessSideBar />}
+                navItems={businessAdminNav}
+                brandLink="/business/dashboard"
+                eyebrow="Business Billing"
+                title="Business Invoices"
+                description="Track invoices issued to counterparties, amounts collected, and approvals still waiting on action."
+                summaryCards={[
+                  [
+                    "Outstanding Receivables",
+                    "$412,000.00",
+                    "Across open invoices",
+                  ],
+                  ["Pending Approval", "06", "Items waiting on business review"],
+                  [
+                    "Collected This Month",
+                    "$126,800.00",
+                    "Processed settlements",
+                  ],
+                ]}
+                invoices={[
+                  ["INV-2401", "Apr 01, 2026", "$84,210.00", "Processing"],
+                  ["INV-2398", "Mar 28, 2026", "$185,290.00", "Overdue"],
+                  ["INV-2384", "Mar 15, 2026", "$120,000.00", "Paid"],
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/business/payments"
           element={
-          <ProtectedRoute>
-            <Payments
-              sidebar={<BusinessSideBar />}
-              navItems={businessAdminNav}
-              brandLink="/business/dashboard"
-              eyebrow="Treasury"
-              title="Business Payments"
-              description="Monitor payments collected from clients and outgoing settlements tied to business obligations."
-              totalOutstanding="$96,240.00"
-              nextDueDate="Apr 24, 2026"
-              lastPayment="$24,500.00"
-              actionTitle="Review Payment Queue"
-              actionCopy="Approve, schedule, or investigate payments that affect company cash flow."
-              actionButton="Open Review Queue"
-              transactions={[
-                [
-                  "Apr 10, 2026",
-                  "Client Settlement - INV-2401",
-                  "Wire Transfer",
-                  "+$24,500.00",
-                ],
-                [
-                  "Apr 08, 2026",
-                  "Recurring Vendor Payout",
-                  "ACH Transfer",
-                  "-$5,200.00",
-                ],
-                [
-                  "Apr 03, 2026",
-                  "Expense Plan Pay-Off",
-                  "Bank Transfer",
-                  "-$12,800.00",
-                ],
-              ]}
-            />
-          </ProtectedRoute>
+            <ProtectedRoute>
+              <Payments
+                sidebar={<BusinessSideBar />}
+                navItems={businessAdminNav}
+                brandLink="/business/dashboard"
+                eyebrow="Treasury"
+                title="Business Payments"
+                description="Monitor payments collected from clients and outgoing settlements tied to business obligations."
+                totalOutstanding="$96,240.00"
+                nextDueDate="Apr 24, 2026"
+                lastPayment="$24,500.00"
+                actionTitle="Review Payment Queue"
+                actionCopy="Approve, schedule, or investigate payments that affect company cash flow."
+                actionButton="Open Review Queue"
+                transactions={[
+                  [
+                    "Apr 10, 2026",
+                    "Client Settlement - INV-2401",
+                    "Wire Transfer",
+                    "+$24,500.00",
+                  ],
+                  [
+                    "Apr 08, 2026",
+                    "Recurring Vendor Payout",
+                    "ACH Transfer",
+                    "-$5,200.00",
+                  ],
+                  [
+                    "Apr 03, 2026",
+                    "Expense Plan Pay-Off",
+                    "Bank Transfer",
+                    "-$12,800.00",
+                  ],
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
         <Route path="/business/employees" element={<Employees />} />
@@ -227,44 +242,44 @@ function App() {
         <Route
           path="/admin/profile"
           element={
-          <ProtectedRoute>
-            <Profile
-              sidebar={<AdminSideBar />}
-              navItems={siteAdminNav}
-              brandLink="/admin/dashboard"
-              eyebrow="Administration"
-              title="Admin Profile"
-              description="Manage site administration access, moderation alerts, and platform-level preferences."
-              infoFields={[
-                ["Name", "Platform Admin"],
-                ["Email Address", "admin@trillium.com"],
-                ["Office", "Platform Operations"],
-                ["Access Level", "Global Admin"],
-              ]}
-              preferenceRows={[
-                {
-                  title: "Moderation alerts",
-                  description:
-                    "Send notifications for flagged users, businesses, and privilege requests.",
-                  enabled: true,
-                },
-                {
-                  title: "System status summaries",
-                  description:
-                    "Receive daily platform health and moderation queue recaps.",
-                  enabled: true,
-                },
-              ]}
-              securityTitle="Platform Access"
-              securityDescription="Manage high-privilege credentials and keep site administration secure."
-              statusTitle="Admin Status"
-              statusItems={[
-                "Global moderation enabled",
-                "Privilege controls active",
-                "Business verification queue synced",
-              ]}
-            />
-          </ProtectedRoute>
+            <ProtectedRoute>
+              <Profile
+                sidebar={<AdminSideBar />}
+                navItems={siteAdminNav}
+                brandLink="/admin/dashboard"
+                eyebrow="Administration"
+                title="Admin Profile"
+                description="Manage site administration access, moderation alerts, and platform-level preferences."
+                infoFields={[
+                  ["Name", "Platform Admin"],
+                  ["Email Address", "admin@trillium.com"],
+                  ["Office", "Platform Operations"],
+                  ["Access Level", "Global Admin"],
+                ]}
+                preferenceRows={[
+                  {
+                    title: "Moderation alerts",
+                    description:
+                      "Send notifications for flagged users, businesses, and privilege requests.",
+                    enabled: true,
+                  },
+                  {
+                    title: "System status summaries",
+                    description:
+                      "Receive daily platform health and moderation queue recaps.",
+                    enabled: true,
+                  },
+                ]}
+                securityTitle="Platform Access"
+                securityDescription="Manage high-privilege credentials and keep site administration secure."
+                statusTitle="Admin Status"
+                statusItems={[
+                  "Global moderation enabled",
+                  "Privilege controls active",
+                  "Business verification queue synced",
+                ]}
+              />
+            </ProtectedRoute>
           }
         />
       </Routes>
