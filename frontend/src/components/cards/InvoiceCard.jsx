@@ -4,7 +4,7 @@ function InvoiceCard({
   title = "Billing History",
   subtitle,
   invoices = [],
-  columns = ["Invoice ID", "Date", "Amount", "Status"],
+  columns = ["Invoice ID", "Date", "Name", "Status"],
   onRowClick,
   actionButton,
 }) {
@@ -48,12 +48,12 @@ function InvoiceCard({
                 }`}
               >
                 <td className="px-6 py-6 font-semibold">
-                  {invoice.invoiceId || invoice.id}
+                  {invoice.id}
                 </td>
-                <td className="px-6 py-6 text-[#475569]">{invoice.date}</td>
-                <td className="px-6 py-6 font-semibold">{invoice.amount}</td>
+                <td className="px-6 py-6 text-[#475569]">{invoice.Transaction_ID.Transaction_Date}</td>
+                <td className="px-6 py-6 font-semibold">{invoice.Name}</td>
                 <td className="px-6 py-6">
-                  <InvoiceStatusBadge status={invoice.status} />
+                  <InvoiceStatusBadge status={invoice.Invoice_Status} />
                 </td>
               </tr>
             ))}

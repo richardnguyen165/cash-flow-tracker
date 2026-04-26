@@ -93,6 +93,8 @@ class Invoice(models.Model):
   Invoice_Status = models.CharField(max_length=256)
   Policy_Description = models.CharField(max_length = 256)
   CounterParty_ID = models.ForeignKey(CounterParty, on_delete=models.SET_NULL, null = True, blank = True, related_name="invoices")
+  Invoice_Type = models.CharField(max_length=256)
+  Invoice_Status = models.CharField(max_length=256)
 
 class Expense_Plan(models.Model):
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="expense_plans")

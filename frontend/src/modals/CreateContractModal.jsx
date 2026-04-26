@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { sendBusinessContract } from "../services/businessWorkspace";
+import decodeTokens from "../services/decode-tokens"
 
 // I did not know you could do this with state, thanks Cellou
 const emptyContract = {
-  name: "",
-  dueDate: "",
-  amount: "",
-  status: "In Review",
+  Contract_Name: "",
+  Contract_Completion_Date: "",
+  Contract_Cost: "",
+  Contract_Status: "In Review",
   clientEmail: "",
   clientType: "Individual",
-  description: "",
+  Contract_Terms: "",
 };
 
 function CreateContractModal({ isOpen, onClose, onSubmit }) {
@@ -38,10 +39,40 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
         "This agreement sets forth the terms and conditions under which the business will provide services to the client, including the scope of work, payment obligations, approval procedures, and ongoing responsibilities of both parties. It outlines the timing of deliverables, billing and collection expectations, requirements for written authorization, and the procedures for handling amendments, delays, disputes, or termination.",
     };
 
-    let resultOfSending = sendBusinessContract();
+    const { id, User_ID } = decodeTokens();
+
+    const newModifiedContract = {
+      Business_ID: id,
+      Contract_CounterParty_ID: {
+        CounterParty_Type: formData.clientType,
+        CounterParty_Email: formData.clientEmail,
+      },
+      Contract_Expense_ID: {
+        Expense_Title: newContract.Contract_Name,
+        Expense_Type: "CONTRACT", 
+        Description: "",
+        Cost: newContract.Contract_Cost,
+        Expense_Due_By: newContract.Contract_Completion_Date,
+        Expense_Plan_ID: {
+            Business_ID: id,
+            Plan_Title: newContract.Contract_Name,
+            Expense_Plan_Due: newContract.Contract_Completion_Date
+        }
+      },
+      Contract_Completion_Date: newContract.Contract_Completion_Date,
+      Contract_Name: newContract.Contract_Name,
+      Contract_Terms: newContract.Contract_Terms,
+      Contract_Status: newContract.Contract_Status,
+      Contract_Type: newContract.Contract_Type,
+      Contract_Cost: newContract.Contract_Cost
+    }
+
+    // We only send a contract from a business
+    let resultOfSending = sendBusinessContract(newModifiedContract);
+    
     // Only leave if successful
     if (resultOfSending){
-      onSubmit(newContract);
+      onSubmit(newModifiedContract);
       setFormData(emptyContract);
       onClose();
     }
@@ -80,25 +111,25 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
               <div className="grid grid-cols-1 gap-x-16 gap-y-6 md:grid-cols-2">
                 <FormInput
                   label="Contract Name"
-                  name="name"
-                  value={formData.name}
+                  name="Contract_Name"
+                  value={formData.Contract_Name}
                   onChange={handleChange}
                   placeholder="Capital Advisory Master Agreement"
                   required
                 />
 
                 <DateInput
-                  label="Due Date"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  label="Completion Date"
+                  name="Contract_Completion_Date"
+                  value={formData.Contract_Completion_Date}
                   onChange={handleChange}
                   required
                 />
 
                 <FormInput
                   label="Amount"
-                  name="amount"
-                  value={formData.amount}
+                  name="Contract_Cost"
+                  value={formData.Contract_Cost}
                   onChange={handleChange}
                   placeholder="$84,210.00"
                   required
@@ -119,19 +150,20 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
                   name="clientType"
                   value={formData.clientType}
                   onChange={handleChange}
-                  options={["Individual", "Business"]}
+                  options={["INDIVIDUAL", "BUSINESS"]}
+                  required
                 />
               </div>
             </div>
 
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                Contract Description
+                Contract Terms
               </label>
 
               <textarea
-                name="description"
-                value={formData.description}
+                name="Contract_Terms"
+                value={formData.Contract_Terms}
                 onChange={handleChange}
                 rows={7}
                 placeholder="This agreement sets forth the terms and conditions under which the business will provide services to the client..."

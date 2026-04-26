@@ -251,7 +251,7 @@ class CounterPartySerializer(serializers.ModelSerializer):
     class Meta:
         model = CounterParty
         fields = [
-            "CounterParty_ID",
+            # "CounterParty_ID", (already set to auto primary key)
             "CounterParty_Type",
             "CounterParty_Email"
             ]

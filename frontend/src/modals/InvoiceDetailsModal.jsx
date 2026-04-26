@@ -18,6 +18,8 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
             Cost: invoice?.lineCost || invoice?.amount || "$0.00",
           },
         ];
+  
+  let valueOfAllLinesCombined = invoice.invoice_line_items.reduce((total_sum, item) => total_sum + item.Cost * item.Quantity, 0);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -50,17 +52,17 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
             <div className="grid grid-cols-1 gap-x-16 gap-y-8 md:grid-cols-2">
               <InfoBlock
                 label="Invoice Name"
-                value={invoice?.name || "September Retainer Invoice"}
+                value={invoice.Name || "N/A"}
               />
 
               <InfoBlock
                 label="Invoice Date"
-                value={invoice?.date || "Sep 15, 2023"}
+                value={invoice.Transaction_ID.Transaction_Date || "N/A"}
               />
 
               <InfoBlock
                 label="Amount"
-                value={invoice?.amount || "$0.00"}
+                value={"$" + valueOfAllLinesCombined.toString() || "$0.00"}
               />
 
               <div className="flex flex-col">
@@ -69,13 +71,13 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
                 </p>
 
                 <div className="mt-3">
-                  <InvoiceStatusBadge status={status} />
+                  <InvoiceStatusBadge status={invoice.Invoice_Status} />
                 </div>
               </div>
 
               <InfoBlock
-                label="Counterparty ID"
-                value={invoice?.counterPartyId || "1"}
+                label="Counterparty Email"
+                value={invoice.CounterParty_ID.CounterParty_Email || "N/A"}
               />
             </div>
           </div>
@@ -98,25 +100,25 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
                 </thead>
 
                 <tbody className="divide-y divide-[#eef2f6] bg-white">
-                  {lineItems.map((item, index) => (
+                  {lineItems.map((item, _) => (
                     <tr
-                      key={`${item.Header || item.name}-${index}`}
+                      key={`${item.Header}-${item.Line_Number}`}
                       className="text-sm"
                     >
                       <td className="px-5 py-5 font-medium text-[#5b6472]">
-                        {item.Line_Number || index + 1}
+                        {item.Line_Number}
                       </td>
                       <td className="px-5 py-5 font-semibold text-[#111827]">
-                        {item.Header || item.name}
+                        {item.Header}
                       </td>
                       <td className="px-5 py-5 leading-6 text-[#5b6472]">
-                        {item.Description || item.description}
+                        {item.Description}
                       </td>
                       <td className="px-5 py-5 font-medium text-[#111827]">
-                        {item.Quantity || item.quantity}
+                        {item.Quantity}
                       </td>
                       <td className="px-5 py-5 font-semibold text-[#111827]">
-                        {item.Cost || item.cost}
+                        ${item.Cost}
                       </td>
                     </tr>
                   ))}
@@ -131,14 +133,14 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
             </p>
 
             <div className="mt-4 rounded-2xl bg-[#f8fafc] px-6 py-5 text-[15px] leading-8 text-[#5b6472]">
-              {invoice?.policyDescription ||
+              {invoice.Policy_Description ||
                 "Payment is expected according to the terms listed on the invoice. Any overdue balance may remain marked as unpaid until the full amount has been settled and recorded by the business."}
             </div>
           </div>
         </div>
 
         <div className="border-t border-[#edf1f5] bg-[#fafbfc] px-8 py-4 text-center text-[12px] font-medium text-[#c2c8d0]">
-          Invoice ID: {invoice?.invoiceId || invoice?.id || "INV-0000"}
+          Invoice ID: {invoice.id || "N/A"}
         </div>
       </div>
     </div>

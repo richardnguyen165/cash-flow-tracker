@@ -108,7 +108,6 @@ function Invoices({
           />
         ))}
       </section> */}
-      {}
       <InvoiceCard
         title={tableTitle}
         invoices={invoiceList}

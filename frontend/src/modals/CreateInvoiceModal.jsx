@@ -1,4 +1,5 @@
 import { useState } from "react";
+import decodeTokens from "../services/decode-tokens";
 
 const emptyInvoice = {
   name: "",
@@ -7,6 +8,8 @@ const emptyInvoice = {
   amount: "",
   status: "Unpaid",
   policyDescription: "",
+  clientType: "BUSINESS",
+  clientEmail: ""
 };
 
 const emptyInvoiceLine = {
@@ -57,14 +60,41 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       (sum, line) => sum + parseAmount(line.Cost) * line.Quantity,
       0
     );
+
+    const { id, User_ID, User_Role } = decodeTokens();
+
     const newInvoice = {
       ...formData,
-      invoiceId: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
+      // invoiceId: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
       amount: formData.amount || formatAmount(total),
       lineItems,
     };
 
-    onSubmit(newInvoice);
+    let Business_ID_Insert = User_Role === "BUSINESS_ADMIN" ? id : null;
+    let User_ID_Insert =  User_Role === "INDIVIDUAL" ? id : null;
+
+    const newModifiedInvoice = {
+      Transaction_ID: {
+        Business_ID: Business_ID_Insert,
+        User_ID: User_ID_Insert, 
+      },
+      Name: newInvoice.name,
+      Has_Paid: false,
+      Policy_Description: newInvoice.policyDescription,
+      CounterParty_ID: {
+        CounterParty_Type: newInvoice.clientType,
+        CounterParty_Email: newInvoice.clientEmail,
+      },
+      invoice_line_items: newInvoice.lineItems,
+    }
+
+    if (User_Role === "INDIVIDUAL"){
+
+    } else if (User_Role === "Business")
+    let result;
+
+
+    onSubmit(newModifiedInvoice);
     setFormData(emptyInvoice);
     setInvoiceLines([{ ...emptyInvoiceLine }]);
     onClose();
@@ -137,11 +167,21 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
                 />
 
                 <SelectInput
-                  label="Status"
-                  name="status"
-                  value={formData.status}
+                  label="Status of Invoice"
+                  name="Invoice_Status"
+                  value={formData.Invoice_Status}
                   onChange={handleChange}
                   options={["Unpaid", "Paid", "Overdue"]}
+                  required
+                />
+
+                <SelectInput
+                  label="Type of Client"
+                  name="clientType"
+                  value={formData.clientType}
+                  onChange={handleChange}
+                  options={["BUSINESS", "INDIVIDUAL"]}
+                  required
                 />
               </div>
             </div>
