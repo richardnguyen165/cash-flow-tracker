@@ -1,13 +1,30 @@
+import { useEffect, useState } from "react";
 import EmployeeSideBar from "../../components/sidebar/EmployeeSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { employeeNav } from "../../config/workspaceNav";
+import { fetchEmployeeExpenses, fetchEmployeeProfile } from "../../services/employeeWorkspace";
 
 function Expenses() {
-  const tasks = [
-    ["Receipt batch #212", "Verify submitted reimbursement documents", "Today"],
-    ["Expense Plan Q2", "Match entries to plan categories", "Apr 20, 2026"],
-    ["Vendor Payment Review", "Attach notes before admin approval", "Apr 22, 2026"],
-  ];
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadEmployeeExpenses() {
+      try {
+        const profile = await fetchEmployeeProfile();
+        const expenseData = await fetchEmployeeExpenses(profile.business.id);
+        setExpenses(expenseData);
+      } catch (loadError) {
+        console.error("Could not load employee expenses.", loadError);
+        setError("Could not load employee expenses right now.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadEmployeeExpenses();
+  }, []);
 
   return (
     <MainLayout
@@ -23,7 +40,9 @@ function Expenses() {
           Expense Tasks
         </h1>
         <p className="mt-3 max-w-3xl text-lg text-[#64748b]">
-          Review the expense items and pay-off tasks that your business admin has assigned to your account.
+          {loading
+            ? "Loading the expense items connected to your employee role..."
+            : error || "Review the expense items and pay-off tasks connected to your employee account."}
         </p>
       </section>
 
@@ -35,7 +54,7 @@ function Expenses() {
           <table className="min-w-full divide-y divide-[#eef2f6]">
             <thead className="bg-[#f8fafc]">
               <tr className="text-left text-xs uppercase tracking-[0.18em] text-[#94a3b8]">
-                {["Task", "Action", "Due"].map((header) => (
+                {["Expense", "Type", "Due By", "Cost"].map((header) => (
                   <th key={header} className="px-6 py-4 font-semibold">
                     {header}
                   </th>
@@ -43,16 +62,20 @@ function Expenses() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#eef2f6] bg-white">
-              {tasks.map((row) => (
-                <tr key={row[0]} className="text-sm text-[#0f172a]">
-                  {row.map((cell, index) => (
-                    <td
-                      key={`${row[0]}-${index}`}
-                      className={`px-6 py-5 ${index === 0 ? "font-medium" : "text-[#475569]"}`}
-                    >
-                      {cell}
-                    </td>
-                  ))}
+              {expenses.length === 0 ? (
+                <tr className="text-sm text-[#475569]">
+                  <td className="px-6 py-5" colSpan={4}>
+                    {loading
+                      ? "Loading expense work..."
+                      : "No expense items are linked to this employee right now."}
+                  </td>
+                </tr>
+              ) : expenses.map((expense) => (
+                <tr key={expense.id} className="text-sm text-[#0f172a]">
+                  <td className="px-6 py-5 font-medium">{expense.Expense_Title}</td>
+                  <td className="px-6 py-5 text-[#475569]">{expense.Expense_Type}</td>
+                  <td className="px-6 py-5 text-[#475569]">{expense.Expense_Due_By}</td>
+                  <td className="px-6 py-5 font-semibold text-[#8b5cf6]">${expense.Cost}</td>
                 </tr>
               ))}
             </tbody>
