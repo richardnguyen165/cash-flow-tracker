@@ -10,6 +10,7 @@ import EmployeeDashboard from "./pages/main/EmployeeDashboard";
 import SiteAdminDashboard from "./pages/main/SiteAdminDashboard";
 import Analytics from "./pages/main/Analytics";
 import Profile from "./pages/auth/Profile";
+import EmployeeProfile from "./pages/auth/EmployeeProfile";
 import Contracts from "./pages/sidebar pages/Contracts";
 import Invoices from "./pages/sidebar pages/Invoices";
 import Payments from "./pages/sidebar pages/Payments";
@@ -215,42 +216,7 @@ function App() {
           path="/employee/profile"
           element={
             <ProtectedRoute>
-              <Profile
-                sidebar={<EmployeeSideBar />}
-                navItems={employeeNav}
-                brandLink="/employee/dashboard"
-                eyebrow="Employee Profile"
-                title="Employee Settings"
-                description="Review the contact information, alerts, and security details attached to your employee account."
-                infoFields={[
-                  ["Full Name", "Maya Torres"],
-                  ["Email Address", "maya.torres@northshorecapital.com"],
-                  ["Phone Number", "+1 (555) 928-3001"],
-                  ["Role", "Operations Analyst"],
-                ]}
-                preferenceRows={[
-                  {
-                    title: "Task alerts",
-                    description:
-                      "Notify me when a business admin assigns or updates work.",
-                    enabled: true,
-                  },
-                  {
-                    title: "Payroll summaries",
-                    description:
-                      "Send notifications when wage or reimbursement records are added.",
-                    enabled: true,
-                  },
-                ]}
-                securityTitle="Employee Access"
-                securityDescription="Update your sign-in details and keep your employee account secure."
-                statusTitle="Employee Status"
-                statusItems={[
-                  "Assigned to Northshore Capital",
-                  "Operations role active",
-                  "Expense task notifications enabled",
-                ]}
-              />
+              <EmployeeProfile />
             </ProtectedRoute>
           }
         />
