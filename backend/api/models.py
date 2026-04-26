@@ -115,6 +115,7 @@ class Expense_Pay_Off(models.Model):
 
 class Employee(models.Model):
   # Employee has their own id
+  User_ID = models.OneToOneField(User, on_delete = models.CASCADE, null = True, blank = True, related_name="employee")
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="employees")
   Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.SET_NULL, null = True, blank = True)
   Expense_ID = models.ForeignKey(Expense, on_delete = models.SET_NULL, null = True, blank = True, related_name="employees")

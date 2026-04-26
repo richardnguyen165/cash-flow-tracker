@@ -50,6 +50,9 @@ function Contracts({
   brandLink = "/dashboard",
   agreements = [],
   tableTitle = "My Contracts",
+  subtitle = "Keep track of agreements that are active, in review, or completed.",
+  columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
+  allowCreateContract = true,
 }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
@@ -92,42 +95,36 @@ function Contracts({
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
       {(role === "INDIVIDUAL" || role === "BUSINESS") ? <ContractsCard
         title={tableTitle}
+        subtitle={subtitle}
+        columns={columns}
         contracts={agreementList}
         onRowClick={(contract) =>
           setSelectedContract({
             ...contract,
-            date: contract.Contract_Completion_Date,
+            date: contract.dueDate,
             authMethod: "Digital Signature",
           })
-        } /> :
-        <ContractsCard
-          title={tableTitle}
-          contracts={agreementList}
-          onRowClick={(contract) =>
-            setSelectedContract({
-              ...contract,
-              date: contract.Contract_Completion_Date,
-              authMethod: "Digital Signature",
-            })
-          }
-          actionButton={
-            <button
-              type="button"
-              onClick={() => setIsCreateModalOpen(true)}
-              className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
-            >
-              + New Contract
-            </button>
-          }
-        />}
-
-      <CreateContractModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={(newContract) => {
-          setAgreementList((prev) => [newContract, ...prev]);
-        }}
+        }
+        actionButton={allowCreateContract ? (
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
+          >
+            + New Contract
+          </button>
+        ) : null}
       />
+
+      {allowCreateContract ? (
+        <CreateContractModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={(newContract) => {
+            setAgreementList((prev) => [newContract, ...prev]);
+          }}
+        />
+      ) : null}
 
       <ContractDetailsModal
         isOpen={!!selectedContract}

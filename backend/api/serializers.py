@@ -61,8 +61,11 @@ class UserSerializer(serializers.ModelSerializer):
     # https://www.django-rest-framework.org/api-guide/serializers/#field-level-validation
     
     def validate(self, data):
+        # Each username can be reused across roles, but not twice for the same role.
         if User.objects.filter(username=data["username"], User_Role=data["User_Role"]).exists():
-            raise serializers.ValidationError(f"Account already registered under {data["User_Role"]}")
+            raise serializers.ValidationError(
+                f"Account already registered under {data['User_Role']}"
+            )
         return data
         
     
@@ -385,6 +388,25 @@ class ExpensePayOffSerializer(serializers.ModelSerializer):
           "Total_Pay"]
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        user = data.get("User_ID")
+
+        if user is None:
+            raise serializers.ValidationError({"User_ID": "Employee must be linked to a user account."})
+
+        # Staff records should only point to login accounts created for employee access.
+        if user.User_Role != User.Role.EMPLOYEE:
+            raise serializers.ValidationError({"User_ID": "Selected user is not registered as an employee."})
+
+        existing_employee = Employee.objects.filter(User_ID=user)
+        if self.instance:
+            existing_employee = existing_employee.exclude(pk=self.instance.pk)
+
+        if existing_employee.exists():
+            raise serializers.ValidationError({"User_ID": "This user is already assigned as an employee."})
+
+        return data
+
     class Meta:
         model = Employee
         fields = [
