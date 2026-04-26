@@ -1,6 +1,11 @@
 import toast from "react-hot-toast";
 import api from "./api";
 
+export async function fetchBusinessProfile(businessId) {
+  const response = await api.get(`api/business/get/${businessId}`);
+  return response.data;
+}
+
 export async function fetchBusinessContracts(businessId) {
   const response = await api.get(`api/business/contracts/get/${businessId}`);
   return response.data;

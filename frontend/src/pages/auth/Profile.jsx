@@ -1,6 +1,7 @@
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
+import decodeTokens from "../../services/decode-tokens";
 
 const defaultInfoFields = [
     ["Full Name", "Julian Delphiki"],
@@ -9,6 +10,20 @@ const defaultInfoFields = [
     ["Company", "Northline Advisory"],
 ];
 
+function buildPersonalRowsFromIdentity(identity) {
+  const {User_Role} = decodeTokens();
+  const isBusiness = User_Role === "BUSINESS" || User_Role === "BUSINESS_ADMIN";
+  const nameLabel = isBusiness ? "Business Name" : "Name";
+  const baseRows = [
+    [nameLabel, identity.name],
+    ["Email Address", identity.email],
+    ["Phone Number", identity.phone],
+  ];
+  return isBusiness
+    ? [...baseRows, ["Access Code", identity.accessCode]]
+    : baseRows;
+}
+
 function Profile({
   sidebar = <ClientSidebar />,
   navItems = clientNav,
@@ -16,6 +31,7 @@ function Profile({
   eyebrow = "Account",
   title = "Profile Settings",
   description = "Update your contact details, notification preferences, and workspace security settings in one place.",
+  identity = undefined,
   infoFields = defaultInfoFields,
   preferenceRows = [
     {
@@ -38,6 +54,11 @@ function Profile({
     "Notifications enabled for invoice alerts",
   ],
 }) {
+  const personalRows =
+    identity !== undefined && identity !== null
+      ? buildPersonalRowsFromIdentity(identity)
+      : infoFields;
+
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
       <section>
@@ -58,7 +79,7 @@ function Profile({
             Personal Information
           </h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {infoFields.map(([label, value]) => (
+            {personalRows.map(([label, value]) => (
               <div key={label}>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#94a3b8]">
                   {label}
@@ -70,7 +91,7 @@ function Profile({
             ))}
           </div>
 
-          <div className="mt-10 rounded-[28px] border border-[#eef2f6] p-6">
+          {/* <div className="mt-10 rounded-[28px] border border-[#eef2f6] p-6">
             <h3 className="text-lg font-semibold text-[#0f172a]">
               Notification Preferences
             </h3>
@@ -79,10 +100,10 @@ function Profile({
                 <PreferenceRow key={row.title} {...row} />
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
 
-        <div className="space-y-6">
+        {/* <div className="space-y-6">
           <div className="rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#94a3b8]">
               Security
@@ -108,7 +129,7 @@ function Profile({
               ))}
             </ul>
           </div>
-        </div>
+        </div> */}
       </section>
     </MainLayout>
   );

@@ -10,6 +10,8 @@ import EmployeeDashboard from "./pages/main/EmployeeDashboard";
 import SiteAdminDashboard from "./pages/main/SiteAdminDashboard";
 import Analytics from "./pages/main/Analytics";
 import Profile from "./pages/auth/Profile";
+import IndividualProfile from "./pages/auth/IndividualProfile";
+import BusinessProfile from "./pages/auth/BusinessProfile";
 import EmployeeProfile from "./pages/auth/EmployeeProfile";
 import Contracts from "./pages/sidebar pages/Contracts";
 import Invoices from "./pages/sidebar pages/Invoices";
@@ -49,7 +51,7 @@ function App() {
         
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><IndividualProfile /></ProtectedRoute>} />
         <Route path="/contracts" element={<ProtectedRoute><IndividualContracts /></ProtectedRoute>} />
         <Route path="/invoices" element={<ProtectedRoute><IndividualInvoices /></ProtectedRoute>} />
         <Route path="/payments" element={<ProtectedRoute><IndividualPayments /></ProtectedRoute>} />
@@ -172,42 +174,7 @@ function App() {
           path="/business/profile"
           element={
             <ProtectedRoute>
-              <Profile
-                sidebar={<BusinessSideBar />}
-                navItems={businessAdminNav}
-                brandLink="/business/dashboard"
-                eyebrow="Business Profile"
-                title="Business Settings"
-                description="Manage organization contact information, billing preferences, and workspace administration details."
-                infoFields={[
-                  ["Business Name", "Northshore Capital"],
-                  ["Admin Email", "ops@northshorecapital.com"],
-                  ["Phone Number", "+1 (555) 288-4000"],
-                  ["Head Office", "Calgary, Alberta"],
-                ]}
-                preferenceRows={[
-                  {
-                    title: "Approval alerts",
-                    description:
-                      "Notify admins when contracts, invoices, or expenses require approval.",
-                    enabled: true,
-                  },
-                  {
-                    title: "Employee updates",
-                    description:
-                      "Receive changes to assigned staff, invites, and task completions.",
-                    enabled: true,
-                  },
-                ]}
-                securityTitle="Admin Access"
-                securityDescription="Control sign-in credentials and security settings for this business workspace."
-                statusTitle="Business Status"
-                statusItems={[
-                  "Business workspace verified",
-                  "Primary admin access active",
-                  "Employee assignments synced",
-                ]}
-              />
+              <BusinessProfile />
             </ProtectedRoute>
           }
         />
