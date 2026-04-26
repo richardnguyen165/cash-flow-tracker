@@ -42,6 +42,9 @@ function Contracts({
   brandLink = "/dashboard",
   agreements = defaultAgreements,
   tableTitle = "My Contracts",
+  subtitle = "Keep track of agreements that are active, in review, or completed.",
+  columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
+  allowCreateContract = true,
 }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState(null);
@@ -51,6 +54,8 @@ function Contracts({
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
       <ContractsCard
         title={tableTitle}
+        subtitle={subtitle}
+        columns={columns}
         contracts={agreementList}
         onRowClick={(contract) =>
           setSelectedContract({
@@ -59,7 +64,7 @@ function Contracts({
             authMethod: "Digital Signature",
           })
         }
-        actionButton={
+        actionButton={allowCreateContract ? (
           <button
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
@@ -67,16 +72,18 @@ function Contracts({
           >
             + New Contract
           </button>
-        }
+        ) : null}
       />
 
-      <CreateContractModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={(newContract) => {
-          setAgreementList((prev) => [newContract, ...prev]);
-        }}
-      />
+      {allowCreateContract ? (
+        <CreateContractModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={(newContract) => {
+            setAgreementList((prev) => [newContract, ...prev]);
+          }}
+        />
+      ) : null}
 
       <ContractDetailsModal
         isOpen={!!selectedContract}

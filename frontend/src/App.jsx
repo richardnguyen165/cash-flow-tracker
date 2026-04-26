@@ -20,6 +20,8 @@ import Employees from "./pages/sidebar pages/Employees";
 import Expenses from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
+import EmployeeContracts from "./pages/sidebar pages/EmployeeContracts";
+import EmployeePayments from "./pages/sidebar pages/EmployeePayments";
 import { Toaster } from 'react-hot-toast';
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -196,26 +198,7 @@ function App() {
           path="/employee/contracts"
           element={
             <ProtectedRoute>
-              <Contracts
-                sidebar={<EmployeeSideBar />}
-                navItems={employeeNav}
-                brandLink="/employee/dashboard"
-                eyebrow="Assigned Work"
-                title="Assigned Contracts"
-                description="Review the contracts and operational tasks your business admin has assigned to your account."
-                summaryCards={[
-                  ["Assigned Contracts", "04", "Current work queue"],
-                  ["Pending Actions", "03", "Need review or completion"],
-                  ["Upcoming Deadlines", "02", "Due this week"],
-                ]}
-                agreements={[
-                  ["Global Custody Rider", "Needs line items", "Apr 18, 2026"],
-                  ["Forecasting Clause", "Expense review", "Apr 20, 2026"],
-                  ["Quarterly Audit Support", "Awaiting notes", "Apr 23, 2026"],
-                ]}
-                columns={["Contract", "Task Status", "Due Date"]}
-                tableTitle="Contract Tasks"
-              />
+              <EmployeeContracts />
             </ProtectedRoute>
           }
         />
@@ -224,40 +207,7 @@ function App() {
           path="/employee/payments"
           element={
             <ProtectedRoute>
-              <Payments
-                sidebar={<EmployeeSideBar />}
-                navItems={employeeNav}
-                brandLink="/employee/dashboard"
-                eyebrow="Compensation"
-                title="Payment History"
-                description="Review wages, reimbursements, and payment records attached to your employee account."
-                totalOutstanding="$4,200.00"
-                nextDueDate="Apr 30, 2026"
-                lastPayment="$2,100.00"
-                actionTitle="View Payroll Notes"
-                actionCopy="See the latest pay status, reimbursement notes, and related approvals."
-                actionButton="Open Payroll Detail"
-                transactions={[
-                  [
-                    "Apr 01, 2026",
-                    "Monthly Wage",
-                    "Direct Deposit",
-                    "+$2,100.00",
-                  ],
-                  [
-                    "Mar 18, 2026",
-                    "Expense Reimbursement",
-                    "ACH Transfer",
-                    "+$640.00",
-                  ],
-                  [
-                    "Mar 01, 2026",
-                    "Monthly Wage",
-                    "Direct Deposit",
-                    "+$2,100.00",
-                  ],
-                ]}
-              />
+              <EmployeePayments />
             </ProtectedRoute>
           }
         />
