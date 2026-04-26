@@ -6,6 +6,9 @@ export const clientNav = [
 
 export const businessAdminNav = [
   { to: "/business/dashboard", label: "Dashboard" },
+  { to: "/business/contracts", label: "Contracts" },
+  { to: "/business/invoices", label: "Invoices" },
+  { to: "/business/payments", label: "Payments" },
   { to: "/business/employees", label: "Employees" },
   { to: "/business/profile", label: "Profile" },
 ];

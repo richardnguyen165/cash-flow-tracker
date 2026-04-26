@@ -81,7 +81,9 @@ function Invoices({
 }) {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
-  const [invoiceList, setInvoiceList] = useState(invoices);
+  const [invoiceList, setInvoiceList] = useState(() =>
+    invoices.map(normalizeInvoice)
+  );
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
@@ -135,6 +137,34 @@ function Invoices({
       />
     </MainLayout>
   );
+}
+
+function normalizeInvoice(invoice) {
+  if (Array.isArray(invoice)) {
+    const [invoiceId, date, amount, status] = invoice;
+
+    return {
+      invoiceId,
+      name: `${invoiceId} Invoice`,
+      date,
+      amount,
+      status,
+      counterPartyId: "1",
+      lineItems: [
+        {
+          Line_Number: 1,
+          Header: "Invoice Line",
+          Description: "Line item generated from the invoice summary row.",
+          Quantity: 1,
+          Cost: amount,
+        },
+      ],
+      policyDescription:
+        "Payment is expected according to the terms listed on the invoice.",
+    };
+  }
+
+  return invoice;
 }
 
 function SummaryCard({ title, value, subtitle }) {

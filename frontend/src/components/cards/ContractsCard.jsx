@@ -47,12 +47,13 @@ function ContractsCard({
                   onRowClick ? "cursor-pointer hover:bg-[#f8fafc]" : ""
                 }`}
               >
-                <td className="px-6 py-6 font-semibold">{contract.name}</td>
-                <td className="px-6 py-6 text-[#475569]">{contract.dueDate}</td>
-                <td className="px-6 py-6 font-semibold">{contract.amount}</td>
-                <td className="px-6 py-6">
-                  <StatusBadge status={contract.status} />
-                </td>
+                {columns.map((column) => (
+                  <ContractCell
+                    key={`${contract.agreementId || contract.name}-${column}`}
+                    column={column}
+                    contract={contract}
+                  />
+                ))}
               </tr>
             ))}
           </tbody>
@@ -60,6 +61,28 @@ function ContractsCard({
       </div>
     </section>
   );
+}
+
+function ContractCell({ column, contract }) {
+  const normalizedColumn = column.toLowerCase();
+
+  if (normalizedColumn.includes("status")) {
+    return (
+      <td className="px-6 py-6">
+        <StatusBadge status={contract.status} />
+      </td>
+    );
+  }
+
+  if (normalizedColumn.includes("due") || normalizedColumn.includes("date")) {
+    return <td className="px-6 py-6 text-[#475569]">{contract.dueDate}</td>;
+  }
+
+  if (normalizedColumn.includes("amount") || normalizedColumn.includes("value")) {
+    return <td className="px-6 py-6 font-semibold">{contract.amount}</td>;
+  }
+
+  return <td className="px-6 py-6 font-semibold">{contract.name}</td>;
 }
 
 export default ContractsCard;
