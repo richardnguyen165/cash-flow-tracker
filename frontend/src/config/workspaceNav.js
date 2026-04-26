@@ -1,6 +1,6 @@
 export const clientNav = [
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/analytics", label: "Analytics" },
+  // { to: "/analytics", label: "Analytics" },
   { to: "/profile", label: "Profile" },
 ];
 

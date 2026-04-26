@@ -56,7 +56,7 @@ function BusinessDashboard() {
         <MetricCard label="Scheduled Expenses" value="$58.2K" subtitle="Payroll, recurring costs, and pay-offs" compact accent="text-[#8b5cf6]" />
       </section> */}
 
-      <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
+      {/* <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
             Business Contracts (Top 3)
@@ -92,7 +92,7 @@ function BusinessDashboard() {
             </tbody>
           </table>
         </div>
-      </section>
+      </section> */}
     </MainLayout>
   );
 }

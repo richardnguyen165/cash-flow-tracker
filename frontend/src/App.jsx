@@ -18,7 +18,7 @@ import BusinessSideBar from "./components/sidebar/BusinessSideBar";
 import EmployeeSideBar from "./components/sidebar/EmployeeSideBar";
 import AdminSideBar from "./components/sidebar/AdminSideBar";
 import Employees from "./pages/sidebar pages/Employees";
-import Expenses from "./pages/sidebar pages/Expenses";
+import Expenses from "./pages/sidebar pages/EmployeeExpenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import EmployeeContracts from "./pages/sidebar pages/EmployeeContracts";
@@ -32,6 +32,7 @@ import {
   siteAdminNav,
 } from "./config/workspaceNav";
 import IndividualContracts from "./pages/sidebar pages/IndividualContracts";
+import EmployeeExpenses from "./pages/sidebar pages/EmployeeExpenses";
 
 function App() {
   return (
@@ -218,7 +219,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/employee/expenses" element={<Expenses />} />
+        <Route path="/employee/expenses" element={<EmployeeExpenses />} />
         <Route
           path="/employee/payments"
           element={
