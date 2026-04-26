@@ -17,7 +17,7 @@ import BusinessSideBar from "./components/sidebar/BusinessSideBar";
 import EmployeeSideBar from "./components/sidebar/EmployeeSideBar";
 import AdminSideBar from "./components/sidebar/AdminSideBar";
 import Employees from "./pages/sidebar pages/Employees";
-import Expenses from "./pages/sidebar pages/Expenses";
+import Expenses, { ClientExpenses } from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import { Toaster } from 'react-hot-toast';

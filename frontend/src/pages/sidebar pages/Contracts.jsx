@@ -14,6 +14,8 @@ const defaultAgreements = [
     dueDate: "Apr 22, 2026",
     amount: "$84,210.00",
     status: "In Review",
+    clientEmail: "client@northshore.com",
+    clientType: "Individual",
     description:
       "This Master Agreement sets forth the terms and conditions under which Northshore Capital will provide advisory, financial planning, and account management services to the client. The agreement outlines the scope of advisory work, billing expectations, approval procedures, reporting obligations, and the responsibilities of both parties during the contract period. It also defines how invoices, client communications, payment adjustments, outstanding balances, and service changes will be handled. Any amendments, renewals, or modifications to this agreement must be reviewed and approved by the appropriate parties before becoming effective.",
     agreementId: "TR-8842-AXL-001",
@@ -23,6 +25,8 @@ const defaultAgreements = [
     dueDate: "Apr 25, 2026",
     amount: "$250,000.00",
     status: "In Review",
+    clientEmail: "equity@atlasventures.com",
+    clientType: "Business",
     description:
       "This Equity Participation Clause describes the terms under which the client may participate in an equity-based financial arrangement with the business. The clause defines ownership expectations, approval requirements, payment obligations, vesting or participation conditions, and the responsibilities of each party before the agreement becomes active. It also explains how changes to the participation structure, missed approvals, incomplete documentation, or delayed signatures may affect the enforceability of the clause. This contract will not be considered fully executed until all required parties have reviewed, approved, and signed the final agreement.",
     agreementId: "TR-8842-AXL-002",
@@ -32,6 +36,8 @@ const defaultAgreements = [
     dueDate: "Apr 30, 2026",
     amount: "$42,500.00",
     status: "Active",
+    clientEmail: "escrow@marinerholdings.com",
+    clientType: "Business",
     description:
       "This Commercial Escrow Agreement establishes the terms under which funds will be held, released, and documented during the transaction between the business and the client. The agreement outlines the escrow amount, scheduled payment timing, release conditions, client obligations, business responsibilities, and documentation required before funds may be transferred. It also describes how delays, disputes, incomplete payments, or changes to the transaction may be managed. All parties agree that the escrowed funds must be handled according to the stated conditions and may only be released once the required approvals and contractual obligations have been satisfied.",
     agreementId: "TR-8842-AXL-003",
@@ -127,6 +133,17 @@ function Contracts({
         isOpen={!!selectedContract}
         onClose={() => setSelectedContract(null)}
         contract={selectedContract}
+        onStatusChange={(contractKey, status) => {
+          setAgreementList((prev) =>
+            prev.map((contract) => {
+              const key = contract.agreementId || contract.id || contract.name;
+
+              return key === contractKey ? { ...contract, status } : contract;
+            })
+          );
+
+          setSelectedContract((prev) => (prev ? { ...prev, status } : prev));
+        }}
       />
     </MainLayout>
   );

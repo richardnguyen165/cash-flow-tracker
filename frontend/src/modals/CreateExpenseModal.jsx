@@ -1,19 +1,28 @@
 import { useState } from "react";
 
-const emptyContract = {
-  name: "",
-  dueDate: "",
-  amount: "",
-  status: "In Review",
-  clientEmail: "",
-  clientType: "Individual",
-  description: "",
+const emptyExpense = {
+  Expense_Plan_ID: "",
+  Expense_Title: "",
+  Expense_Type: "",
+  Cost: "",
+  Description: "",
+  Expense_Due_By: "",
 };
 
-function CreateContractModal({ isOpen, onClose, onSubmit }) {
-  const [formData, setFormData] = useState(emptyContract);
+function CreateExpenseModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  expensePlans = [],
+  expensePlan,
+}) {
+  const [formData, setFormData] = useState(emptyExpense);
 
   if (!isOpen) return null;
+
+  const selectedPlan = expensePlans.find(
+    (plan) => plan.id === formData.Expense_Plan_ID
+  ) || expensePlan;
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -27,17 +36,19 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    const newContract = {
+    const plan = expensePlan || selectedPlan || expensePlans[0];
+    const newExpense = {
+      id: `EXP-${Date.now()}`,
       ...formData,
-      authMethod: "Digital Signature",
-      agreementId: `TR-${Date.now()}`,
-      description:
-        formData.description ||
-        "This agreement sets forth the terms and conditions under which the business will provide services to the client, including the scope of work, payment obligations, approval procedures, and ongoing responsibilities of both parties. It outlines the timing of deliverables, billing and collection expectations, requirements for written authorization, and the procedures for handling amendments, delays, disputes, or termination.",
+      Expense_Plan_ID: formData.Expense_Plan_ID || plan?.id || "",
+      Plan_Title: plan?.Plan_Title || plan?.title || "Expense Plan",
+      Cost: formatAmount(formData.Cost),
+      Expense_Date_Issued: formatDate(new Date()),
+      status: "Available for pay-off",
     };
 
-    onSubmit(newContract);
-    setFormData(emptyContract);
+    onSubmit(newExpense);
+    setFormData(emptyExpense);
     onClose();
   }
 
@@ -49,15 +60,15 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
             <div className="flex items-start justify-between gap-6">
               <div className="min-w-0">
                 <p className="inline-flex rounded-full bg-purple-50 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-purple-500">
-                  New Contract
+                  New Expense
                 </p>
 
                 <h2 className="mt-5 text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[#111827]">
-                  Create Contract Agreement
+                  Create Expense
                 </h2>
 
                 <p className="mt-2 text-[15px] text-[#9ca3af]">
-                  Enter the contract details below.
+                  Add an expense under an available expense plan.
                 </p>
               </div>
 
@@ -72,63 +83,73 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
 
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <div className="grid grid-cols-1 gap-x-16 gap-y-6 md:grid-cols-2">
-                <FormInput
-                  label="Contract Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Capital Advisory Master Agreement"
-                  required
-                />
+                {expensePlan ? (
+                  <ReadOnlyField
+                    label="Expense Plan"
+                    value={expensePlan.Plan_Title}
+                  />
+                ) : (
+                  <SelectInput
+                    label="Expense Plan"
+                    name="Expense_Plan_ID"
+                    value={formData.Expense_Plan_ID || expensePlans[0]?.id || ""}
+                    onChange={handleChange}
+                    options={expensePlans.map((plan) => ({
+                      label: plan.Plan_Title || plan.title,
+                      value: plan.id,
+                    }))}
+                    required
+                  />
+                )}
 
                 <DateInput
-                  label="Due Date"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  label="Due By"
+                  name="Expense_Due_By"
+                  value={formData.Expense_Due_By}
                   onChange={handleChange}
                   required
                 />
 
                 <FormInput
-                  label="Amount"
-                  name="amount"
-                  value={formData.amount}
+                  label="Expense Title"
+                  name="Expense_Title"
+                  value={formData.Expense_Title}
                   onChange={handleChange}
-                  placeholder="$84,210.00"
+                  placeholder="Vendor Settlement"
                   required
                 />
 
                 <FormInput
-                  label="Client Email"
-                  name="clientEmail"
-                  value={formData.clientEmail}
+                  label="Expense Type"
+                  name="Expense_Type"
+                  value={formData.Expense_Type}
                   onChange={handleChange}
-                  placeholder="client@email.com"
-                  type="email"
+                  placeholder="Vendor"
                   required
                 />
 
-                <BiSelector
-                  label="Contract Type"
-                  name="clientType"
-                  value={formData.clientType}
+                <FormInput
+                  label="Cost"
+                  name="Cost"
+                  value={formData.Cost}
                   onChange={handleChange}
-                  options={["Individual", "Business"]}
+                  placeholder="$5,200.00"
+                  required
                 />
               </div>
             </div>
 
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                Contract Description
+                Description
               </label>
 
               <textarea
-                name="description"
-                value={formData.description}
+                name="Description"
+                value={formData.Description}
                 onChange={handleChange}
-                rows={7}
-                placeholder="This agreement sets forth the terms and conditions under which the business will provide services to the client..."
+                rows={5}
+                placeholder="Describe what this expense covers."
                 className="mt-4 w-full resize-none rounded-2xl border border-[#e5eaf0] bg-[#f8fafc] px-6 py-5 text-[15px] leading-8 text-[#5b6472] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
               />
             </div>
@@ -147,7 +168,7 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
               type="submit"
               className="rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-black"
             >
-              Create Contract
+              Create Expense
             </button>
           </div>
         </form>
@@ -156,13 +177,33 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
   );
 }
 
+function parseAmount(value) {
+  const parsed = Number(String(value).replace(/[^0-9.-]/g, ""));
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatAmount(value) {
+  return parseAmount(value).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
+}
+
+function formatDate(date) {
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  });
+}
+
 function FormInput({
   label,
   name,
   value,
   onChange,
   placeholder,
-  type = "text",
   required = false,
 }) {
   return (
@@ -172,7 +213,6 @@ function FormInput({
       </label>
 
       <input
-        type={type}
         name={name}
         value={value}
         onChange={onChange}
@@ -203,38 +243,41 @@ function DateInput({ label, name, value, onChange, required = false }) {
   );
 }
 
-function BiSelector({ label, name, value, onChange, options }) {
+function ReadOnlyField({ label, value }) {
+  return (
+    <div className="flex flex-col">
+      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
+        {label}
+      </p>
+      <p className="mt-3 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] px-4 py-3 text-[15px] font-medium text-[#111827]">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function SelectInput({ label, name, value, onChange, options, required = false }) {
   return (
     <div className="flex flex-col">
       <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
         {label}
       </label>
 
-      <div className="mt-3 grid grid-cols-2 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] p-1">
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="mt-3 rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
+      >
         {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() =>
-              onChange({
-                target: {
-                  name,
-                  value: option,
-                },
-              })
-            }
-            className={`rounded-lg px-4 py-2.5 text-[15px] font-semibold transition ${
-              value === option
-                ? "bg-white text-[#111827] shadow-sm"
-                : "text-[#64748b] hover:text-[#111827]"
-            }`}
-          >
-            {option}
-          </button>
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }
 
-export default CreateContractModal;
+export default CreateExpenseModal;

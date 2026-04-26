@@ -1,3 +1,5 @@
+// This status badge is for contract card***
+
 function StatusBadge({ status }) {
   const styles = {
     "In Review": "bg-yellow-100 text-yellow-700",

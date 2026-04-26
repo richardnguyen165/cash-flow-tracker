@@ -1,17 +1,14 @@
 import { useState } from "react";
 
-const emptyContract = {
-  name: "",
-  dueDate: "",
-  amount: "",
-  status: "In Review",
-  clientEmail: "",
-  clientType: "Individual",
-  description: "",
+const emptyExpensePlan = {
+  Plan_Title: "",
+  Expense_Plan_Due: "",
+  Plan_Frequency: "Monthly",
+  Occurance_Number: "1",
 };
 
-function CreateContractModal({ isOpen, onClose, onSubmit }) {
-  const [formData, setFormData] = useState(emptyContract);
+function CreateExpensePlanModal({ isOpen, onClose, onSubmit }) {
+  const [formData, setFormData] = useState(emptyExpensePlan);
 
   if (!isOpen) return null;
 
@@ -27,17 +24,12 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    const newContract = {
+    onSubmit({
+      id: `PLAN-${Date.now()}`,
       ...formData,
-      authMethod: "Digital Signature",
-      agreementId: `TR-${Date.now()}`,
-      description:
-        formData.description ||
-        "This agreement sets forth the terms and conditions under which the business will provide services to the client, including the scope of work, payment obligations, approval procedures, and ongoing responsibilities of both parties. It outlines the timing of deliverables, billing and collection expectations, requirements for written authorization, and the procedures for handling amendments, delays, disputes, or termination.",
-    };
-
-    onSubmit(newContract);
-    setFormData(emptyContract);
+      expenses: [],
+    });
+    setFormData(emptyExpensePlan);
     onClose();
   }
 
@@ -49,15 +41,15 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
             <div className="flex items-start justify-between gap-6">
               <div className="min-w-0">
                 <p className="inline-flex rounded-full bg-purple-50 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-purple-500">
-                  New Contract
+                  New Expense Plan
                 </p>
 
                 <h2 className="mt-5 text-[32px] font-semibold leading-tight tracking-[-0.02em] text-[#111827]">
-                  Create Contract Agreement
+                  Create Expense Plan
                 </h2>
 
                 <p className="mt-2 text-[15px] text-[#9ca3af]">
-                  Enter the contract details below.
+                  Create a plan first, then add expenses under it.
                 </p>
               </div>
 
@@ -73,64 +65,39 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <div className="grid grid-cols-1 gap-x-16 gap-y-6 md:grid-cols-2">
                 <FormInput
-                  label="Contract Name"
-                  name="name"
-                  value={formData.name}
+                  label="Plan Title"
+                  name="Plan_Title"
+                  value={formData.Plan_Title}
                   onChange={handleChange}
-                  placeholder="Capital Advisory Master Agreement"
+                  placeholder="Office Renovation Q2"
                   required
                 />
 
                 <DateInput
-                  label="Due Date"
-                  name="dueDate"
-                  value={formData.dueDate}
+                  label="Plan Due Date"
+                  name="Expense_Plan_Due"
+                  value={formData.Expense_Plan_Due}
                   onChange={handleChange}
                   required
+                />
+
+                <SelectInput
+                  label="Plan Frequency"
+                  name="Plan_Frequency"
+                  value={formData.Plan_Frequency}
+                  onChange={handleChange}
+                  options={["One-time", "Weekly", "Monthly", "Quarterly", "Yearly"]}
                 />
 
                 <FormInput
-                  label="Amount"
-                  name="amount"
-                  value={formData.amount}
+                  label="Occurrence Number"
+                  name="Occurance_Number"
+                  value={formData.Occurance_Number}
                   onChange={handleChange}
-                  placeholder="$84,210.00"
+                  placeholder="1"
                   required
-                />
-
-                <FormInput
-                  label="Client Email"
-                  name="clientEmail"
-                  value={formData.clientEmail}
-                  onChange={handleChange}
-                  placeholder="client@email.com"
-                  type="email"
-                  required
-                />
-
-                <BiSelector
-                  label="Contract Type"
-                  name="clientType"
-                  value={formData.clientType}
-                  onChange={handleChange}
-                  options={["Individual", "Business"]}
                 />
               </div>
-            </div>
-
-            <div className="mt-2 border-t border-[#edf1f5] pt-8">
-              <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                Contract Description
-              </label>
-
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={7}
-                placeholder="This agreement sets forth the terms and conditions under which the business will provide services to the client..."
-                className="mt-4 w-full resize-none rounded-2xl border border-[#e5eaf0] bg-[#f8fafc] px-6 py-5 text-[15px] leading-8 text-[#5b6472] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
-              />
             </div>
           </div>
 
@@ -147,7 +114,7 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
               type="submit"
               className="rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-black"
             >
-              Create Contract
+              Create Expense Plan
             </button>
           </div>
         </form>
@@ -162,7 +129,6 @@ function FormInput({
   value,
   onChange,
   placeholder,
-  type = "text",
   required = false,
 }) {
   return (
@@ -172,7 +138,6 @@ function FormInput({
       </label>
 
       <input
-        type={type}
         name={name}
         value={value}
         onChange={onChange}
@@ -203,38 +168,25 @@ function DateInput({ label, name, value, onChange, required = false }) {
   );
 }
 
-function BiSelector({ label, name, value, onChange, options }) {
+function SelectInput({ label, name, value, onChange, options }) {
   return (
     <div className="flex flex-col">
       <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
         {label}
       </label>
 
-      <div className="mt-3 grid grid-cols-2 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] p-1">
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="mt-3 rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
+      >
         {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() =>
-              onChange({
-                target: {
-                  name,
-                  value: option,
-                },
-              })
-            }
-            className={`rounded-lg px-4 py-2.5 text-[15px] font-semibold transition ${
-              value === option
-                ? "bg-white text-[#111827] shadow-sm"
-                : "text-[#64748b] hover:text-[#111827]"
-            }`}
-          >
-            {option}
-          </button>
+          <option key={option}>{option}</option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }
 
-export default CreateContractModal;
+export default CreateExpensePlanModal;
