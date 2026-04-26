@@ -55,7 +55,7 @@ function Contracts({
   const [selectedContract, setSelectedContract] = useState(null);
   const [agreementList, setAgreementList] = useState([]);
 
-  const [userID, setID] = useState(null);
+  const [id, setID] = useState(null);
   const [role, setRole] = useState(null);
 
   useEffect(() => {
@@ -68,9 +68,9 @@ function Contracts({
       setRole(User_Role);
 
       if (User_Role === "INDIVIDUAL") {
-        link = `api/indiv/contracts/get/${userID}`
+        link = `api/indiv/contracts/get/${id}`
       } else if (User_Role === "BUSINESS") {
-        link = `api/business/contracts/get/${userID}`
+        link = `api/business/contracts/get/${id}`
       } else if (User_Role === "BUSINESS_ADMIN") {
         console.log("BUSINESS_ADMIN");
       } else if (User_Role === "EMPLOYEE") {
@@ -90,7 +90,7 @@ function Contracts({
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
-      {role !== "BUSINESS_ADMIN" ? <ContractsCard
+      {(role === "INDIVIDUAL" || role === "BUSINESS") ? <ContractsCard
         title={tableTitle}
         contracts={agreementList}
         onRowClick={(contract) =>

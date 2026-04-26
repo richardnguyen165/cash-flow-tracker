@@ -9,12 +9,14 @@ import WorkspaceSidebar from "./WorkspaceSidebar";
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import decodeTokens from "../../services/decode-tokens";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 
 function BusinessSideBar() {
   const navItems = [
     { to: "/business/contracts", label: "Contracts", Icon: DocumentTextIcon },
     { to: "/business/invoices", label: "Invoices", Icon: ReceiptPercentIcon },
     { to: "/business/payments", label: "Payments", Icon: CreditCardIcon },
+    { to: "/expenses", label: "Expenses", Icon: ClipboardDocumentListIcon},
     { to: "/business/employees", label: "Employees", Icon: UsersIcon },
     { to: "/business/profile", label: "Profile", Icon: UserCircleIcon },
   ];
@@ -26,18 +28,18 @@ function BusinessSideBar() {
   useEffect(() => {
     async function getData() {
       const decodedToken = decodeTokens();
-      const { user_id, User_Role } = decodedToken;
+      const { id, User_Role } = decodedToken;
       let link;
 
       if (User_Role === "BUSINESS" || User_Role === "BUSINESS_ADMIN") {
-        link = `api/business/get/${user_id}`
+        link = `api/business/get/${id}`
       }
 
       const send = await api.get(link);
       const all_data = send.data;
-
+      
       if (User_Role === "BUSINESS" || User_Role === "BUSINESS_ADMIN"){
-        setID(user_id);
+        setID(id);
         setRole(User_Role);
         setName(all_data.Business_Name);
       }

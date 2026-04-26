@@ -90,7 +90,7 @@ class Transaction(models.Model):
 class Invoice(models.Model):
   Transaction_ID = models.OneToOneField(Transaction, on_delete = models.CASCADE, null = True, blank = True, related_name="invoice")
   Name = models.CharField(max_length= 256)
-  Has_Paid = models.BooleanField(default = False)
+  Invoice_Status = models.CharField(max_length=256)
   Policy_Description = models.CharField(max_length = 256)
   CounterParty_ID = models.ForeignKey(CounterParty, on_delete=models.SET_NULL, null = True, blank = True, related_name="invoices")
 

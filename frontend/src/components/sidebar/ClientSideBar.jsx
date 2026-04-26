@@ -18,18 +18,18 @@ function ClientSidebar() {
   useEffect(() => {
     async function getData() {
       const decodedToken = decodeTokens();
-      const { user_id, User_Role } = decodedToken;
+      const { id, User_Role } = decodedToken;
       let link;
 
       if (User_Role === "INDIVIDUAL") {
-        link = `api/indiv/get/user/${user_id}`
+        link = `api/indiv/get/user/${id}`
       }
 
       const send = await api.get(link);
       const all_data = send.data;
 
       if (User_Role === "INDIVIDUAL"){
-        setID(user_id);
+        setID(id);
         setRole(User_Role);
         setName(all_data.Individual_Name);
       }
@@ -42,13 +42,18 @@ function ClientSidebar() {
 
 
 
-  const navItems = [
+  const navItems = (role !== "INDIVIDUAL" ? [
     { to: "/contracts", label: "My Contracts", Icon: DocumentTextIcon },
     { to: "/invoices", label: "My Invoices", Icon: ReceiptPercentIcon },
     { to: "/expenses", label: "My Expenses", Icon: ClipboardDocumentListIcon },
     { to: "/payments", label: "My Payments", Icon: CreditCardIcon },
     { to: "/profile", label: "Profile", Icon: UserCircleIcon },
-  ];
+  ] : [
+    { to: "/contracts", label: "My Contracts", Icon: DocumentTextIcon },
+    { to: "/invoices", label: "My Invoices", Icon: ReceiptPercentIcon },
+    { to: "/payments", label: "My Payments", Icon: CreditCardIcon },
+    { to: "/profile", label: "Profile", Icon: UserCircleIcon },
+  ]);
 
   return (
     <WorkspaceSidebar

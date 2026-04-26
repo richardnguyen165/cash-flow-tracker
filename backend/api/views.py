@@ -126,6 +126,7 @@ def create_business(request):
 def get_business(request, business_id):
   business = Business.objects.get(id=business_id)
   bsuiness_info_serializer = BusinessSerializer(business)
+  print(bsuiness_info_serializer.data)
   return Response(bsuiness_info_serializer.data)
 
 # For website moderator

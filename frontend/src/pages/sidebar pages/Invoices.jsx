@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clientNav } from "../../config/workspaceNav";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
@@ -79,9 +79,19 @@ function Invoices({
   invoices = defaultInvoices,
   tableTitle = "Billing History",
 }) {
+
+  const [id, setID] = useState(null);
+  const [role, setRole] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
-  const [invoiceList, setInvoiceList] = useState(invoices);
+  const [invoiceList, setInvoiceList] = useState([]);
+
+  useEffect(() => {
+    const decodedToken = decodeTokens();
+    const { id, User_Role } = decodedToken;
+
+    
+  }, [])
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
@@ -95,7 +105,7 @@ function Invoices({
         <p className="mt-3 max-w-3xl text-lg text-[#64748b]">{description}</p>
       </section>
 
-      <section className="mt-10 grid gap-6 md:grid-cols-3">
+      {/* <section className="mt-10 grid gap-6 md:grid-cols-3">
         {summaryCards.map(([cardTitle, value, subtitle]) => (
           <SummaryCard
             key={cardTitle}
@@ -104,8 +114,8 @@ function Invoices({
             subtitle={subtitle}
           />
         ))}
-      </section>
-
+      </section> */}
+      {}
       <InvoiceCard
         title={tableTitle}
         invoices={invoiceList}

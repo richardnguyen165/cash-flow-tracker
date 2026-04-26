@@ -7,14 +7,14 @@ import { useEffect, useState } from "react";
 
 function Dashboard() {
   
-  const [indivID, setIndivID] = useState(null);
-  const [indivRole, setIndivRole] = useState(null);
+  const [id, setIndivID] = useState(null);
+  const [role, setIndivRole] = useState(null);
 
   useEffect(() => {
     const decodedToken = decodeTokens();
-    const { indiv_id, indiv_role } = decodedToken;
-    setIndivID(indiv_id);
-    setIndivRole(indiv_role);
+    const { id, User_Role } = decodedToken;
+    setIndivID(id);
+    setIndivRole(User_Role);
   }, []);
 
   const activeContracts = [];

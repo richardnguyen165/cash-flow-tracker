@@ -13,7 +13,20 @@ class TokenSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['User_Role'] = user.User_Role
-        token['id'] = user.id
+        token['User_ID'] = user.id
+        
+        if user.User_Role == "INDIVIDUAL":
+            token['id'] = user.individual.id
+        elif user.User_Role == "BUSINESS":
+            token['id'] = user.business.id
+        elif user.User_Role == "BUSINESS_ADMIN":
+            token['id'] = user.business_admin.id
+            token['business_id'] = user.business_admin.business_id.id
+        elif user.User_Role == "SITE_ADMIN":
+            token['id'] = user.site_admin.id
+        else:
+            token['id'] = user.employee.id
+            
         return token
 
     # For logging in (https://dev.to/koladev/django-rest-authentication-cmh)

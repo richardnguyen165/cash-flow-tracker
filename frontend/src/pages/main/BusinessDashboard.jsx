@@ -24,7 +24,7 @@ function BusinessDashboard() {
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      {/* <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-[28px] border border-[#efeafc] bg-[#f6efff] p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
             Total Outstanding Balance
@@ -54,12 +54,12 @@ function BusinessDashboard() {
         <MetricCard label="Active Contracts" value="12" subtitle="Current client agreements" compact />
         <MetricCard label="Pending Invoices" value="07" subtitle="Awaiting review or settlement" compact />
         <MetricCard label="Scheduled Expenses" value="$58.2K" subtitle="Payroll, recurring costs, and pay-offs" compact accent="text-[#8b5cf6]" />
-      </section>
+      </section> */}
 
       <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
-            Business Contracts
+            Business Contracts (Top 3)
           </h2>
           <button className="rounded-2xl bg-[#111827] px-5 py-3 text-sm font-semibold text-white transition hover:bg-black">
             New Contract
