@@ -277,7 +277,8 @@ class ExpensePlanSerializer(serializers.ModelSerializer):
           "id", 
           "Business_ID", 
           "Plan_Title", 
-          "Expense_Plan_Due"
+          "Expense_Plan_Due",
+          "Occurance_Number",
         ]
     
     def create(self, data):
@@ -424,13 +425,4 @@ class ModeratesSerializer(serializers.ModelSerializer):
         fields = [
           "Site_Admin_ID", 
           "Business_ID"
-        ]
-
-class RecurringPlanSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecurringPlan
-        fields = [
-          "Expense_Plan_ID", 
-          "Plan_Frequency", 
-          "Occurance_Number"
         ]

@@ -100,6 +100,7 @@ class Expense_Plan(models.Model):
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="expense_plans")
   Plan_Title = models.CharField(max_length = 256)
   Expense_Plan_Due = models.DateField()
+  Occurance_Number = models.PositiveIntegerField(default = 1)
   
 class Expense(models.Model):
   Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.SET_NULL, null = True, blank = True)
@@ -140,11 +141,6 @@ class Moderates(models.Model):
   Site_Admin_ID = models.ForeignKey(Site_Admin, on_delete = models.CASCADE, related_name="moderates")
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="moderates")
 
-class RecurringPlan(models.Model):
-  Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.CASCADE, related_name="recurring_plans")
-  Plan_Frequency = models.CharField(max_length = 64)
-  Occurance_Number = models.PositiveIntegerField(default = 1)
-
 class InvoiceLineItem(models.Model):
   Invoice_ID = models.ForeignKey(Invoice, on_delete = models.CASCADE, related_name="invoice_line_items")
   Line_Number = models.PositiveIntegerField()
@@ -156,3 +152,8 @@ class InvoiceLineItem(models.Model):
   # Ensures that two invoices can each have line number 1, but not in the same invoice
   class Meta:
     unique_together = [("Invoice_ID", "Line_Number")]
+
+# class RecurringPlan(models.Model):
+#   Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.CASCADE, related_name="recurring_plans")
+#   Plan_Frequency = models.CharField(max_length = 64)
+#   Occurance_Number = models.PositiveIntegerField(default = 1)
