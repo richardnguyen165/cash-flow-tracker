@@ -4,6 +4,20 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
   if (!isOpen) return null;
 
   const status = invoice?.status || "Unpaid";
+  const lineItems =
+    invoice?.lineItems?.length > 0
+      ? invoice.lineItems
+      : [
+          {
+            Line_Number: 1,
+            Header: invoice?.lineHeader || "Service Fee",
+            Description:
+              invoice?.lineDescription ||
+              "This line item covers the services, deliverables, or billable work associated with this invoice.",
+            Quantity: invoice?.quantity || "1",
+            Cost: invoice?.lineCost || invoice?.amount || "$0.00",
+          },
+        ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -68,23 +82,46 @@ function InvoiceDetailsModal({ isOpen, onClose, invoice }) {
 
           <div className="mt-2 border-t border-[#edf1f5] pt-8">
             <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-              Invoice Line
+              Invoice Line Items
             </p>
 
-            <div className="mt-4 rounded-2xl bg-[#f8fafc] px-6 py-5 text-[15px] leading-8 text-[#5b6472]">
-              <p className="font-semibold text-[#111827]">
-                {invoice?.lineHeader || "Service Fee"}
-              </p>
+            <div className="mt-4 overflow-hidden rounded-2xl border border-[#e5eaf0]">
+              <table className="min-w-full divide-y divide-[#eef2f6]">
+                <thead className="bg-[#f8fafc]">
+                  <tr className="text-left text-xs uppercase tracking-[0.18em] text-[#94a3b8]">
+                    <th className="px-5 py-4 font-semibold">#</th>
+                    <th className="px-5 py-4 font-semibold">Header</th>
+                    <th className="px-5 py-4 font-semibold">Description</th>
+                    <th className="px-5 py-4 font-semibold">Qty</th>
+                    <th className="px-5 py-4 font-semibold">Cost</th>
+                  </tr>
+                </thead>
 
-              <p className="mt-2">
-                {invoice?.lineDescription ||
-                  "This line item covers the services, deliverables, or billable work associated with this invoice."}
-              </p>
-
-              <p className="mt-3 text-sm text-[#64748b]">
-                Quantity: {invoice?.quantity || "1"} · Cost:{" "}
-                {invoice?.lineCost || invoice?.amount || "$0.00"}
-              </p>
+                <tbody className="divide-y divide-[#eef2f6] bg-white">
+                  {lineItems.map((item, index) => (
+                    <tr
+                      key={`${item.Header || item.name}-${index}`}
+                      className="text-sm"
+                    >
+                      <td className="px-5 py-5 font-medium text-[#5b6472]">
+                        {item.Line_Number || index + 1}
+                      </td>
+                      <td className="px-5 py-5 font-semibold text-[#111827]">
+                        {item.Header || item.name}
+                      </td>
+                      <td className="px-5 py-5 leading-6 text-[#5b6472]">
+                        {item.Description || item.description}
+                      </td>
+                      <td className="px-5 py-5 font-medium text-[#111827]">
+                        {item.Quantity || item.quantity}
+                      </td>
+                      <td className="px-5 py-5 font-semibold text-[#111827]">
+                        {item.Cost || item.cost}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 

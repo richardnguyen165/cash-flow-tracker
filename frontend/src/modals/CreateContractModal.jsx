@@ -5,6 +5,8 @@ const emptyContract = {
   dueDate: "",
   amount: "",
   status: "In Review",
+  clientEmail: "",
+  clientType: "Individual",
   description: "",
 };
 
@@ -96,22 +98,23 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
                   required
                 />
 
-                <div className="flex flex-col">
-                  <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                    Status
-                  </label>
+                <FormInput
+                  label="Client Email"
+                  name="clientEmail"
+                  value={formData.clientEmail}
+                  onChange={handleChange}
+                  placeholder="client@email.com"
+                  type="email"
+                  required
+                />
 
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    className="mt-3 rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
-                  >
-                    <option>In Review</option>
-                    <option>Active</option>
-                    <option>Completed</option>
-                  </select>
-                </div>
+                <BiSelector
+                  label="Contract Type"
+                  name="clientType"
+                  value={formData.clientType}
+                  onChange={handleChange}
+                  options={["Individual", "Business"]}
+                />
               </div>
             </div>
 
@@ -142,7 +145,7 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
 
             <button
               type="submit"
-              className="rounded-full bg-purple-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-600"
+              className="rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-black"
             >
               Create Contract
             </button>
@@ -159,6 +162,7 @@ function FormInput({
   value,
   onChange,
   placeholder,
+  type = "text",
   required = false,
 }) {
   return (
@@ -168,6 +172,7 @@ function FormInput({
       </label>
 
       <input
+        type={type}
         name={name}
         value={value}
         onChange={onChange}
@@ -194,6 +199,40 @@ function DateInput({ label, name, value, onChange, required = false }) {
         required={required}
         className="mt-3 rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
       />
+    </div>
+  );
+}
+
+function BiSelector({ label, name, value, onChange, options }) {
+  return (
+    <div className="flex flex-col">
+      <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
+        {label}
+      </label>
+
+      <div className="mt-3 grid grid-cols-2 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] p-1">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() =>
+              onChange({
+                target: {
+                  name,
+                  value: option,
+                },
+              })
+            }
+            className={`rounded-lg px-4 py-2.5 text-[15px] font-semibold transition ${
+              value === option
+                ? "bg-white text-[#111827] shadow-sm"
+                : "text-[#64748b] hover:text-[#111827]"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

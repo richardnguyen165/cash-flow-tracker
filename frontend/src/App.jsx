@@ -17,7 +17,7 @@ import BusinessSideBar from "./components/sidebar/BusinessSideBar";
 import EmployeeSideBar from "./components/sidebar/EmployeeSideBar";
 import AdminSideBar from "./components/sidebar/AdminSideBar";
 import Employees from "./pages/sidebar pages/Employees";
-import Expenses from "./pages/sidebar pages/Expenses";
+import Expenses, { ClientExpenses } from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import {
@@ -40,6 +40,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/contracts" element={<Contracts />} />
         <Route path="/invoices" element={<Invoices />} />
+        <Route path="/expenses" element={<ClientExpenses />} />
         <Route path="/payments" element={<Payments />} />
 
         <Route path="/business/dashboard" element={<BusinessDashboard />} />

@@ -1,11 +1,75 @@
+import { useState } from "react";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
+import CreateTransactionModal from "../../modals/CreateTransactionModal";
+import TransactionDetailsModal from "../../modals/TransactionDetailsModal";
 
 const defaultTransactions = [
-    ["Sep 28, 2023", "Invoice #8821 Payment", "Wire Transfer", "+$12,400.00"],
-    ["Sep 15, 2023", "Invoice #8792 Payment", "Amex **** 1002", "+$8,500.00"],
-    ["Sep 04, 2023", "Deposit - Asset Reallocation", "Digital Secure", "+$50,000.00"],
+  ["Sep 28, 2023", "Invoice #8821 Payment", "Wire Transfer", "+$12,400.00"],
+  ["Sep 15, 2023", "Invoice #8792 Payment", "Amex **** 1002", "+$8,500.00"],
+  [
+    "Sep 04, 2023",
+    "Deposit - Asset Reallocation",
+    "Digital Secure",
+    "+$50,000.00",
+  ],
+];
+
+const defaultExpensePlans = [
+  {
+    id: "EXP-Q2",
+    title: "Expense Plan Q2",
+    dueDate: "Apr 20, 2026",
+    expenses: [
+      {
+        id: "EXPENSE-001",
+        title: "Vendor Settlement",
+        type: "Vendor",
+        description: "Quarterly vendor account pay-off.",
+        cost: "$8,400.00",
+        dueBy: "Apr 20, 2026",
+      },
+      {
+        id: "EXPENSE-002",
+        title: "Operations Supplies",
+        type: "Operations",
+        description: "Supplies attached to the Q2 expense plan.",
+        cost: "$4,400.00",
+        dueBy: "Apr 20, 2026",
+      },
+    ],
+  },
+  {
+    id: "EXP-VENDOR",
+    title: "Vendor Payment Review",
+    dueDate: "Apr 22, 2026",
+    expenses: [
+      {
+        id: "EXPENSE-003",
+        title: "Recurring Vendor Payout",
+        type: "Vendor",
+        description: "Approved vendor payout awaiting settlement.",
+        cost: "$5,200.00",
+        dueBy: "Apr 22, 2026",
+      },
+    ],
+  },
+  {
+    id: "EXP-REIMB",
+    title: "Employee Reimbursement Batch",
+    dueDate: "Apr 30, 2026",
+    expenses: [
+      {
+        id: "EXPENSE-004",
+        title: "Employee Reimbursement",
+        type: "Reimbursement",
+        description: "Approved employee reimbursement batch.",
+        cost: "$640.00",
+        dueBy: "Apr 30, 2026",
+      },
+    ],
+  },
 ];
 
 function Payments({
@@ -22,7 +86,14 @@ function Payments({
   actionCopy = "Use your saved method or initiate a transfer to clear the next due invoice.",
   actionButton = "Open Payment Modal",
   transactions = defaultTransactions,
+  expensePlans = defaultExpensePlans,
 }) {
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [transactionList, setTransactionList] = useState(() =>
+    transactions.map(normalizeTransaction)
+  );
+
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
       <section>
@@ -71,16 +142,31 @@ function Payments({
           <p className="mt-3 text-sm leading-6 text-[#d6e4ef]">
             {actionCopy}
           </p>
-          <button className="mt-8 w-full rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-[#111827] transition hover:bg-[#f4f7fb]">
+          <button
+            type="button"
+            onClick={() => setIsTransactionModalOpen(true)}
+            className="mt-8 w-full rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-[#111827] transition hover:bg-[#f4f7fb]"
+          >
             {actionButton}
           </button>
         </div>
       </section>
 
       <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
-        <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
-          Recent Transactions
-        </h2>
+        <div className="flex items-start justify-between gap-4">
+          <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
+            Recent Transactions
+          </h2>
+
+          <button
+            type="button"
+            onClick={() => setIsTransactionModalOpen(true)}
+            className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
+          >
+            + New Transaction
+          </button>
+        </div>
+
         <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
           <table className="min-w-full divide-y divide-[#eef2f6]">
             <thead className="bg-[#f8fafc]">
@@ -92,13 +178,35 @@ function Payments({
               </tr>
             </thead>
             <tbody className="divide-y divide-[#eef2f6] bg-white">
-              {transactions.map(([date, description, method, amount]) => (
-                <tr key={`${date}-${description}`} className="text-sm text-[#0f172a]">
-                  <td className="px-6 py-5 text-[#475569]">{date}</td>
-                  <td className="px-6 py-5 font-medium">{description}</td>
-                  <td className="px-6 py-5 text-[#475569]">{method}</td>
-                  <td className="px-6 py-5 font-semibold text-[#8b5cf6]">
-                    {amount}
+              {transactionList.map((transaction) => (
+                <tr
+                  key={transaction.id}
+                  onClick={() => setSelectedTransaction(transaction)}
+                  className="cursor-pointer text-sm text-[#0f172a] transition hover:bg-[#f8fafc]"
+                >
+                  <td className="px-6 py-5 text-[#475569]">
+                    {transaction.date}
+                  </td>
+                  <td className="px-6 py-5 font-medium">
+                    {transaction.description}
+                    {transaction.balanceAdjustment && (
+                      <p className="mt-1 text-xs font-normal text-[#94a3b8]">
+                        Balance {transaction.balanceAdjustment.direction}:{" "}
+                        {transaction.balanceAdjustment.amount}
+                      </p>
+                    )}
+                  </td>
+                  <td className="px-6 py-5 text-[#475569]">
+                    {transaction.method}
+                  </td>
+                  <td
+                    className={`px-6 py-5 font-semibold ${
+                      transaction.amount.startsWith("-")
+                        ? "text-red-600"
+                        : "text-[#8b5cf6]"
+                    }`}
+                  >
+                    {transaction.amount}
                   </td>
                 </tr>
               ))}
@@ -106,8 +214,42 @@ function Payments({
           </table>
         </div>
       </section>
+
+      <CreateTransactionModal
+        isOpen={isTransactionModalOpen}
+        onClose={() => setIsTransactionModalOpen(false)}
+        expensePlans={expensePlans}
+        onSubmit={(newTransaction) => {
+          setTransactionList((prev) => [newTransaction, ...prev]);
+        }}
+      />
+
+      <TransactionDetailsModal
+        isOpen={!!selectedTransaction}
+        onClose={() => setSelectedTransaction(null)}
+        transaction={selectedTransaction}
+      />
     </MainLayout>
   );
+}
+
+function normalizeTransaction(transaction, index) {
+  if (Array.isArray(transaction)) {
+    const [date, description, method, amount] = transaction;
+
+    return {
+      id: `${date}-${description}-${index}`,
+      date,
+      description,
+      method,
+      amount,
+    };
+  }
+
+  return {
+    id: transaction.id || `${transaction.date}-${transaction.description}-${index}`,
+    ...transaction,
+  };
 }
 
 export default Payments;

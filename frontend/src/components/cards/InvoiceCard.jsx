@@ -4,19 +4,22 @@ function InvoiceCard({
   title = "Billing History",
   subtitle,
   invoices = [],
+  columns = ["Invoice ID", "Date", "Amount", "Status"],
   onRowClick,
   actionButton,
 }) {
   return (
-    <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
-      <div className="flex items-center justify-between gap-4">
+    <section className="mt-8 rounded-4xl border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-[#0f172a]">
             {title}
           </h2>
 
           {subtitle && (
-            <p className="mt-2 text-sm text-[#64748b]">{subtitle}</p>
+            <p className="mt-2 text-sm text-[#64748b]">
+              {subtitle}
+            </p>
           )}
         </div>
 
@@ -27,10 +30,11 @@ function InvoiceCard({
         <table className="min-w-full divide-y divide-[#eef2f6]">
           <thead className="bg-[#f8fafc]">
             <tr className="text-left text-xs uppercase tracking-[0.18em] text-[#94a3b8]">
-              <th className="px-6 py-4 font-semibold">Invoice ID</th>
-              <th className="px-6 py-4 font-semibold">Date</th>
-              <th className="px-6 py-4 font-semibold">Amount</th>
-              <th className="px-6 py-4 font-semibold">Status</th>
+              {columns.map((column) => (
+                <th key={column} className="px-6 py-4 font-semibold">
+                  {column}
+                </th>
+              ))}
             </tr>
           </thead>
 
@@ -46,11 +50,8 @@ function InvoiceCard({
                 <td className="px-6 py-6 font-semibold">
                   {invoice.invoiceId || invoice.id}
                 </td>
-
                 <td className="px-6 py-6 text-[#475569]">{invoice.date}</td>
-
                 <td className="px-6 py-6 font-semibold">{invoice.amount}</td>
-
                 <td className="px-6 py-6">
                   <InvoiceStatusBadge status={invoice.status} />
                 </td>

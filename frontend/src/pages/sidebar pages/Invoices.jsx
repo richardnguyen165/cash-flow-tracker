@@ -13,6 +13,22 @@ const defaultInvoices = [
     date: "Oct 01, 2023",
     amount: "$18,200.00",
     status: "Overdue",
+    lineItems: [
+      {
+        Line_Number: 1,
+        Header: "Consulting Services",
+        Description: "Monthly advisory services and account review.",
+        Quantity: 1,
+        Cost: "$12,000.00",
+      },
+      {
+        Line_Number: 2,
+        Header: "Implementation Support",
+        Description: "Operational support for October service changes.",
+        Quantity: 1,
+        Cost: "$6,200.00",
+      },
+    ],
   },
   {
     invoiceId: "INV-8714",
@@ -20,6 +36,15 @@ const defaultInvoices = [
     date: "Sep 28, 2023",
     amount: "$6,250.00",
     status: "Unpaid",
+    lineItems: [
+      {
+        Line_Number: 1,
+        Header: "Advisory Review",
+        Description: "Portfolio review and reporting preparation.",
+        Quantity: 1,
+        Cost: "$6,250.00",
+      },
+    ],
   },
   {
     invoiceId: "INV-8650",
@@ -27,6 +52,15 @@ const defaultInvoices = [
     date: "Sep 15, 2023",
     amount: "$12,000.00",
     status: "Paid",
+    lineItems: [
+      {
+        Line_Number: 1,
+        Header: "Monthly Retainer",
+        Description: "Fixed retainer for September services.",
+        Quantity: 1,
+        Cost: "$12,000.00",
+      },
+    ],
   },
 ];
 

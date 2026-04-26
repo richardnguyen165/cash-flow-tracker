@@ -1,8 +1,13 @@
 import StatusBadge from "../components/cards/StatusBadge";
 
-function ContractDetailsModal({ isOpen, onClose, contract }) {
+function ContractDetailsModal({ isOpen, onClose, contract, onStatusChange }) {
   if (!isOpen) return null;
   const status = contract?.status || "In Review";
+  const contractKey = contract?.agreementId || contract?.id || contract?.name;
+
+  function handleStatusChange(e) {
+    onStatusChange?.(contractKey, e.target.value);
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -47,13 +52,33 @@ function ContractDetailsModal({ isOpen, onClose, contract }) {
 
               <InfoBlock label="Amount" value={contract?.amount || "$0.00"} />
 
+              <InfoBlock
+                label="Client Email"
+                value={contract?.clientEmail || "No client email"}
+              />
+
+              <InfoBlock
+                label="Contract Type"
+                value={contract?.clientType || "Individual"}
+              />
+
               <div className="flex flex-col">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
                   Status
                 </p>
 
-                <div className="mt-3">
+                <div className="mt-3 flex items-center gap-3">
                   <StatusBadge status={status} />
+
+                  <select
+                    value={status}
+                    onChange={handleStatusChange}
+                    className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-2 text-[14px] font-medium text-[#111827] outline-none transition focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
+                  >
+                    <option>In Review</option>
+                    <option>Active</option>
+                    <option>Completed</option>
+                  </select>
                 </div>
               </div>
 

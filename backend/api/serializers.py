@@ -101,12 +101,13 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
-          "id"
+          "id",
           "Transaction_ID",
           "Name", 
           "Has_Paid",           
           "Policy_Description", 
-          "CounterParty_ID"
+          "CounterParty_ID",
+          "invoice_line_items",
         ]
 
 

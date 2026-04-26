@@ -6,15 +6,19 @@ const emptyInvoice = {
   date: "",
   amount: "",
   status: "Unpaid",
-  lineHeader: "",
-  quantity: "",
-  lineCost: "",
-  lineDescription: "",
   policyDescription: "",
+};
+
+const emptyInvoiceLine = {
+  Header: "",
+  Description: "",
+  Quantity: "1",
+  Cost: "",
 };
 
 function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState(emptyInvoice);
+  const [invoiceLines, setInvoiceLines] = useState([{ ...emptyInvoiceLine }]);
 
   if (!isOpen) return null;
 
@@ -27,18 +31,42 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
     }));
   }
 
+  function handleInvoiceLineChange(index, field, value) {
+    setInvoiceLines((prev) =>
+      prev.map((line, lineIndex) =>
+        lineIndex === index ? { ...line, [field]: value } : line
+      )
+    );
+  }
+
+  function addInvoiceLine() {
+    setInvoiceLines((prev) => [...prev, { ...emptyInvoiceLine }]);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
 
+    const lineItems = invoiceLines.map((line, index) => ({
+      Line_Number: index + 1,
+      Header: line.Header,
+      Description: line.Description,
+      Quantity: Number(line.Quantity) || 1,
+      Cost: formatAmount(line.Cost),
+    }));
+    const total = lineItems.reduce(
+      (sum, line) => sum + parseAmount(line.Cost) * line.Quantity,
+      0
+    );
     const newInvoice = {
       ...formData,
       invoiceId: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
-      amount:
-        formData.amount || `$${Number(formData.lineCost || 0).toFixed(2)}`,
+      amount: formData.amount || formatAmount(total),
+      lineItems,
     };
 
     onSubmit(newInvoice);
     setFormData(emptyInvoice);
+    setInvoiceLines([{ ...emptyInvoiceLine }]);
     onClose();
   }
 
@@ -71,7 +99,7 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
               </button>
             </div>
 
-            <div className="mt-8 border-t border-[#edf1f5] pt-8">
+            <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <div className="grid grid-cols-1 gap-x-16 gap-y-6 md:grid-cols-2">
                 <FormInput
                   label="Invoice Name"
@@ -115,52 +143,80 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
                   onChange={handleChange}
                   options={["Unpaid", "Paid", "Overdue"]}
                 />
-
-                <FormInput
-                  label="Line Header"
-                  name="lineHeader"
-                  value={formData.lineHeader}
-                  onChange={handleChange}
-                  placeholder="Consulting Services"
-                  required
-                />
-
-                <FormInput
-                  label="Quantity"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  placeholder="1"
-                  required
-                />
-
-                <FormInput
-                  label="Line Cost"
-                  name="lineCost"
-                  value={formData.lineCost}
-                  onChange={handleChange}
-                  placeholder="18200.00"
-                  required
-                />
               </div>
             </div>
 
-            <div className="mt-8 border-t border-[#edf1f5] pt-8">
-              <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                Line Description
-              </label>
+            <div className="mt-2 border-t border-[#edf1f5] pt-8">
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
+                  Invoice Lines
+                </p>
 
-              <textarea
-                name="lineDescription"
-                value={formData.lineDescription}
-                onChange={handleChange}
-                rows={5}
-                placeholder="Describe what this invoice line covers."
-                className="mt-4 w-full resize-none rounded-2xl border border-[#e5eaf0] bg-[#f8fafc] px-6 py-5 text-[15px] leading-8 text-[#5b6472] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
-              />
+                <button
+                  type="button"
+                  onClick={addInvoiceLine}
+                  className="rounded-full border border-[#e5eaf0] bg-white px-4 py-2 text-sm font-semibold text-[#64748b] transition hover:bg-[#f8fafc]"
+                >
+                  Add Line
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {invoiceLines.map((line, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_110px_160px]"
+                  >
+                    <input
+                      value={line.Header}
+                      onChange={(e) =>
+                        handleInvoiceLineChange(index, "Header", e.target.value)
+                      }
+                      placeholder="Header"
+                      required
+                      className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
+                    />
+                    <input
+                      value={line.Quantity}
+                      onChange={(e) =>
+                        handleInvoiceLineChange(
+                          index,
+                          "Quantity",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Qty"
+                      required
+                      className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
+                    />
+                    <input
+                      value={line.Cost}
+                      onChange={(e) =>
+                        handleInvoiceLineChange(index, "Cost", e.target.value)
+                      }
+                      placeholder="Cost"
+                      required
+                      className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
+                    />
+                    <textarea
+                      value={line.Description}
+                      onChange={(e) =>
+                        handleInvoiceLineChange(
+                          index,
+                          "Description",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Description"
+                      rows={3}
+                      className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50 md:col-span-3"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-8 border-t border-[#edf1f5] pt-8">
+            <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
                 Payment Policy
               </label>
@@ -196,6 +252,21 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       </div>
     </div>
   );
+}
+
+function parseAmount(value) {
+  const parsed = Number(String(value).replace(/[^0-9.-]/g, ""));
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatAmount(value) {
+  const parsed = typeof value === "number" ? value : parseAmount(value);
+
+  return parsed.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 }
 
 function FormInput({

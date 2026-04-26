@@ -1,6 +1,7 @@
 import {
   DocumentTextIcon,
   ReceiptPercentIcon,
+  ClipboardDocumentListIcon,
   CreditCardIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -10,6 +11,7 @@ function ClientSidebar() {
   const navItems = [
     { to: "/contracts", label: "My Contracts", Icon: DocumentTextIcon },
     { to: "/invoices", label: "My Invoices", Icon: ReceiptPercentIcon },
+    { to: "/expenses", label: "My Expenses", Icon: ClipboardDocumentListIcon },
     { to: "/payments", label: "My Payments", Icon: CreditCardIcon },
     { to: "/profile", label: "Profile", Icon: UserCircleIcon },
   ];
