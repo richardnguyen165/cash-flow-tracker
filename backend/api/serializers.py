@@ -265,8 +265,6 @@ class CounterPartySerializer(serializers.ModelSerializer):
         elif counterparty_type == 'BUSINESS':
             if not User.objects.filter(email=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
                 raise serializers.ValidationError("Business with this email does not exist.")
-        else:
-            raise serializers.ValidationError("Invalid CounterParty_Type.")
         return data
     
     def create(self, validated_data):
@@ -365,6 +363,7 @@ class InvoiceLineItemSerializer(serializers.ModelSerializer):
         ]
 
 class InvoiceSerializer(serializers.ModelSerializer):
+    # allows us to find all the invoice lines tied to a single invoice
     invoice_line_items = InvoiceLineItemSerializer(many=True, read_only=True)
     
     class Meta:

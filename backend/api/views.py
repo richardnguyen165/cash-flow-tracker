@@ -43,19 +43,20 @@ def get_individual(request, user_id):
   individual = Individual.objects.get(id=user_id)
   indiv_info_serializer = IndividualSerializer(individual)
   return Response(indiv_info_serializer.data)
-  
-@api_view(["GET", "POST"])
-def individual_profile(request, user_id):
 
-  # View user profile
-  if request.method == "GET":
-    user = User.objects.get(id=user_id)
-    user_info_serializer = UserSerializer(user)
-    return Response(user_info_serializer.data)
+
+# @api_view(["GET", "POST"])
+# def individual_profile(request, user_id):
+
+#   # View user profile
+#   if request.method == "GET":
+#     user = User.objects.get(id=user_id)
+#     user_info_serializer = UserSerializer(user)
+#     return Response(user_info_serializer.data)
   
-  # Edit user profile
-  elif request.method == "POST":
-    return
+#   # Edit user profile
+#   elif request.method == "POST":
+#     return
 
 @api_view(["GET", "OPTIONS"])
 
@@ -84,27 +85,44 @@ def view_individual_contracts(_, individual_id):
 #   contract_serializer = ContractSerializer(specific_contract, many = False)
 #   return Response(contract_serializer.data)
 
-@api_view(["GET"])
-def view_individual_invoices(_, user_id):
-  # Will need a join, because invoice is a transaction,
-  # and needs a user id
-  all_invoices = Invoice.objects.filter(Transaction_ID__User_id=user_id)
-  invoice_serializer = InvoiceSerializer(all_invoices, many = True)
-  return Response(invoice_serializer.data)
+# @api_view(["GET"])
+# def view_individual_invoices(_, user_id):
+#   # Will need a join, because invoice is a transaction,
+#   # and needs a user id
+#   all_invoices = Invoice.objects.filter(Transaction_ID__User_id=user_id)
+#   invoice_serializer = InvoiceSerializer(all_invoices, many = True)
+#   return Response(invoice_serializer.data)
 
-@api_view(["GET"])
-def view_individual_specific_invoice(_, user_id, invoice_id):
-  # https://www.geeksforgeeks.org/python/get_object_or_404-method-in-django-models/
-  # get is for one item
+# @api_view(["GET"])
+# def view_individual_specific_invoice(_, user_id, invoice_id):
+#   # https://www.geeksforgeeks.org/python/get_object_or_404-method-in-django-models/
+#   # get is for one item
   
-  specific_invoice = get_object_or_404(Invoice, Invoice.objects.prefetch_related("invoice_line_items"), Transaction_ID__User_ID=user_id, id = invoice_id)
-  invoice_serializer = InvoiceSerializer(specific_invoice, many = False)
-  return Response(invoice_serializer.data)
+#   specific_invoice = get_object_or_404(Invoice, Invoice.objects.prefetch_related("invoice_line_items"), Transaction_ID__User_ID=user_id, id = invoice_id)
+#   invoice_serializer = InvoiceSerializer(specific_invoice, many = False)
+#   return Response(invoice_serializer.data)
 
-@api_view(["PUT"])
-def individual_contracts_payment(request):
-  return
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
+def create_contract(request):
+  contract_serializer = ContractSerializer(data=request.data)
+  if contract_serializer.is_valid():
+    contract_serializer.save()
+    return Response(contract_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["GET", "OPTIONS"])
+@permission_classes([AllowAny])
+def get_individual_invoices(request, user_id):
+  user = User.objects.filter(id=user_id) 
+  email_of_individual = user.username
+  
+   
+  all_individual_invoices = Invoice.objects.filter(
+    Q(CounterParty_ID__CounterParty_Type = "INDIVIDUAL") & Q(CounterParty_ID__CounterParty_Email = email_of_individual)
+  )
+  invoice_serializer = InvoiceSerializer(all_individual_invoices, many = True)
+  return Response(invoice_serializer.data);
 '''
 BUSINESS CLIENT
 '''
@@ -129,6 +147,18 @@ def get_business(request, business_id):
   bsuiness_info_serializer = BusinessSerializer(business)
   print(bsuiness_info_serializer.data)
   return Response(bsuiness_info_serializer.data)
+
+@api_view(["GET", "OPTIONS"])
+@permission_classes([AllowAny])
+def get_business_invoices(request, user_id):
+  user = User.objects.filter(id=user_id) 
+  email_of_business = user.username
+  
+  all_business_invoices = Invoice.objects.filter(
+    Q(CounterParty_ID__CounterParty_Type = "BUSINESS") & Q(CounterParty_ID__CounterParty_Email = email_of_business)
+  )
+  invoice_serializer = InvoiceSerializer(all_business_invoices, many = True)
+  return Response(invoice_serializer.data);
 
 # For website moderator
 @api_view(["DELETE"])

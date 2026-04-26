@@ -68,30 +68,23 @@ function Invoices({
   sidebar = <ClientSidebar />,
   navItems = clientNav,
   brandLink = "/dashboard",
-  eyebrow = "Billing",
+  eyebrow = "Invoices",
   title = "Invoices",
   description = "Review invoice history, pending approval items, and the balances that still need to be settled.",
   summaryCards = [
-    ["Total Outstanding", "$24,450.00", "Across all open invoices"],
-    ["Pending Review", "02", "Waiting on approval"],
-    ["Last Paid", "$12,000.00", "Settled Sep 15, 2023"],
+    // ["Total Outstanding", "$24,450.00", "Across all open invoices"],
+    // ["Pending Review", "02", "Waiting on approval"],
+    // ["Last Paid", "$12,000.00", "Settled Sep 15, 2023"],
   ],
   invoices = defaultInvoices,
-  tableTitle = "Billing History",
+  tableTitle = "Invoice History",
+  allowCreateInvoice = true
 }) {
 
-  const [id, setID] = useState(null);
-  const [role, setRole] = useState(null);
+
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
   const [invoiceList, setInvoiceList] = useState([]);
-
-  useEffect(() => {
-    const decodedToken = decodeTokens();
-    const { id, User_Role } = decodedToken;
-
-    
-  }, [])
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>

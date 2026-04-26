@@ -8,15 +8,15 @@ urlpatterns = [
     path("indiv/profile/get/<int:user_id>", views.individual_profile),
     path("indiv/transactions/get/<int:user_id>", views.view_individual_transactions),
     path("indiv/contracts/get/<int:individual_id>", views.view_individual_contracts),
-    # path("indiv/contracts/get/<int:user_id>/<int:contract_id>", views.view_individual_contracts_details),
-    path("indiv/invoices/get/<int:user_id>", views.view_individual_invoices),
-    path("indiv/invoices/get/<int:user_id>/<int:invoice_id>", views.view_individual_specific_invoice),
+    path("indiv/invoices/get/<int:individual_id>", views.get_individual_invoices),
     
     # Richard - Business Client
     path("business/put/create_business", views.create_business),
     path("business/get/<int:business_id>", views.get_business),
     path("business/contracts/get/<int:business_id>", views.business_view_contracts),
-    path("bus/transactions/get/<int:business_id>", views.business_view_transactions),
+    path("business/transactions/get/<int:business_id>", views.business_view_transactions),
+    path("business/put/contracts", views.create_contract),
+    path("business/invoices/get/<int:business_id>", views.get_business_invoices),
     
     # Cellou - Staff Client 
     

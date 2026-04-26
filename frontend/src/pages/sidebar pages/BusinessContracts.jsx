@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import EmployeeSideBar from "../../components/sidebar/EmployeeSideBar";
 import Contracts from "./Contracts";
-import { clientNav } from "../../config/workspaceNav";
+import { businessAdminNav } from "../../config/workspaceNav";
 import { fetchBusinessContracts } from "../../services/businessWorkspace";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import decodeTokens from "../../services/decode-tokens";
+import BusinessSideBar from "../../components/sidebar/BusinessSideBar";
 
 function BusinessContracts() {
   const [agreements, setAgreements] = useState([]);
@@ -44,8 +45,8 @@ function BusinessContracts() {
 
   return (
     <Contracts
-      sidebar={<ClientSidebar />}
-      navItems={clientNav}
+      sidebar={<BusinessSideBar />}
+      navItems={businessAdminNav}
       brandLink="/business/dashboard"
       tableTitle="Business Contracts"
       agreements={agreements}
