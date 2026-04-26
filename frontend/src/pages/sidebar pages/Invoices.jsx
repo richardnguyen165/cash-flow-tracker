@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clientNav } from "../../config/workspaceNav";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
@@ -68,22 +68,23 @@ function Invoices({
   sidebar = <ClientSidebar />,
   navItems = clientNav,
   brandLink = "/dashboard",
-  eyebrow = "Billing",
+  eyebrow = "Invoices",
   title = "Invoices",
   description = "Review invoice history, pending approval items, and the balances that still need to be settled.",
   summaryCards = [
-    ["Total Outstanding", "$24,450.00", "Across all open invoices"],
-    ["Pending Review", "02", "Waiting on approval"],
-    ["Last Paid", "$12,000.00", "Settled Sep 15, 2023"],
+    // ["Total Outstanding", "$24,450.00", "Across all open invoices"],
+    // ["Pending Review", "02", "Waiting on approval"],
+    // ["Last Paid", "$12,000.00", "Settled Sep 15, 2023"],
   ],
   invoices = defaultInvoices,
-  tableTitle = "Billing History",
+  tableTitle = "Invoice History",
+  allowCreateInvoice = true
 }) {
+
+
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
-  const [invoiceList, setInvoiceList] = useState(() =>
-    invoices.map(normalizeInvoice)
-  );
+  const [invoiceList, setInvoiceList] = useState([]);
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
@@ -97,7 +98,7 @@ function Invoices({
         <p className="mt-3 max-w-3xl text-lg text-[#64748b]">{description}</p>
       </section>
 
-      <section className="mt-10 grid gap-6 md:grid-cols-3">
+      {/* <section className="mt-10 grid gap-6 md:grid-cols-3">
         {summaryCards.map(([cardTitle, value, subtitle]) => (
           <SummaryCard
             key={cardTitle}
@@ -106,8 +107,8 @@ function Invoices({
             subtitle={subtitle}
           />
         ))}
-      </section>
-
+      </section> */}
+      {}
       <InvoiceCard
         title={tableTitle}
         invoices={invoiceList}
@@ -137,34 +138,6 @@ function Invoices({
       />
     </MainLayout>
   );
-}
-
-function normalizeInvoice(invoice) {
-  if (Array.isArray(invoice)) {
-    const [invoiceId, date, amount, status] = invoice;
-
-    return {
-      invoiceId,
-      name: `${invoiceId} Invoice`,
-      date,
-      amount,
-      status,
-      counterPartyId: "1",
-      lineItems: [
-        {
-          Line_Number: 1,
-          Header: "Invoice Line",
-          Description: "Line item generated from the invoice summary row.",
-          Quantity: 1,
-          Cost: amount,
-        },
-      ],
-      policyDescription:
-        "Payment is expected according to the terms listed on the invoice.",
-    };
-  }
-
-  return invoice;
 }
 
 function SummaryCard({ title, value, subtitle }) {

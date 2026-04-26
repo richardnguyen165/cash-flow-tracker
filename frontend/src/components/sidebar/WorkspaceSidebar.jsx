@@ -5,9 +5,9 @@ function WorkspaceSidebar({
   subtitle,
   meta,
   navItems,
-  summaryLabel,
-  summaryValue,
-  summaryHint,
+  // summaryLabel,
+  // summaryValue,
+  // summaryHint,
 }) {
   const navClass = ({ isActive }) =>
     `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
@@ -34,7 +34,7 @@ function WorkspaceSidebar({
           ))}
         </nav>
 
-        <div className="mt-10 rounded-3xl bg-[#ede9fe] p-5">
+        {/* <div className="mt-10 rounded-3xl bg-[#ede9fe] p-5">
           <p className="text-xs uppercase tracking-[0.2em] text-[#8b5cf6]">
             {summaryLabel}
           </p>
@@ -42,7 +42,7 @@ function WorkspaceSidebar({
             {summaryValue}
           </p>
           <p className="mt-2 text-sm text-[#4b5563]">{summaryHint}</p>
-        </div>
+        </div> */}
       </div>
     </aside>
   );

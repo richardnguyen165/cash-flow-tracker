@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { sendBusinessContract } from "../services/businessWorkspace";
 
+// I did not know you could do this with state, thanks Cellou
 const emptyContract = {
   name: "",
   dueDate: "",
@@ -30,15 +32,19 @@ function CreateContractModal({ isOpen, onClose, onSubmit }) {
     const newContract = {
       ...formData,
       authMethod: "Digital Signature",
-      agreementId: `TR-${Date.now()}`,
+      // agreementId: `TR-${Date.now()}`,
       description:
         formData.description ||
         "This agreement sets forth the terms and conditions under which the business will provide services to the client, including the scope of work, payment obligations, approval procedures, and ongoing responsibilities of both parties. It outlines the timing of deliverables, billing and collection expectations, requirements for written authorization, and the procedures for handling amendments, delays, disputes, or termination.",
     };
 
-    onSubmit(newContract);
-    setFormData(emptyContract);
-    onClose();
+    let resultOfSending = sendBusinessContract();
+    // Only leave if successful
+    if (resultOfSending){
+      onSubmit(newContract);
+      setFormData(emptyContract);
+      onClose();
+    }
   }
 
   return (

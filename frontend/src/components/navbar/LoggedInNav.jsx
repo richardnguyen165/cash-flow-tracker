@@ -13,6 +13,11 @@ function LoggedInNav({
         : "border-transparent text-[#6b7280] hover:text-black"
     }`;
 
+  function clearCookies(){
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+  }
+
   return (
     <header className="sticky top-0 z-20 w-full border-b border-[#ececf2] bg-white/95 px-6 py-4 backdrop-blur">
       <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-8">
@@ -30,6 +35,7 @@ function LoggedInNav({
 
         <Link
           to={actionLink}
+          onClick={() => clearCookies()}
           className="rounded-full border border-[#9f67ff] px-4 py-2 text-sm font-medium text-[#8b5cf6] transition hover:bg-[#f7f1ff]"
         >
           {actionLabel}

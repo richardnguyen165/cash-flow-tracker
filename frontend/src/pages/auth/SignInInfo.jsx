@@ -2,6 +2,9 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signupRedirects } from "../../config/workspaceNav";
 import Navbar from "../../components/navbar/Navbar";
+import axios from 'axios';
+import api from "../../services/api"
+import toast, { Toaster } from 'react-hot-toast';
 
 const ACCOUNT_SETUP_CONFIG = {
   "individual-client": {
@@ -16,6 +19,12 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "text",
       },
       {
+        name: "email",
+        label: "Email*",
+        placeholder: "individual@domain.com",
+        type: "email",
+      },
+      {
         name: "phoneNumber",
         label: "Phone Number*",
         placeholder: "+1 123-456-7890",
@@ -27,11 +36,17 @@ const ACCOUNT_SETUP_CONFIG = {
         placeholder: "",
         type: "date",
       },
+      // {
+      //   name: "employmentStatus",
+      //   label: "Employment Status*",
+      //   type: "radio-group",
+      //   options: ["Employed", "Unemployed"],
+      // },
       {
-        name: "employmentStatus",
-        label: "Employment Status*",
-        type: "radio-group",
-        options: ["Employed", "Unemployed"],
+        name: "password",
+        label: "Password*",
+        placeholder: "Create a password",
+        type: "password",
       },
       {
         name: "currentBalance",
@@ -53,22 +68,34 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "text",
       },
       {
-        name: "businessId",
-        label: "Business ID*",
-        placeholder: "Tax ID or Registration Number",
-        type: "text",
-      },
-      {
-        name: "adminEmail",
-        label: "Admin Email*",
-        placeholder: "ops@yourbusiness.com",
+        name: "businessEmail",
+        label: "Email*",
+        placeholder: "ops@domain.com",
         type: "email",
       },
+      {
+        name: "businessPhoneNumber",
+        label: "Phone Number*",
+        placeholder: "+1 123-456-7890",
+        type: "text",
+      },
+      // {
+      //   name: "businessId",
+      //   label: "Business ID*",
+      //   placeholder: "Tax ID or Registration Number",
+      //   type: "text",
+      // },
       {
         name: "password",
         label: "Password*",
         placeholder: "Create a password",
         type: "password",
+      },
+      {
+        name: "currentBalance",
+        label: "Current Balance (in $)*",
+        placeholder: "$12000",
+        type: "text",
       },
     ],
   },
@@ -88,6 +115,18 @@ const ACCOUNT_SETUP_CONFIG = {
         label: "Email*",
         placeholder: "admin@trillium.com",
         type: "email",
+      },
+      {
+        name: "phoneNumber",
+        label: "Phone Number*",
+        placeholder: "+1 123-456-7890",
+        type: "text",
+      },
+      {
+        name: "birthday",
+        label: "Birthday*",
+        placeholder: "",
+        type: "date",
       },
       {
         name: "password",
@@ -121,6 +160,18 @@ const ACCOUNT_SETUP_CONFIG = {
         type: "email",
       },
       {
+        name: "phoneNumber",
+        label: "Phone Number*",
+        placeholder: "+1 123-456-7890",
+        type: "text",
+      },
+      {
+        name: "birthday",
+        label: "Birthday*",
+        placeholder: "",
+        type: "date",
+      },
+      {
         name: "password",
         label: "Password*",
         placeholder: "Create a password",
@@ -147,10 +198,103 @@ function SignInInfo() {
     setFormValues((current) => ({ ...current, [name]: value }));
   };
 
-  const submit = (e) => {
+  const createEntity = async (link, payload) => {
+    const send = await api.post(link, payload);
+    const tokens = send.data
+    const status = send.status;
+
+    if (status !== 201){
+      // Error message
+      toast.error(send.data);
+    }
+
+    return { status, tokens }
+  }
+
+  const submit = async (e) => {
     e.preventDefault();
     console.log({ accountType, ...formValues });
-    navigate(signupRedirects[accountType]);
+    // Ok, this is where I create a user, buiness client
+    let payload;
+    let link;
+
+    // Individual Client
+    if (accountType === "individual-client") {
+      const { password, birthday, currentBalance, fullName, phoneNumber, email } = formValues;
+      payload = {
+        User_ID: {
+          username: email,
+          password: password,
+          User_Role: "INDIVIDUAL",
+        },
+        Individual_BirthDate: birthday,
+        // Individual_Profile: "",
+        Individual_PhoneNumber: phoneNumber,
+        Individual_Balance: currentBalance,
+        Individual_Name: fullName,
+      }
+      link = "api/indiv/put/create_user"
+    }
+    // Business Client
+    else if (accountType === "business-client") {
+      const { businessName, businessPhoneNumber, businessEmail, password, currentBalance } = formValues;
+      payload = {
+        User_ID: {
+          username: businessEmail,
+          password: password,
+          User_Role: "BUSINESS",
+        },
+        Business_Balance: currentBalance,
+        // Business_Profile: "",
+        Business_PhoneNumber: businessPhoneNumber,
+        Business_Name: businessName,
+        // Business_ID: businessId
+      }
+      link = "api/business/put/create_business"
+    }
+    // Business admin
+    else if (accountType === "business-admin"){
+      const { name, email, phoneNumber, password, businessAccessCode, birthday } = formValues;
+      payload = {
+        User_ID : {
+          username: email,
+          password: password,
+          User_Role: "BUSINESS_ADMIN"
+        },
+        BusinessAdmin_Name: name,
+        BusinessAdmin_BirthDate: birthday,
+        // BusinessAdmin_Profile : "",
+        BusinessAdmin_PhoneNumber: phoneNumber,
+        businessAccessCode
+      }
+      link = "api/business/admin/put/create_business_admin"
+    }
+    else {
+      const { name, email, phoneNumber, password, birthday, authorizationCode } = formValues;
+      payload = {
+        User_ID : {
+          username: email,
+          password: password,
+          User_Role: "SITE_ADMIN"
+        },
+        SiteAdmin_Name: name,
+        SiteAdmin_BirthDate: birthday,
+        // SiteAdmin_Profile: "",
+        SiteAdmin_PhoneNumber: phoneNumber,
+        authorizationCode
+      }
+      link = "api/site/admin/put/create_site_admin"
+    }
+
+    const { status, tokens } = await createEntity(link, payload);
+
+    // Set the acces and refresh tokens, if the creation was good.
+    if (status === 201) {
+      toast.success('Logged in!');
+      localStorage.setItem("access", tokens.access);
+      localStorage.setItem("refresh", tokens.refresh);
+      navigate(signupRedirects[accountType]);
+    }
   };
 
   return (

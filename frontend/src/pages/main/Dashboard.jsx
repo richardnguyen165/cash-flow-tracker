@@ -2,28 +2,22 @@ import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import MetricCard from "../../components/cards/MetricCard";
 import ContractsCard from "../../components/cards/ContractsCard";
+import decodeTokens from "../../services/decode-tokens";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
-  const activeContracts = [
-    {
-      name: "Capital Advisory Master Agreement",
-      dueDate: "Apr 22, 2026",
-      amount: "$84,210.00",
-      status: "In Review",
-    },
-    {
-      name: "Equity Participation Clause",
-      dueDate: "Apr 25, 2026",
-      amount: "$250,000.00",
-      status: "In Review",
-    },
-    {
-      name: "Commercial Escrow Agreement",
-      dueDate: "Apr 30, 2026",
-      amount: "$42,500.00",
-      status: "Active",
-    },
-  ];
+  
+  const [id, setIndivID] = useState(null);
+  const [role, setIndivRole] = useState(null);
+
+  useEffect(() => {
+    const decodedToken = decodeTokens();
+    const { id, User_Role } = decodedToken;
+    setIndivID(id);
+    setIndivRole(User_Role);
+  }, []);
+
+  const activeContracts = [];
 
   return (
     <MainLayout sidebar={<ClientSidebar />}>
@@ -37,7 +31,7 @@ function Dashboard() {
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      {/* <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-[28px] border border-[#efeafc] bg-[#f6efff] p-8 shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6b7280]">
             Total Outstanding Balance
@@ -65,9 +59,9 @@ function Dashboard() {
             Last synced today at 9:24 AM
           </p>
         </div>
-      </section>
+      </section> */}
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-3">
+      {/* <section className="mt-6 grid gap-6 lg:grid-cols-3">
         <MetricCard
           label="Active Contracts"
           value="04"
@@ -75,9 +69,9 @@ function Dashboard() {
           compact
         />
         <MetricCard
-          label="Open Invoices"
+          label="Total Invoices Received"
           value="11"
-          subtitle="Across current clients and retained services"
+          subtitle="Invoices received from outgoing contracts"
           compact
         />
         <MetricCard
@@ -87,7 +81,7 @@ function Dashboard() {
           compact
           accent="text-[#8b5cf6]"
         />
-      </section>
+      </section> */}
 
       <ContractsCard
         title="My Contracts"

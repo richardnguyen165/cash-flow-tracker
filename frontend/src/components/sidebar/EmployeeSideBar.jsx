@@ -4,7 +4,9 @@ import {
   ClipboardDocumentListIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 import WorkspaceSidebar from "./WorkspaceSidebar";
+import { fetchEmployeeProfile } from "../../services/employeeWorkspace";
 
 function EmployeeSideBar() {
   const navItems = [
@@ -14,11 +16,28 @@ function EmployeeSideBar() {
     { to: "/employee/profile", label: "Profile", Icon: UserCircleIcon },
   ];
 
+  const [userName, setUserName] = useState("Employee Account");
+  const [meta, setMeta] = useState("Business workspace");
+
+  useEffect(() => {
+    async function loadEmployeeSidebar() {
+      try {
+        const profile = await fetchEmployeeProfile();
+        setUserName(profile.user.username);
+        setMeta(`${profile.business.Business_Name} - ${profile.employee.Role}`);
+      } catch (error) {
+        console.error("Could not load employee sidebar profile.", error);
+      }
+    }
+
+    loadEmployeeSidebar();
+  }, []);
+
   return (
     <WorkspaceSidebar
-      userName="Maya Torres"
+      userName={userName}
       subtitle="Employee Workspace"
-      meta="Northshore Capital - Operations Analyst"
+      meta={meta}
       navItems={navItems}
       summaryLabel="Pending Tasks"
       summaryValue="05"

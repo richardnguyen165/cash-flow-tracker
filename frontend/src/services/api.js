@@ -8,7 +8,7 @@
 import axios from "axios"
 import { ACCESS_TOKEN }from "../constants/constants.js"
 
-export const api = axios.create({
+const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL
 });
 
@@ -22,10 +22,13 @@ api.interceptors.request.use(
       // Add token to authroization header when sending to Django backend
       config.headers.Authorization = `Bearer ${accessToken}`
     }
+    console.log("Successful intercept.")
     return config;
   }, (error) => {
     return Promise.reject(error);
   }
 )
+
+export default api;
 
 
