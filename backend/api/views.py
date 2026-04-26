@@ -349,8 +349,22 @@ def staff_business_contracts(request, business_id):
   return Response(contract_serializer.data)
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def staff_create_transaction(request, business_id):
-  return Response({"message": "staff_create_transaction placeholder"})
+  employee, permission_error = _require_staff_access(request, business_id)
+  if permission_error:
+    return permission_error
+
+  transaction_serializer = TransactionSerializer(data={
+    "Business_ID": employee.Business_ID.id,
+    "User_ID": employee.User_ID.id,
+  })
+
+  if transaction_serializer.is_valid():
+    transaction_serializer.save()
+    return Response(transaction_serializer.data, status=status.HTTP_201_CREATED)
+
+  return Response(transaction_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # May's views
 
