@@ -92,7 +92,7 @@ function SignUp() {
             </button>
 
             <p className="text-center text-sm text-[#6b7280]">
-              Employee accounts are added by a business admin and use the sign in flow instead of public signup.
+              { selectedType ? displayInformationText(accountTypes, selectedType) : "Please pick a role!"}
             </p>
 
             <p className="text-center text-sm text-[#374151]">
@@ -106,6 +106,14 @@ function SignUp() {
       </main>
     </div>
   );
+}
+
+function displayInformationText(accountRoles, selectedRole) {
+  for (const role of accountRoles){
+    if (role.id === selectedRole){
+      return role.description;
+    }
+  }
 }
 
 export default SignUp;

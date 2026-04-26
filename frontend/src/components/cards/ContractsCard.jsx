@@ -1,10 +1,10 @@
-import InvoiceStatusBadge from "./InvoiceStatusBadge";
+import StatusBadge from "./StatusBadge";
 
-function InvoiceCard({
-  title = "Billing History",
+function ContractsCard({
+  title = "My Contracts",
   subtitle,
-  invoices = [],
-  columns = ["Invoice ID", "Date", "Amount", "Status"],
+  contracts,
+  columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
   onRowClick,
   actionButton,
 }) {
@@ -39,21 +39,19 @@ function InvoiceCard({
           </thead>
 
           <tbody className="divide-y divide-[#eef2f6] bg-white">
-            {invoices.map((invoice) => (
+            {contracts.map((contract) => (
               <tr
-                key={invoice.invoiceId || invoice.id}
-                onClick={() => onRowClick?.(invoice)}
+                key={contract.agreementId || contract.name}
+                onClick={() => onRowClick?.(contract)}
                 className={`text-sm text-[#0f172a] transition ${
                   onRowClick ? "cursor-pointer hover:bg-[#f8fafc]" : ""
                 }`}
               >
-                <td className="px-6 py-6 font-semibold">
-                  {invoice.invoiceId || invoice.id}
-                </td>
-                <td className="px-6 py-6 text-[#475569]">{invoice.date}</td>
-                <td className="px-6 py-6 font-semibold">{invoice.amount}</td>
+                <td className="px-6 py-6 font-semibold">{contract.Contract_Name}</td>
+                <td className="px-6 py-6 text-[#475569]">{contract.Contract_Completion_Date}</td>
+                <td className="px-6 py-6 font-semibold">{contract.Contract_Cost}</td>
                 <td className="px-6 py-6">
-                  <InvoiceStatusBadge status={invoice.status} />
+                  <StatusBadge status={contract.Contract_Status} />
                 </td>
               </tr>
             ))}
@@ -64,4 +62,4 @@ function InvoiceCard({
   );
 }
 
-export default InvoiceCard;
+export default ContractsCard;
