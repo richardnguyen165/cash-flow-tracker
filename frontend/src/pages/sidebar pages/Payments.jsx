@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
@@ -85,14 +85,25 @@ function Payments({
   actionTitle = "Make a Payment",
   actionCopy = "Use your saved method or initiate a transfer to clear the next due invoice.",
   actionButton = "Open Payment Modal",
-  transactions = defaultTransactions,
-  expensePlans = defaultExpensePlans,
+  transactions = [],
+  expensePlans = [],
 }) {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [transactionList, setTransactionList] = useState(() =>
-    transactions.map(normalizeTransaction)
+    (Array.isArray(transactions) ? transactions : []).map(normalizeTransaction)
   );
+  const lastSyncedTransactionsRef = useRef(null);
+
+  useEffect(() => {
+    const source = Array.isArray(transactions) ? transactions : [];
+    const serialized = JSON.stringify(source);
+    if (lastSyncedTransactionsRef.current === serialized) {
+      return;
+    }
+    lastSyncedTransactionsRef.current = serialized;
+    setTransactionList(source.map(normalizeTransaction));
+  }, [transactions]);
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
@@ -108,7 +119,7 @@ function Payments({
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      {/* <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-[28px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#94a3b8]">
             Total Outstanding
@@ -150,7 +161,7 @@ function Payments({
             {actionButton}
           </button>
         </div>
-      </section>
+      </section> */}
 
       <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
         <div className="flex items-start justify-between gap-4">

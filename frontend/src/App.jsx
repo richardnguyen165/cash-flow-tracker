@@ -33,6 +33,8 @@ import {
 } from "./config/workspaceNav";
 import IndividualContracts from "./pages/sidebar pages/IndividualContracts";
 import EmployeeExpenses from "./pages/sidebar pages/EmployeeExpenses";
+import IndividualInvoices from "./pages/sidebar pages/IndividualInvoices";
+import IndividualPayments from "./pages/sidebar pages/IndividualPayments";
 
 function App() {
   return (
@@ -49,8 +51,8 @@ function App() {
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/contracts" element={<ProtectedRoute><IndividualContracts /></ProtectedRoute>} />
-        <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-        <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
+        <Route path="/invoices" element={<ProtectedRoute><IndividualInvoices /></ProtectedRoute>} />
+        <Route path="/payments" element={<ProtectedRoute><IndividualPayments /></ProtectedRoute>} />
         {/* <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} /> */}
 
         <Route path="/business/dashboard" element={<ProtectedRoute><BusinessDashboard /></ProtectedRoute>} />

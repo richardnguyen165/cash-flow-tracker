@@ -260,10 +260,10 @@ class CounterPartySerializer(serializers.ModelSerializer):
         email = data.get('CounterParty_Email')
         counterparty_type = data.get('CounterParty_Type')
         if counterparty_type == 'INDIVIDUAL':
-            if not User.objects.filter(email=email, User_Role=User.Role.INDIVIDUAL_CLIENT).exists():
+            if not User.objects.filter(username=email, User_Role=User.Role.INDIVIDUAL_CLIENT).exists():
                 raise serializers.ValidationError("Individual with this email does not exist.")
         elif counterparty_type == 'BUSINESS':
-            if not User.objects.filter(email=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
+            if not User.objects.filter(username=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
                 raise serializers.ValidationError("Business with this email does not exist.")
         return data
     
@@ -347,7 +347,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = [
           "id", 
           "Business_ID", 
-          "User_ID", 
+          "Individual_ID", 
           "Transaction_Date"
         ]
     
@@ -368,7 +368,10 @@ class InvoiceLineItemSerializer(serializers.ModelSerializer):
         
 class InvoiceSerializer(serializers.ModelSerializer):
     # allows us to find all the invoice lines tied to a single invoice
-    invoice_line_items = InvoiceLineItemSerializer(many=True, read_only=True)
+    invoice_line_items = InvoiceLineItemSerializer(many=True,)
+    # needed for creation, as it contains a reference to transaction
+    Transaction_ID = TransactionSerializer()
+    CounterParty_ID = CounterPartySerializer()
     
     class Meta:
         model = Invoice
@@ -376,7 +379,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
           "id",
           "Transaction_ID",
           "Name", 
-          "Has_Paid",           
+          "Invoice_Status",
           "Policy_Description", 
           "CounterParty_ID",
           "invoice_line_items",

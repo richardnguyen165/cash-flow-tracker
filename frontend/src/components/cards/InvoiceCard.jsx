@@ -54,6 +54,7 @@ function InvoiceCard({
                 <td className="px-6 py-6 font-semibold">{invoice.Name}</td>
                 <td className="px-6 py-6">
                   <InvoiceStatusBadge status={invoice.Invoice_Status} />
+                  {invoice.Invoice_Status}
                 </td>
               </tr>
             ))}

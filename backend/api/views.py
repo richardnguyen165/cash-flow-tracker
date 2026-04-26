@@ -59,9 +59,9 @@ def get_individual(request, user_id):
 #     return
 
 @api_view(["GET", "OPTIONS"])
-
-def view_individual_transactions(_, user_id):
-  all_transactions = Transaction.objects.filter(User_ID=user_id)
+@permission_classes([IsAuthenticated])
+def view_individual_transactions(_, individual_id):
+  all_transactions = Transaction.objects.filter(Individual_ID=individual_id)
   indiv_transaction_serializer = TransactionSerializer(all_transactions, many=True)
   return Response(indiv_transaction_serializer.data)
   
@@ -114,25 +114,31 @@ def create_contract(request):
 @api_view(["PUT", "OPTIONS"])
 @permission_classes([AllowAny])
 def create_invoice(request):
-  contract_serializer = InvoiceSerializer(data=request.data)
-  if contract_serializer.is_valid():
-    contract_serializer.save()
-    return Response(contract_serializer.data, status=status.HTTP_201_CREATED)
-  return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  invoice_serializer = InvoiceSerializer(data=request.data)
+  if invoice_serializer.is_valid():
+    invoice_serializer.save()
+    return Response(invoice_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(invoice_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET", "OPTIONS"])
 @permission_classes([AllowAny])
 def get_individual_invoices(request, user_id):
-  user = User.objects.filter(id=user_id) 
+  user = User.objects.get(id=user_id)
+  print(user)
   email_of_individual = user.username
   
-   
   all_individual_invoices = Invoice.objects.filter(
     Q(CounterParty_ID__CounterParty_Type = "INDIVIDUAL") & Q(CounterParty_ID__CounterParty_Email = email_of_individual)
   )
   invoice_serializer = InvoiceSerializer(all_individual_invoices, many = True)
   return Response(invoice_serializer.data);
+
+# @api_view(["GET", "OPTIONS"])
+# @permission_classes([AllowAny])
+# def get_individual_transactions(request, individual_id):
+  
+
 '''
 BUSINESS CLIENT
 '''

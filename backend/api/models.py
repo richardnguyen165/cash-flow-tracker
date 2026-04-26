@@ -85,6 +85,17 @@ class Transaction(models.Model):
   Individual_ID = models.ForeignKey(Individual, on_delete = models.CASCADE, related_name="transactions", null = True)
   # adds date automatically
   Transaction_Date = models.DateField(auto_now_add=True)
+  
+  # https://dev.to/hyun_hyun/extrakwargs-358e
+  # https://www.django-rest-framework.org/api-guide/serializers/#specifying-read-only-fields
+  extra_kwargs = {
+    "Business_ID": {"required": False, "allow_null": True},
+    "Individual_ID": {"required": False, "allow_null": True},
+    "Transaction_Date": {"read_only": True}
+  }
+
+  def create(self, data):
+    return Transaction.objects.create(**data)
 
 # Invoice and Expense Pay Off already connected to Transaction, which means we don thave
 class Invoice(models.Model):

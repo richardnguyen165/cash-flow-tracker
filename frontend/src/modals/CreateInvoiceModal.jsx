@@ -8,7 +8,7 @@ const emptyInvoice = {
   counterPartyId: "",
   date: "",
   amount: "",
-  status: "Unpaid",
+  Invoice_Status: "Unpaid",
   policyDescription: "",
   clientType: "BUSINESS",
   clientEmail: ""
@@ -48,7 +48,7 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
     setInvoiceLines((prev) => [...prev, { ...emptyInvoiceLine }]);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const lineItems = invoiceLines.map((line, index) => ({
@@ -56,7 +56,7 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       Header: line.Header,
       Description: line.Description,
       Quantity: Number(line.Quantity) || 1,
-      Cost: formatAmount(line.Cost),
+      Cost: parseAmount(line.Cost),
     }));
     const total = lineItems.reduce(
       (sum, line) => sum + parseAmount(line.Cost) * line.Quantity,
@@ -73,29 +73,30 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
     };
 
     let Business_ID_Insert = all_info.User_Role === "BUSINESS_ADMIN" ? all_info.business_id : null;
-    let User_ID_Insert = all_info.User_Role === "INDIVIDUAL" ? all_info.id : null;
+    let Individual_ID_Insert = all_info.User_Role === "INDIVIDUAL" ? all_info.id : null;
 
     const newModifiedInvoice = {
       Transaction_ID: {
         Business_ID: Business_ID_Insert,
-        User_ID: User_ID_Insert, 
+        Individual_ID: Individual_ID_Insert, 
       },
       Name: newInvoice.name,
-      Has_Paid: false,
       Policy_Description: newInvoice.policyDescription,
       CounterParty_ID: {
         CounterParty_Type: newInvoice.clientType,
         CounterParty_Email: newInvoice.clientEmail,
       },
+      Invoice_Status: newInvoice.Invoice_Status,
       invoice_line_items: newInvoice.lineItems,
     }
 
-    let response = api.put("api/put/create_invoice/", newModifiedInvoice);
+    console.log(newModifiedInvoice);
+
+    let response = await api.put("api/put/create_invoice/", newModifiedInvoice);
 
     if (response.status === 201){
-      onSubmit(newInvoice);
+      onSubmit(newModifiedInvoice);
       setFormData(emptyInvoice);
-      setInvoiceLines([{ ...emptyInvoiceLine }]);
       onClose();
     } else {
       toast.error("Failed to create invoice. Check console.")
@@ -151,11 +152,11 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
                 />
 
                 <FormInput
-                  label="Counterparty ID"
-                  name="counterPartyId"
-                  value={formData.counterPartyId}
+                  label="Counterparty Email"
+                  name="clientEmail"
+                  value={formData.clientEmail}
                   onChange={handleChange}
-                  placeholder="1"
+                  placeholder=""
                   required
                 />
 

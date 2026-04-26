@@ -86,6 +86,10 @@ function Invoices({
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
   const [invoiceList, setInvoiceList] = useState([]);
 
+  useEffect(() => {
+    setInvoiceList(invoices);
+  }, [invoices]);
+
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
       <section>

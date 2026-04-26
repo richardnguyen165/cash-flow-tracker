@@ -3,7 +3,7 @@ import StatusBadge from "./StatusBadge";
 function ContractsCard({
   title = "My Contracts",
   subtitle,
-  contracts,
+  contracts = [],
   columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
   onRowClick,
   actionButton,
@@ -41,7 +41,7 @@ function ContractsCard({
           <tbody className="divide-y divide-[#eef2f6] bg-white">
             {contracts.map((contract) => (
               <tr
-                key={contract.agreementId || contract.name}
+                key={contract.id}
                 onClick={() => onRowClick?.(contract)}
                 className={`text-sm text-[#0f172a] transition ${
                   onRowClick ? "cursor-pointer hover:bg-[#f8fafc]" : ""

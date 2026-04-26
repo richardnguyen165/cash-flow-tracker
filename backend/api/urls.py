@@ -5,9 +5,9 @@ urlpatterns = [
     # Richard - Invdividual Client
     path("indiv/put/create_user", views.create_individual),
     path("indiv/get/user/<int:user_id>", views.get_individual),
-    path("indiv/transactions/get/<int:user_id>", views.view_individual_transactions),
+    path("indiv/transactions/get/<int:individual_id>", views.view_individual_transactions),
     path("indiv/contracts/get/<int:individual_id>", views.view_individual_contracts),
-    path("indiv/invoices/get/<int:individual_id>", views.get_individual_invoices),
+    path("indiv/invoices/get/<int:user_id>", views.get_individual_invoices),
     
     # Richard - Business Client
     path("business/put/create_business", views.create_business),
@@ -52,5 +52,5 @@ urlpatterns = [
     path("site/admin/users/<int:user_id>/privileges/grant/", views.site_admin_grant_privileges),
     path("site/admin/users/<int:user_id>/privileges/withdraw/", views.site_admin_withdraw_privileges),
     
-    path("put/create_invoice/", views.create_invoice);
+    path("put/create_invoice/", views.create_invoice)
 ]
