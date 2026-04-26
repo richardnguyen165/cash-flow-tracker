@@ -111,6 +111,16 @@ def create_contract(request):
     return Response(contract_serializer.data, status=status.HTTP_201_CREATED)
   return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["PUT", "OPTIONS"])
+@permission_classes([AllowAny])
+def create_invoice(request):
+  contract_serializer = InvoiceSerializer(data=request.data)
+  if contract_serializer.is_valid():
+    contract_serializer.save()
+    return Response(contract_serializer.data, status=status.HTTP_201_CREATED)
+  return Response(contract_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(["GET", "OPTIONS"])
 @permission_classes([AllowAny])
 def get_individual_invoices(request, user_id):

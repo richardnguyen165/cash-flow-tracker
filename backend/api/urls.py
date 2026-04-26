@@ -51,4 +51,6 @@ urlpatterns = [
     path("site/admin/privileges/", views.site_admin_privileges),
     path("site/admin/users/<int:user_id>/privileges/grant/", views.site_admin_grant_privileges),
     path("site/admin/users/<int:user_id>/privileges/withdraw/", views.site_admin_withdraw_privileges),
+    
+    path("put/create_invoice/", views.create_invoice);
 ]

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import decodeTokens from "../services/decode-tokens";
 import api from "../services/api";
+import toast from "react-hot-toast";
 
 const emptyInvoice = {
   name: "",
@@ -89,12 +90,16 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
       invoice_line_items: newInvoice.lineItems,
     }
 
-    const response = api.
+    let response = api.put("api/put/create_invoice/", newModifiedInvoice);
 
-    onSubmit(newModifiedInvoice);
-    setFormData(emptyInvoice);
-    setInvoiceLines([{ ...emptyInvoiceLine }]);
-    onClose();
+    if (response.status === 201){
+      onSubmit(newInvoice);
+      setFormData(emptyInvoice);
+      setInvoiceLines([{ ...emptyInvoiceLine }]);
+      onClose();
+    } else {
+      toast.error("Failed to create invoice. Check console.")
+    }
   }
 
   return (

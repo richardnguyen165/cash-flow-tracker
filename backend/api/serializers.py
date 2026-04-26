@@ -350,19 +350,22 @@ class TransactionSerializer(serializers.ModelSerializer):
           "User_ID", 
           "Transaction_Date"
         ]
+    
+    def create(self, data):
+        return Transaction.objects.create(**data)
 
 class InvoiceLineItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceLineItem
         fields = [
-            "Invoice_ID",
             "Line_Number",
             "Cost",
             "Description",
             "Quantity",
             "Header",
         ]
-
+        # No need to add invoice id, we already create it
+        
 class InvoiceSerializer(serializers.ModelSerializer):
     # allows us to find all the invoice lines tied to a single invoice
     invoice_line_items = InvoiceLineItemSerializer(many=True, read_only=True)
@@ -378,6 +381,34 @@ class InvoiceSerializer(serializers.ModelSerializer):
           "CounterParty_ID",
           "invoice_line_items",
         ]
+        
+        
+    def create(self, invoice_data):
+        # source on nested serializers https://www.django-rest-framework.org/api-guide/serializers/#writing-create-methods-for-nested-representations
+        
+        transaction_data = invoice_data.pop("Transaction_ID")
+        counter_party_data = invoice_data.pop("CounterParty_ID")
+        line_items_data = invoice_data.pop("invoice_line_items")
+
+        # create counter party, transaction and invoice
+        
+        counter_party = CounterParty.objects.create(**counter_party_data)
+
+        transaction = Transaction.objects.create(**transaction_data)
+
+        invoice = Invoice.objects.create(
+            Transaction_ID=transaction,
+            CounterParty_ID=counter_party,
+            **invoice_data
+        )
+
+        for item in line_items_data:
+            InvoiceLineItem.objects.create(
+                Invoice_ID=invoice,
+                **item
+            )
+
+        return invoice
 
 class ExpensePayOffSerializer(serializers.ModelSerializer):
     class Meta:
