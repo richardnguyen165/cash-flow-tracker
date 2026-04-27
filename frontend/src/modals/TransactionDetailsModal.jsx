@@ -3,7 +3,12 @@ function TransactionDetailsModal({ isOpen, onClose, transaction }) {
 
   const type = transaction?.type || transaction?.method || "Transaction";
   const isExpensePayOff = type === "Expense-Pay Off";
+  const isInvoicePayOff = type === "Invoice Pay Off";
   const isInvoice = type === "Invoice";
+  const invoiceLineRows =
+    transaction?.lineItems ||
+    transaction?.invoiceRecord?.invoice_line_items ||
+    [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -54,7 +59,9 @@ function TransactionDetailsModal({ isOpen, onClose, transaction }) {
                 </p>
                 <p className="mt-1">
                   Lump-sum pay-off amount:{" "}
-                  {transaction?.expensePayOff?.Total_Pay || transaction?.amount}
+                  {transaction?.expensePayOff?.Display_Total_Pay ||
+                    transaction?.expensePayOff?.Total_Pay ||
+                    transaction?.amount}
                 </p>
               </div>
 
@@ -94,11 +101,26 @@ function TransactionDetailsModal({ isOpen, onClose, transaction }) {
             </div>
           )}
 
-          {isInvoice && (
+          {(isInvoice || isInvoicePayOff) && (
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
               <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                Invoice Lines
+                {isInvoicePayOff ? "Invoice pay-off" : "Invoice Lines"}
               </p>
+
+              {isInvoicePayOff && (
+                <div className="mt-3 rounded-2xl bg-[#f8fafc] px-5 py-4 text-sm text-[#5b6472]">
+                  <span className="font-semibold text-[#111827]">
+                    {transaction?.invoiceRecord?.Name || "Invoice"}
+                  </span>
+                  <span className="mx-2 text-[#cbd5e1]">·</span>
+                  <span>
+                    Pay-off:{" "}
+                    {transaction?.invoicePayOff?.Display_Total_Pay ||
+                      transaction?.invoicePayOff?.Total_Pay ||
+                      transaction?.amount}
+                  </span>
+                </div>
+              )}
 
               <div className="mt-4 overflow-hidden rounded-2xl border border-[#e5eaf0]">
                 <table className="min-w-full divide-y divide-[#eef2f6]">
@@ -113,7 +135,7 @@ function TransactionDetailsModal({ isOpen, onClose, transaction }) {
                   </thead>
 
                   <tbody className="divide-y divide-[#eef2f6] bg-white">
-                    {(transaction?.lineItems || []).map((line, index) => (
+                    {invoiceLineRows.map((line, index) => (
                       <tr key={`${line.Header || line.title}-${index}`} className="text-sm">
                         <td className="px-5 py-5 font-medium text-[#5b6472]">
                           {line.Line_Number || index + 1}

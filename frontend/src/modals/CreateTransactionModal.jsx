@@ -1,35 +1,105 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import decodeTokens from "../services/decode-tokens";
 
-const emptyTransaction = {
+const emptyFormFields = {
   type: "Expense-Pay Off",
   expensePlanId: "",
+  invoicePayOffId: "",
   invoiceTitle: "",
   balanceAdjustmentEnabled: false,
   balanceAdjustmentDirection: "Increase",
   balanceAdjustmentAmount: "",
 };
 
-const emptyInvoiceLine = {
-  header: "",
-  description: "",
-  quantity: "1",
-  cost: "",
-};
+function getTransactionTypeOptions(userRole, hasInvoices) {
+  if (userRole === "INDIVIDUAL") {
+    return ["Invoice Pay Off"];
+  }
+  if (userRole === "BUSINESS_ADMIN") {
+    return ["Expense-Pay Off", "Invoice Pay Off"];
+  }
+}
+
+function defaultTypeForProps(userRole, allowExpense, invoices) {
+  const hasInvoices = Array.isArray(invoices) && invoices.length > 0;
+  if (userRole === "INDIVIDUAL") return "Invoice Pay Off";
+  if (userRole === "BUSINESS_ADMIN") return "Expense-Pay Off";
+  if (allowExpense) return "Expense-Pay Off";
+  return hasInvoices ? "Invoice Pay Off" : "Invoice";
+}
+
+function buildInitialForm(userRole, allowExpense, invoices) {
+  const hasInvoices = Array.isArray(invoices) && invoices.length > 0;
+  return {
+    ...emptyFormFields,
+    type: defaultTypeForProps(userRole, allowExpense, invoices),
+    expensePlanId: "",
+    invoicePayOffId: hasInvoices ? String(invoices[0].id) : "",
+  };
+}
+
+function modalSubtitleText(userRole) {
+  if (userRole === "INDIVIDUAL") {
+    return "Choose an invoice from your list to record a payment toward it.";
+  }
+  else {
+    return "Pay off an expense plan or settle an existing invoice.";
+  }
+}
+
+function typeOptionDisplayLabel(option) {
+  if (option === "Invoice Pay Off") return "Invoice pay-off";
+  if (option === "Expense-Pay Off") return "Expense pay-off";
+  if (option === "Invoice") return "New invoice";
+  return option;
+}
 
 function CreateTransactionModal({
   isOpen,
   onClose,
   onSubmit,
   expensePlans = [],
+  invoices = [],
+  allowExpense = true,
+  userRole = null,
+  businessId = null,
+  individualId = null,
 }) {
-  const [formData, setFormData] = useState(emptyTransaction);
-  const [invoiceLines, setInvoiceLines] = useState([{ ...emptyInvoiceLine }]);
+  const hasInvoices = Array.isArray(invoices) && invoices.length > 0;
+
+  const transactionTypeOptions = getTransactionTypeOptions(
+    userRole,
+    allowExpense,
+    hasInvoices
+  );
+
+  const [formData, setFormData] = useState(() =>
+    buildInitialForm(userRole, allowExpense, invoices)
+  );
+ 
+  useEffect(() => {
+    if (!isOpen) return;
+    setFormData(buildInitialForm(userRole, allowExpense, invoices));
+  }, [isOpen, allowExpense, invoices, userRole]);
+
+  useEffect(() => {
+    if (!isOpen || formData.type !== "Invoice Pay Off" || !hasInvoices) return;
+    setFormData((prev) => {
+      if (prev.invoicePayOffId) return prev;
+      return { ...prev, invoicePayOffId: String(invoices[0].id) };
+    });
+  }, [isOpen, formData.type, hasInvoices, invoices, formData.invoicePayOffId]);
 
   if (!isOpen) return null;
 
+  // Help with choosing the selected expense plan or inovice and storing them in case of submission
   const selectedExpensePlan =
     expensePlans.find((plan) => plan.id === formData.expensePlanId) ||
     expensePlans[0];
+
+  const selectedInvoice =
+    invoices.find((inv) => String(inv.id) === String(formData.invoicePayOffId)) ||
+    invoices[0];
 
   function handleChange(e) {
     const { name, value, checked, type } = e.target;
@@ -47,41 +117,44 @@ function CreateTransactionModal({
       expensePlanId:
         type === "Expense-Pay Off"
           ? prev.expensePlanId || expensePlans[0]?.id || ""
-          : prev.expensePlanId,
+          : "",
+      invoicePayOffId:
+        type === "Invoice Pay Off"
+          ? prev.invoicePayOffId || (invoices[0] ? String(invoices[0].id) : "")
+          : "",
     }));
-  }
-
-  function handleInvoiceLineChange(index, field, value) {
-    setInvoiceLines((prev) =>
-      prev.map((line, lineIndex) =>
-        lineIndex === index ? { ...line, [field]: value } : line
-      )
-    );
-  }
-
-  function addInvoiceLine() {
-    setInvoiceLines((prev) => [...prev, { ...emptyInvoiceLine }]);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    const balanceAdjustment = formData.balanceAdjustmentEnabled
-      ? {
-          direction: formData.balanceAdjustmentDirection,
-          amount: formatAmount(formData.balanceAdjustmentAmount),
-        }
-      : null;
+    if (formData.type === "Invoice Pay Off") {
+      if (!hasInvoices || !selectedInvoice) return;
+    }
 
-    const transaction =
-      formData.type === "Expense-Pay Off"
-        ? createExpenseTransaction(selectedExpensePlan, balanceAdjustment)
-        : createInvoiceTransaction(formData.invoiceTitle, invoiceLines, balanceAdjustment);
+    const decoded = decodeTokens();
+    const resolvedBusinessId = businessId ?? decoded?.business_id ?? null;
+    const resolvedIndividualId = individualId ?? decoded?.id ?? null;
+    let payload = null;
 
-    onSubmit(transaction);
-    setFormData(emptyTransaction);
-    setInvoiceLines([{ ...emptyInvoiceLine }]);
+    if (formData.type === "Expense-Pay Off") {
+      if (!selectedExpensePlan) return;
+      payload = buildExpensePlanPayOffPayload(selectedExpensePlan, resolvedBusinessId);
+    } else if (formData.type === "Invoice Pay Off") {
+      if (!hasInvoices || !selectedInvoice) return;
+      payload = buildInvoicePayOffPayload(selectedInvoice, {
+        businessId: resolvedBusinessId,
+        individualId: resolvedIndividualId,
+      });
+      if (!payload.business_id && !payload.individual_id) return;
+    } else {
+      return;
+    }
+
+    onSubmit(payload);
+    setFormData(buildInitialForm(userRole, allowExpense, invoices));
     onClose();
+
   }
 
   return (
@@ -100,7 +173,7 @@ function CreateTransactionModal({
                 </h2>
 
                 <p className="mt-2 text-[15px] text-[#9ca3af]">
-                  Choose an expense pay-off or invoice transaction.
+                  {modalSubtitleText(userRole, allowExpense)}
                 </p>
               </div>
 
@@ -114,12 +187,26 @@ function CreateTransactionModal({
             </div>
 
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
-              <BiSelector
-                label="Transaction Type"
-                value={formData.type}
-                options={["Expense-Pay Off", "Invoice"]}
-                onChange={handleTypeChange}
-              />
+              {transactionTypeOptions.length <= 1 ? (
+                <div className="flex flex-col">
+                  <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
+                    Transaction type
+                  </label>
+                  <div className="mt-3 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] px-4 py-3 text-[15px] font-semibold text-[#111827]">
+                    {transactionTypeOptions[0]
+                      ? typeOptionDisplayLabel(transactionTypeOptions[0])
+                      : "—"}
+                  </div>
+                </div>
+              ) : (
+                <BiSelector
+                  label="Transaction Type"
+                  value={formData.type}
+                  options={transactionTypeOptions}
+                  onChange={handleTypeChange}
+                  formatOptionLabel={typeOptionDisplayLabel}
+                />
+              )}
             </div>
 
             {formData.type === "Expense-Pay Off" ? (
@@ -149,87 +236,50 @@ function CreateTransactionModal({
                   </div>
                 )}
               </div>
-            ) : (
+            ) : formData.type === "Invoice Pay Off" ? (
               <div className="mt-2 border-t border-[#edf1f5] pt-8">
-                <FormInput
-                  label="Invoice Title"
-                  name="invoiceTitle"
-                  value={formData.invoiceTitle}
-                  onChange={handleChange}
-                  placeholder="April Services Invoice"
-                  required
-                />
+                {!hasInvoices ? (
+                  <p className="rounded-2xl bg-[#f8fafc] px-6 py-5 text-[15px] text-[#64748b]">
+                    No invoices are available to pay off yet.
+                  </p>
+                ) : (
+                  <>
+                    <SelectInput
+                      label="Invoice to pay off"
+                      name="invoicePayOffId"
+                      value={
+                        formData.invoicePayOffId ||
+                        String(selectedInvoice?.id ?? "")
+                      }
+                      onChange={handleChange}
+                      options={invoices.map((inv) => ({
+                        label: `${inv.Name || "Invoice"} — ${formatAmount(
+                          getInvoiceTotal(inv)
+                        )}`,
+                        value: String(inv.id),
+                      }))}
+                      required
+                    />
 
-                <div className="mt-6">
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
-                      Invoice Lines
-                    </p>
-
-                    <button
-                      type="button"
-                      onClick={addInvoiceLine}
-                      className="rounded-full border border-[#e5eaf0] bg-white px-4 py-2 text-sm font-semibold text-[#64748b] transition hover:bg-[#f8fafc]"
-                    >
-                      Add Line
-                    </button>
-                  </div>
-
-                  <div className="mt-4 space-y-4">
-                    {invoiceLines.map((line, index) => (
-                      <div
-                        key={index}
-                        className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_110px_160px]"
-                      >
-                        <input
-                          value={line.header}
-                          onChange={(e) =>
-                            handleInvoiceLineChange(index, "header", e.target.value)
-                          }
-                          placeholder="Header"
-                          required
-                          className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
-                        />
-                        <input
-                          value={line.quantity}
-                          onChange={(e) =>
-                            handleInvoiceLineChange(index, "quantity", e.target.value)
-                          }
-                          placeholder="Qty"
-                          required
-                          className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
-                        />
-                        <input
-                          value={line.cost}
-                          onChange={(e) =>
-                            handleInvoiceLineChange(index, "cost", e.target.value)
-                          }
-                          placeholder="Cost"
-                          required
-                          className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
-                        />
-                        <textarea
-                          value={line.description}
-                          onChange={(e) =>
-                            handleInvoiceLineChange(
-                              index,
-                              "description",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Description"
-                          rows={3}
-                          className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-3 text-[15px] font-medium text-[#111827] outline-none transition placeholder:text-[#aab2bf] focus:border-purple-300 focus:ring-4 focus:ring-purple-50 md:col-span-3"
-                        />
+                    {selectedInvoice && (
+                      <div className="mt-6 rounded-2xl bg-[#f8fafc] px-6 py-5 text-[15px] leading-7 text-[#5b6472]">
+                        <p className="font-semibold text-[#111827]">
+                          Lump-sum payment:{" "}
+                          {formatAmount(getInvoiceTotal(selectedInvoice))}
+                        </p>
+                        <p className="mt-1">
+                          This records a settlement for the selected invoice (same
+                          pattern as choosing an expense plan to pay off).
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    )}
+                  </>
+                )}
               </div>
-            )}
+            ) : null}
 
             <div className="mt-2 border-t border-[#edf1f5] pt-8">
-              <label className="flex items-center gap-3 text-[15px] font-semibold text-[#111827]">
+              {/* <label className="flex items-center gap-3 text-[15px] font-semibold text-[#111827]">
                 <input
                   type="checkbox"
                   name="balanceAdjustmentEnabled"
@@ -238,7 +288,7 @@ function CreateTransactionModal({
                   className="h-4 w-4 rounded border-[#cbd5e1] text-purple-500 focus:ring-purple-300"
                 />
                 Adjust owner balance
-              </label>
+              </label> */}
 
               {formData.balanceAdjustmentEnabled && (
                 <div className="mt-6 grid grid-cols-1 gap-x-16 gap-y-6 md:grid-cols-2">
@@ -277,7 +327,14 @@ function CreateTransactionModal({
 
             <button
               type="submit"
-              className="rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-black"
+              onClick={handleSubmit}
+              disabled={
+                (formData.type === "Invoice Pay Off" &&
+                  (!hasInvoices || !selectedInvoice)) ||
+                (formData.type === "Expense-Pay Off" &&
+                  (!expensePlans.length || !selectedExpensePlan))
+              }
+              className="rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
             >
               Create Transaction
             </button>
@@ -288,56 +345,17 @@ function CreateTransactionModal({
   );
 }
 
-function createExpenseTransaction(expensePlan, balanceAdjustment) {
-  const totalPay = formatAmount(getExpensePlanTotal(expensePlan));
-
-  return {
-    id: `TRX-${Date.now()}`,
-    date: formatDate(new Date()),
-    description: `Expense Plan Pay-Off - ${expensePlan?.title || "Expense Plan"}`,
-    method: "Expense-Pay Off",
-    amount: `-${totalPay}`,
-    type: "Expense-Pay Off",
-    expensePlan,
-    expensePayOff: {
-      Expense_Plan_ID: expensePlan?.id || "",
-      Expense_IDs: expensePlan?.expenses?.map((expense) => expense.id) || [],
-      Total_Pay: totalPay,
-    },
-    balanceAdjustment,
-  };
-}
-
-function createInvoiceTransaction(invoiceTitle, invoiceLines, balanceAdjustment) {
-  const lineItems = invoiceLines.map((line, index) => ({
-    Line_Number: index + 1,
-    Header: line.header,
-    Description: line.description,
-    Quantity: Number(line.quantity) || 1,
-    Cost: formatAmount(line.cost),
-  }));
-  const total = lineItems.reduce(
-    (sum, line) => sum + parseAmount(line.Cost) * line.Quantity,
-    0
+function getInvoiceTotal(invoice) {
+  return (
+    invoice?.invoice_line_items?.reduce((sum, line) => {
+      const cost =
+        typeof line.Cost === "number"
+          ? line.Cost
+          : parseAmount(String(line.Cost ?? ""));
+      const qty = Number(line.Quantity) || 1;
+      return sum + cost * qty;
+    }, 0) || 0
   );
-
-  return {
-    id: `TRX-${Date.now()}`,
-    date: formatDate(new Date()),
-    description: `Invoice - ${invoiceTitle}`,
-    method: "Invoice",
-    amount: `+${formatAmount(total)}`,
-    type: "Invoice",
-    invoiceTitle,
-    lineItems,
-    invoice: {
-      Name: invoiceTitle,
-      Has_Paid: false,
-      Policy_Description: "",
-      invoice_line_items: lineItems,
-    },
-    balanceAdjustment,
-  };
 }
 
 function getExpensePlanTotal(expensePlan) {
@@ -348,13 +366,24 @@ function getExpensePlanTotal(expensePlan) {
     ) || 0
   );
 }
+function buildExpensePlanPayOffPayload(expensePlan, businessId) {
+  const expense_plan_total = getExpensePlanTotal(expensePlan);
+  return {
+    expense_plan_id: Number(expensePlan?.id),
+    total_pay: expense_plan_total.toFixed(2),
+    business_id: Number(businessId),
+  };
+}
 
-function formatDate(date) {
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  });
+function buildInvoicePayOffPayload(invoice, { businessId, individualId }) {
+  const invoice_total = getInvoiceTotal(invoice);
+  const payload = {
+    invoice_id: Number(invoice?.id),
+    total_pay: invoice_total.toFixed(2),
+  };
+  if (businessId != null) payload.business_id = Number(businessId);
+  else if (individualId != null) payload.individual_id = Number(individualId);
+  return payload;
 }
 
 function parseAmount(value) {
@@ -422,26 +451,31 @@ function SelectInput({ label, name, value, onChange, options, required = false }
   );
 }
 
-function BiSelector({ label, value, options, onChange }) {
+function BiSelector({ label, value, options, onChange, formatOptionLabel }) {
+  const cols = options.length;
+  const labelFor = formatOptionLabel || typeOptionDisplayLabel;
   return (
     <div className="flex flex-col">
       <label className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#c2c8d0]">
         {label}
       </label>
 
-      <div className="mt-3 grid grid-cols-2 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] p-1">
+      <div
+        className="mt-3 grid gap-1 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] p-1"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+      >
         {options.map((option) => (
           <button
             key={option}
             type="button"
             onClick={() => onChange(option)}
-            className={`rounded-lg px-4 py-2.5 text-[15px] font-semibold transition ${
+            className={`rounded-lg px-2 py-2.5 text-[12px] font-semibold leading-snug transition sm:px-3 sm:text-[14px] ${
               value === option
                 ? "bg-white text-[#111827] shadow-sm"
                 : "text-[#64748b] hover:text-[#111827]"
             }`}
           >
-            {option}
+            {labelFor(option)}
           </button>
         ))}
       </div>

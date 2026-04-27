@@ -70,7 +70,7 @@ function Invoices({
   brandLink = "/dashboard",
   eyebrow = "Invoices",
   title = "Invoices",
-  description = "Review invoice history, pending approval items, and the balances that still need to be settled.",
+  description = "Review invoice history, pending approval items, and the balances that still need to be settled. Do note that when you create an invoice, it appears at the receiver, not the sender! (So if you create a new invoice, it will not be here).",
   summaryCards = [
     // ["Total Outstanding", "$24,450.00", "Across all open invoices"],
     // ["Pending Review", "02", "Waiting on approval"],
@@ -85,6 +85,10 @@ function Invoices({
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [isCreateInvoiceOpen, setIsCreateInvoiceOpen] = useState(false);
   const [invoiceList, setInvoiceList] = useState([]);
+
+  useEffect(() => {
+    setInvoiceList(invoices);
+  }, [invoices]);
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
@@ -108,6 +112,7 @@ function Invoices({
           />
         ))}
       </section> */}
+      { allowCreateInvoice ? (
       <InvoiceCard
         title={tableTitle}
         invoices={invoiceList}
@@ -121,13 +126,15 @@ function Invoices({
             + New Invoice
           </button>
         }
-      />
+      />) : <InvoiceCard
+      title={tableTitle}
+      invoices={invoiceList}
+      onRowClick={(invoice) => setSelectedInvoice(invoice)}
+    />}
       <CreateInvoiceModal
         isOpen={isCreateInvoiceOpen}
         onClose={() => setIsCreateInvoiceOpen(false)}
-        onSubmit={(newInvoice) => {
-          setInvoiceList((prev) => [newInvoice, ...prev]);
-        }}
+        allowCreateInvoice={allowCreateInvoice}
       />
 
       <InvoiceDetailsModal

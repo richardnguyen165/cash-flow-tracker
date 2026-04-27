@@ -15,9 +15,11 @@ function IndividualInvoices() {
     async function loadIndividualInvoices() {
       try {
         const decodedToken = decodeTokens();
-        const { id, User_Role  } = decodedToken;
+        const { User_Role, User_ID  } = decodedToken;
 
-        const invoiceData = await fetchIndividualInvoices(id);
+        const invoiceData = await fetchIndividualInvoices(User_ID);
+
+        console.log(invoiceData);
 
         setInvoices(invoiceData);
       } catch (error) {

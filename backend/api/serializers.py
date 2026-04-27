@@ -14,6 +14,7 @@ class TokenSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['User_Role'] = user.User_Role
         token['User_ID'] = user.id
+        print(user)
         
         if user.User_Role == "INDIVIDUAL":
             token['id'] = user.individual.id
@@ -21,7 +22,7 @@ class TokenSerializer(TokenObtainPairSerializer):
             token['id'] = user.business.id
         elif user.User_Role == "BUSINESS_ADMIN":
             token['id'] = user.business_admin.id
-            token['business_id'] = user.business_admin.business_id.id
+            token['business_id'] = user.business_admin.Business_ID.id
         elif user.User_Role == "SITE_ADMIN":
             token['id'] = user.site_admin.id
         else:
@@ -35,6 +36,7 @@ class TokenSerializer(TokenObtainPairSerializer):
         sign_in_mapping = {
             "individual-client": "INDIVIDUAL",
             "business-admin":    "BUSINESS_ADMIN",
+            "business":   "BUSINESS",
             "employee":          "EMPLOYEE",
             "site-admin":        "SITE_ADMIN",
         }
@@ -260,10 +262,10 @@ class CounterPartySerializer(serializers.ModelSerializer):
         email = data.get('CounterParty_Email')
         counterparty_type = data.get('CounterParty_Type')
         if counterparty_type == 'INDIVIDUAL':
-            if not User.objects.filter(email=email, User_Role=User.Role.INDIVIDUAL_CLIENT).exists():
+            if not User.objects.filter(username=email, User_Role=User.Role.INDIVIDUAL_CLIENT).exists():
                 raise serializers.ValidationError("Individual with this email does not exist.")
         elif counterparty_type == 'BUSINESS':
-            if not User.objects.filter(email=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
+            if not User.objects.filter(username=email, User_Role=User.Role.BUSINESS_CLIENT).exists():
                 raise serializers.ValidationError("Business with this email does not exist.")
         return data
     
@@ -277,7 +279,8 @@ class ExpensePlanSerializer(serializers.ModelSerializer):
           "id", 
           "Business_ID", 
           "Plan_Title", 
-          "Expense_Plan_Due"
+          "Expense_Plan_Due",
+          "Occurance_Number",
         ]
     
     def create(self, data):
@@ -346,25 +349,40 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = [
           "id", 
           "Business_ID", 
-          "User_ID", 
+          "Individual_ID", 
           "Transaction_Date"
         ]
+
+        # https://dev.to/hyun_hyun/extrakwargs-358e
+        # https://www.django-rest-framework.org/api-guide/serializers/#specifying-read-only-fields
+        extra_kwargs = {
+            "Business_ID": {"required": False, "allow_null": True},
+            "Individual_ID": {"required": False, "allow_null": True},
+            "Transaction_Date": {"read_only": True}
+        }
+
+    
+    def create(self, data):
+        return Transaction.objects.create(**data)
 
 class InvoiceLineItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceLineItem
         fields = [
-            "Invoice_ID",
             "Line_Number",
             "Cost",
             "Description",
             "Quantity",
             "Header",
         ]
-
+        # No need to add invoice id, we already create it
+        
 class InvoiceSerializer(serializers.ModelSerializer):
     # allows us to find all the invoice lines tied to a single invoice
-    invoice_line_items = InvoiceLineItemSerializer(many=True, read_only=True)
+    invoice_line_items = InvoiceLineItemSerializer(many=True,)
+    # needed for creation, as it contains a reference to transaction
+    Transaction_ID = TransactionSerializer()
+    CounterParty_ID = CounterPartySerializer()
     
     class Meta:
         model = Invoice
@@ -372,19 +390,77 @@ class InvoiceSerializer(serializers.ModelSerializer):
           "id",
           "Transaction_ID",
           "Name", 
-          "Has_Paid",           
+          "Invoice_Status",
           "Policy_Description", 
           "CounterParty_ID",
           "invoice_line_items",
         ]
+        
+        
+    def create(self, invoice_data):
+        # source on nested serializers https://www.django-rest-framework.org/api-guide/serializers/#writing-create-methods-for-nested-representations
+        
+        transaction_data = invoice_data.pop("Transaction_ID")
+        counter_party_data = invoice_data.pop("CounterParty_ID")
+        line_items_data = invoice_data.pop("invoice_line_items")
 
-class ExpensePayOffSerializer(serializers.ModelSerializer):
+        # create counter party, transaction and invoice
+        
+        counter_party = CounterParty.objects.create(**counter_party_data)
+
+        transaction = Transaction.objects.create(**transaction_data)
+
+        invoice = Invoice.objects.create(
+            Transaction_ID=transaction,
+            CounterParty_ID=counter_party,
+            **invoice_data
+        )
+
+        for item in line_items_data:
+            InvoiceLineItem.objects.create(
+                Invoice_ID=invoice,
+                **item
+            )
+
+        return invoice
+
+class Expense_Plan_Pay_Off_Serializer(serializers.ModelSerializer):
+    Transaction_ID = TransactionSerializer()
+    # We need to create a new transaction -> serializer 
+
     class Meta:
-        model = Expense_Pay_Off
+        model = Expense_Plan_Pay_Off
         fields = [
-          "Transaction_ID",
-          "Expense_ID", 
-          "Total_Pay"]
+            'Transaction_ID', 
+            'Expense_Plan_ID', 
+            'Total_Pay'
+        ]
+
+    def create(self, data):
+        transaction_data = data.pop('Transaction_ID')
+        transaction = Transaction.objects.create(**transaction_data)
+        expense_plan_pay_off = Expense_Plan_Pay_Off.objects.create(
+            Transaction_ID=transaction,
+            **data
+        )
+        return expense_plan_pay_off
+
+class Invoice_Pay_Off_Serializer(serializers.ModelSerializer):
+    Transaction_ID = TransactionSerializer()
+    class Meta:
+        model = Invoice_Pay_Off
+        fields = ['Transaction_ID', 
+                'Invoice_ID', 
+                'Total_Pay']
+
+    def create(self, data):
+        transaction_data = data.pop('Transaction_ID')
+        transaction = Transaction.objects.create(**transaction_data)
+        invoice_pay_off = Invoice_Pay_Off.objects.create(
+            Transaction_ID=transaction,
+            **data
+        )
+        return invoice_pay_off
 
 class EmployeeSerializer(serializers.ModelSerializer):
     def validate(self, data):
@@ -424,13 +500,4 @@ class ModeratesSerializer(serializers.ModelSerializer):
         fields = [
           "Site_Admin_ID", 
           "Business_ID"
-        ]
-
-class RecurringPlanSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecurringPlan
-        fields = [
-          "Expense_Plan_ID", 
-          "Plan_Frequency", 
-          "Occurance_Number"
         ]

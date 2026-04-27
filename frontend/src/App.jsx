@@ -10,6 +10,8 @@ import EmployeeDashboard from "./pages/main/EmployeeDashboard";
 import SiteAdminDashboard from "./pages/main/SiteAdminDashboard";
 import Analytics from "./pages/main/Analytics";
 import Profile from "./pages/auth/Profile";
+import IndividualProfile from "./pages/auth/IndividualProfile";
+import BusinessProfile from "./pages/auth/BusinessProfile";
 import EmployeeProfile from "./pages/auth/EmployeeProfile";
 import Contracts from "./pages/sidebar pages/Contracts";
 import Invoices from "./pages/sidebar pages/Invoices";
@@ -18,7 +20,7 @@ import BusinessSideBar from "./components/sidebar/BusinessSideBar";
 import EmployeeSideBar from "./components/sidebar/EmployeeSideBar";
 import AdminSideBar from "./components/sidebar/AdminSideBar";
 import Employees from "./pages/sidebar pages/Employees";
-import Expenses from "./pages/sidebar pages/EmployeeExpenses";
+import Expenses from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import EmployeeContracts from "./pages/sidebar pages/EmployeeContracts";
@@ -33,6 +35,13 @@ import {
 } from "./config/workspaceNav";
 import IndividualContracts from "./pages/sidebar pages/IndividualContracts";
 import EmployeeExpenses from "./pages/sidebar pages/EmployeeExpenses";
+import IndividualInvoices from "./pages/sidebar pages/IndividualInvoices";
+import IndividualPayments from "./pages/sidebar pages/IndividualPayments";
+import BusinessPayments from "./pages/sidebar pages/BusinessPayments";
+import BusinessContracts from "./pages/sidebar pages/BusinessContracts";
+import BusinessInvoices from "./pages/sidebar pages/BusinessInvoices";
+import BusinessEmployees from "./pages/sidebar pages/BusinessEmployees";
+import BusinessExpenses from "./pages/sidebar pages/BusinessExpenses";
 
 function App() {
   return (
@@ -47,22 +56,18 @@ function App() {
         
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><IndividualProfile /></ProtectedRoute>} />
         <Route path="/contracts" element={<ProtectedRoute><IndividualContracts /></ProtectedRoute>} />
-        <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
-        <Route path="/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
-        <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+        <Route path="/invoices" element={<ProtectedRoute><IndividualInvoices /></ProtectedRoute>} />
+        <Route path="/payments" element={<ProtectedRoute><IndividualPayments /></ProtectedRoute>} />
+        {/* <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} /> */}
 
         <Route path="/business/dashboard" element={<ProtectedRoute><BusinessDashboard /></ProtectedRoute>} />
         <Route
           path="/business/expenses"
           element={
             <ProtectedRoute>
-              <Expenses
-                sidebar={<BusinessSideBar />}
-                navItems={businessAdminNav}
-                brandLink="/business/dashboard"
-              />
+              <BusinessExpenses />
             </ProtectedRoute>
           }
         />
@@ -70,7 +75,7 @@ function App() {
           path="/business/contracts"
           element={
             <ProtectedRoute>
-              <Contracts
+              <BusinessContracts
                 sidebar={<BusinessSideBar />}
                 navItems={businessAdminNav}
                 brandLink="/business/dashboard"
@@ -95,7 +100,7 @@ function App() {
           path="/business/invoices"
           element={
             <ProtectedRoute>
-              <Invoices
+              <BusinessInvoices 
                 sidebar={<BusinessSideBar />}
                 navItems={businessAdminNav}
                 brandLink="/business/dashboard"
@@ -128,84 +133,23 @@ function App() {
           path="/business/payments"
           element={
             <ProtectedRoute>
-              <Payments
-                sidebar={<BusinessSideBar />}
-                navItems={businessAdminNav}
-                brandLink="/business/dashboard"
-                eyebrow="Treasury"
-                title="Business Payments"
-                description="Monitor payments collected from clients and outgoing settlements tied to business obligations."
-                totalOutstanding="$96,240.00"
-                nextDueDate="Apr 24, 2026"
-                lastPayment="$24,500.00"
-                actionTitle="Review Payment Queue"
-                actionCopy="Approve, schedule, or investigate payments that affect company cash flow."
-                actionButton="Open Review Queue"
-                transactions={[
-                  [
-                    "Apr 10, 2026",
-                    "Client Settlement - INV-2401",
-                    "Wire Transfer",
-                    "+$24,500.00",
-                  ],
-                  [
-                    "Apr 08, 2026",
-                    "Recurring Vendor Payout",
-                    "ACH Transfer",
-                    "-$5,200.00",
-                  ],
-                  [
-                    "Apr 03, 2026",
-                    "Expense Plan Pay-Off",
-                    "Bank Transfer",
-                    "-$12,800.00",
-                  ],
-                ]}
-              />
+              <BusinessPayments />
             </ProtectedRoute>
           }
         />
-        <Route path="/business/employees" element={<Employees />} />
+        <Route
+          path="/business/employees"
+          element={
+            <ProtectedRoute>
+              <BusinessEmployees />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/business/profile"
           element={
             <ProtectedRoute>
-              <Profile
-                sidebar={<BusinessSideBar />}
-                navItems={businessAdminNav}
-                brandLink="/business/dashboard"
-                eyebrow="Business Profile"
-                title="Business Settings"
-                description="Manage organization contact information, billing preferences, and workspace administration details."
-                infoFields={[
-                  ["Business Name", "Northshore Capital"],
-                  ["Admin Email", "ops@northshorecapital.com"],
-                  ["Phone Number", "+1 (555) 288-4000"],
-                  ["Head Office", "Calgary, Alberta"],
-                ]}
-                preferenceRows={[
-                  {
-                    title: "Approval alerts",
-                    description:
-                      "Notify admins when contracts, invoices, or expenses require approval.",
-                    enabled: true,
-                  },
-                  {
-                    title: "Employee updates",
-                    description:
-                      "Receive changes to assigned staff, invites, and task completions.",
-                    enabled: true,
-                  },
-                ]}
-                securityTitle="Admin Access"
-                securityDescription="Control sign-in credentials and security settings for this business workspace."
-                statusTitle="Business Status"
-                statusItems={[
-                  "Business workspace verified",
-                  "Primary admin access active",
-                  "Employee assignments synced",
-                ]}
-              />
+              <BusinessProfile />
             </ProtectedRoute>
           }
         />

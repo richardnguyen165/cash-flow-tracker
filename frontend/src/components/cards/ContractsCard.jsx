@@ -3,11 +3,12 @@ import StatusBadge from "./StatusBadge";
 function ContractsCard({
   title = "My Contracts",
   subtitle,
-  contracts,
+  contracts = [],
   columns = ["Agreement Name", "Finish Date", "Amount", "Status"],
   onRowClick,
   actionButton,
 }) {
+  console.log(contracts);
   return (
     <section className="mt-8 rounded-4xl border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
       <div className="flex items-start justify-between gap-4">
@@ -41,7 +42,7 @@ function ContractsCard({
           <tbody className="divide-y divide-[#eef2f6] bg-white">
             {contracts.map((contract) => (
               <tr
-                key={contract.agreementId || contract.name}
+                key={contract.id}
                 onClick={() => onRowClick?.(contract)}
                 className={`text-sm text-[#0f172a] transition ${
                   onRowClick ? "cursor-pointer hover:bg-[#f8fafc]" : ""

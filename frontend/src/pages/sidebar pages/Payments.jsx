@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
 import CreateTransactionModal from "../../modals/CreateTransactionModal";
 import TransactionDetailsModal from "../../modals/TransactionDetailsModal";
+import api from "../../services/api";
 
 const defaultTransactions = [
   ["Sep 28, 2023", "Invoice #8821 Payment", "Wire Transfer", "+$12,400.00"],
@@ -15,6 +16,8 @@ const defaultTransactions = [
     "+$50,000.00",
   ],
 ];
+
+const defaultInvoices = [];
 
 const defaultExpensePlans = [
   {
@@ -85,14 +88,30 @@ function Payments({
   actionTitle = "Make a Payment",
   actionCopy = "Use your saved method or initiate a transfer to clear the next due invoice.",
   actionButton = "Open Payment Modal",
-  transactions = defaultTransactions,
+  transactions = [],
   expensePlans = defaultExpensePlans,
+  invoices = defaultInvoices,
+  allowExpense = true,
+  userRole = null,
+  businessId = null, // Prevents massive recomputation
+  individualId = null,
 }) {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [transactionList, setTransactionList] = useState(() =>
-    transactions.map(normalizeTransaction)
+    (Array.isArray(transactions) ? transactions : []).map(normalizeTransaction)
   );
+  const lastSyncedTransactionsRef = useRef(null);
+
+  useEffect(() => {
+    const source = Array.isArray(transactions) ? transactions : [];
+    const serialized = JSON.stringify(source);
+    if (lastSyncedTransactionsRef.current === serialized) {
+      return;
+    }
+    lastSyncedTransactionsRef.current = serialized;
+    setTransactionList(source.map(normalizeTransaction));
+  }, [transactions]);
 
   return (
     <MainLayout sidebar={sidebar} navItems={navItems} brandLink={brandLink}>
@@ -108,7 +127,7 @@ function Payments({
         </p>
       </section>
 
-      <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      {/* <section className="mt-10 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="rounded-[28px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#94a3b8]">
             Total Outstanding
@@ -150,7 +169,7 @@ function Payments({
             {actionButton}
           </button>
         </div>
-      </section>
+      </section> */}
 
       <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
         <div className="flex items-start justify-between gap-4">
@@ -158,6 +177,7 @@ function Payments({
             Recent Transactions
           </h2>
 
+          {userRole === "BUSINESS" ? <></> :
           <button
             type="button"
             onClick={() => setIsTransactionModalOpen(true)}
@@ -165,6 +185,7 @@ function Payments({
           >
             + New Transaction
           </button>
+          }
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
@@ -216,11 +237,46 @@ function Payments({
       </section>
 
       <CreateTransactionModal
+        allowExpense={allowExpense}
+        invoices={invoices}
+        userRole={userRole}
+        businessId={businessId}
+        individualId={individualId}
         isOpen={isTransactionModalOpen}
         onClose={() => setIsTransactionModalOpen(false)}
         expensePlans={expensePlans}
-        onSubmit={(newTransaction) => {
-          setTransactionList((prev) => [newTransaction, ...prev]);
+        onSubmit={async (payload) => {
+          const isExpensePayOff = payload && Object.hasOwn(payload, "expense_plan_id");
+          const isInvoicePayOff = payload && Object.hasOwn(payload, "invoice_id");
+
+          try {
+            if (isExpensePayOff) {
+              await api.post("api/transactions/expense-plan-pay-off/", payload);
+            } else if (isInvoicePayOff) {
+              await api.post("api/transactions/invoice-pay-off/", payload);
+            } else {
+              return;
+            }
+
+            setTransactionList((prev) => [
+              {
+                id: `local-${Date.now()}`,
+                date: new Date().toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                }),
+                description: isExpensePayOff
+                  ? `Expense Plan Pay-Off #${payload.expense_plan_id}`
+                  : `Invoice Pay-Off #${payload.invoice_id}`,
+                method: isExpensePayOff ? "Expense-Pay Off" : "Invoice Pay Off",
+                amount: `-$${Number(payload.total_pay || 0).toFixed(2)}`,
+              },
+              ...prev,
+            ]);
+          } catch (error) {
+            console.error("Could not create payment.", error);
+          }
         }}
       />
 

@@ -39,7 +39,7 @@ class Business(models.Model):
   Business_PhoneNumber = models.CharField(max_length=20)
   Business_AccessCode = models.CharField(max_length=6, unique = True, blank = True)
   
-  # https://stackoverflow.com/questions/72371106/how-to-auto-generate-a-field-value-with-the-input-field-value-in-django-model
+  # https://stackoverfFlow.com/questions/72371106/how-to-auto-generate-a-field-value-with-the-input-field-value-in-django-model
   # Creates 6 letter access code for business automatically
   def save(self, *args, **kwargs):
     if not self.Business_AccessCode:
@@ -85,6 +85,9 @@ class Transaction(models.Model):
   Individual_ID = models.ForeignKey(Individual, on_delete = models.CASCADE, related_name="transactions", null = True)
   # adds date automatically
   Transaction_Date = models.DateField(auto_now_add=True)
+  
+  def create(self, data):
+    return Transaction.objects.create(**data)
 
 # Invoice and Expense Pay Off already connected to Transaction, which means we don thave
 class Invoice(models.Model):
@@ -100,6 +103,7 @@ class Expense_Plan(models.Model):
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="expense_plans")
   Plan_Title = models.CharField(max_length = 256)
   Expense_Plan_Due = models.DateField()
+  Occurance_Number = models.PositiveIntegerField(default = 1)
   
 class Expense(models.Model):
   Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.SET_NULL, null = True, blank = True)
@@ -110,9 +114,15 @@ class Expense(models.Model):
   Expense_Date_Issued = models.DateField(auto_now_add = True)
   Expense_Due_By = models.DateField(null = False, blank = False)
   
-class Expense_Pay_Off(models.Model):
+class Expense_Plan_Pay_Off(models.Model):
   Transaction_ID = models.OneToOneField(Transaction, on_delete = models.CASCADE, null = True, blank = True, related_name="expense_pay_off")
-  Expense_ID = models.OneToOneField(Expense, on_delete = models.CASCADE, null = True, blank = True, related_name="expense_pay_off")
+  Expense_Plan_ID = models.OneToOneField(Expense_Plan, on_delete = models.CASCADE, null = True, blank = True, related_name="expense_pay_off")
+  Total_Pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+# New table, since we have a new type of expense
+class Invoice_Pay_Off(models.Model):
+  Transaction_ID = models.OneToOneField(Transaction, on_delete = models.CASCADE, null = True, blank = True, related_name="invoice_pay_off")
+  Invoice_ID = models.OneToOneField(Invoice, on_delete = models.CASCADE, null = True, blank = True, related_name="invoice_pay_off")
   Total_Pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 class Employee(models.Model):
@@ -140,11 +150,6 @@ class Moderates(models.Model):
   Site_Admin_ID = models.ForeignKey(Site_Admin, on_delete = models.CASCADE, related_name="moderates")
   Business_ID = models.ForeignKey(Business, on_delete = models.CASCADE, related_name="moderates")
 
-class RecurringPlan(models.Model):
-  Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.CASCADE, related_name="recurring_plans")
-  Plan_Frequency = models.CharField(max_length = 64)
-  Occurance_Number = models.PositiveIntegerField(default = 1)
-
 class InvoiceLineItem(models.Model):
   Invoice_ID = models.ForeignKey(Invoice, on_delete = models.CASCADE, related_name="invoice_line_items")
   Line_Number = models.PositiveIntegerField()
@@ -156,3 +161,8 @@ class InvoiceLineItem(models.Model):
   # Ensures that two invoices can each have line number 1, but not in the same invoice
   class Meta:
     unique_together = [("Invoice_ID", "Line_Number")]
+
+# class RecurringPlan(models.Model):
+#   Expense_Plan_ID = models.ForeignKey(Expense_Plan, on_delete = models.CASCADE, related_name="recurring_plans")
+#   Plan_Frequency = models.CharField(max_length = 64)
+#   Occurance_Number = models.PositiveIntegerField(default = 1)

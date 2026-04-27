@@ -46,7 +46,7 @@ function ContractDetailsModal({ isOpen, onClose, contract, onStatusChange }) {
               <InfoBlock
                 label="Due Date"
                 value={
-                  contract?.Contract_Completion_Date | "N/A"
+                  contract?.Contract_Completion_Date || "N/A"
                 }
               />
 
@@ -54,12 +54,12 @@ function ContractDetailsModal({ isOpen, onClose, contract, onStatusChange }) {
 
               <InfoBlock
                 label="Client Email"
-                value={contract?.clientEmail || "No client email"}
+                value={contract?.Contract_CounterParty_ID?.CounterParty_Email || "No client email"}
               />
 
               <InfoBlock
                 label="Contract Type"
-                value={contract?.clientType || "Individual"}
+                value={contract?.Contract_Type || "Individual"}
               />
 
               <div className="flex flex-col">
@@ -68,17 +68,17 @@ function ContractDetailsModal({ isOpen, onClose, contract, onStatusChange }) {
                 </p>
 
                 <div className="mt-3 flex items-center gap-3">
-                  <StatusBadge status={status} />
+                  <StatusBadge status={contract?.Contract_Status} />
 
-                  <select
-                    value={status}
+                  {/* <select
+                    value={contract?.Contract_Status}
                     onChange={handleStatusChange}
                     className="rounded-xl border border-[#e5eaf0] bg-white px-4 py-2 text-[14px] font-medium text-[#111827] outline-none transition focus:border-purple-300 focus:ring-4 focus:ring-purple-50"
                   >
                     <option>In Review</option>
                     <option>Active</option>
                     <option>Completed</option>
-                  </select>
+                  </select> */}
                 </div>
               </div>
 

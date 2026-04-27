@@ -5,16 +5,19 @@ urlpatterns = [
     # Richard - Invdividual Client
     path("indiv/put/create_user", views.create_individual),
     path("indiv/get/user/<int:user_id>", views.get_individual),
-    path("indiv/profile/get/<int:user_id>", views.individual_profile),
-    path("indiv/transactions/get/<int:user_id>", views.view_individual_transactions),
+    path("indiv/transactions/get/<int:individual_id>", views.view_individual_transactions),
     path("indiv/contracts/get/<int:individual_id>", views.view_individual_contracts),
-    path("indiv/invoices/get/<int:individual_id>", views.get_individual_invoices),
+    path("indiv/invoices/get/<int:user_id>", views.get_individual_invoices),
     
     # Richard - Business Client
     path("business/put/create_business", views.create_business),
     path("business/get/<int:business_id>", views.get_business),
     path("business/contracts/get/<int:business_id>", views.business_view_contracts),
     path("business/transactions/get/<int:business_id>", views.business_view_transactions),
+    path("business/expense-plans/get/<int:business_id>", views.business_view_expense_plans),
+    path("business/expense-plans/<int:business_id>/", views.business_expense_plans),
+    path("business/expense-plans/<int:business_id>/<int:expense_plan_id>/expenses/", views.business_expense_plan_expenses),
+    path("business/expense-plan-pay-offs/get/<int:business_id>", views.business_view_expense_plan_pay_offs),
     path("business/put/contracts", views.create_contract),
     path("business/invoices/get/<int:business_id>", views.get_business_invoices),
     
@@ -38,6 +41,7 @@ urlpatterns = [
     path("business/admin/<int:business_id>/payments/", views.business_admin_payments),
     #employees
     path("business/admin/<int:business_id>/employees/", views.business_admin_employees),
+    path("business/admin/<int:business_id>/employees/invite/", views.business_admin_invite_employee),
     # path("business/admin/<int:business_id>/employees/add/", views.business_admin_add_employee),
     path("business/admin/<int:business_id>/employees/<int:employee_id>/remove/", views.business_admin_remove_employee),
     path("business/admin/<int:business_id>/employees/<int:employee_id>/assign-contracts/", views.business_admin_assign_contracts),
@@ -52,4 +56,8 @@ urlpatterns = [
     path("site/admin/privileges/", views.site_admin_privileges),
     path("site/admin/users/<int:user_id>/privileges/grant/", views.site_admin_grant_privileges),
     path("site/admin/users/<int:user_id>/privileges/withdraw/", views.site_admin_withdraw_privileges),
+    
+    path("put/create_invoice/", views.create_invoice),
+    path("transactions/expense-plan-pay-off/", views.pay_off_expense_plan),
+    path("transactions/invoice-pay-off/", views.pay_off_invoice),
 ]
