@@ -30,6 +30,9 @@ function SignIn() {
       else if (User_Role === "SITE_ADMIN") {
         navigate("/admin/dashboard");
       }
+      else if (User_Role === "BUSINESS"){
+        navigate("/business/dashboard");
+      }
       else if (User_Role === "BUSINESS_ADMIN"){
         navigate("/business/dashboard");
       } else if (User_Role === "EMPLOYEE") {
@@ -56,6 +59,11 @@ function SignIn() {
       id: "business-admin",
       title: "Business Admin",
       description: "Sign in on behalf of a business to manage contracts, billing, and staff.",
+    },
+    {
+      id: "business",
+      title: "Business",
+      description: "Sign into a business to get access codes."
     },
     {
       id: "employee",

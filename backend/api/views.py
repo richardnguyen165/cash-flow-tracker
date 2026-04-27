@@ -241,8 +241,6 @@ def business_view_contracts(_, business_id):
   contract_serializer = ContractSerializer(all_business_contracts, many=True)
   return Response(contract_serializer.data)
 
-@api_view(["GET", "OPTIONS"])
-@permission_classes([IsAuthenticated])
 def business_view_expense_plans(request, business_id):
   plans = (
     Expense_Plan.objects.filter(Business_ID=business_id)

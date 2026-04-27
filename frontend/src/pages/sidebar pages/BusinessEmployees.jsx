@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import BusinessSideBar from "../../components/sidebar/BusinessSideBar";
 import MainLayout from "../../layout/MainLayout";
 import { businessAdminNav } from "../../config/workspaceNav";
@@ -14,15 +14,20 @@ function BusinessEmployees() {
   const [loading, setLoading] = useState(true);
   const [inviting, setInviting] = useState(false);
 
-  const businessId = useMemo(() => decodeTokens()?.business_id ?? null, []);
+  const decoded = decodeTokens();
+  const businessId =
+    decoded?.User_Role === "BUSINESS"
+      ? decoded.id ?? null
+      : decoded?.business_id ?? decoded?.id ?? null;
 
   useEffect(() => {
     async function loadEmployees() {
+      if (!businessId) {
+        setEmployees([]);
+        setLoading(false);
+        return;
+      }
       try {
-        if (!businessId) {
-          setEmployees([]);
-          return;
-        }
         const rows = await fetchBusinessEmployees(businessId);
         setEmployees(Array.isArray(rows) ? rows : []);
       } catch (error) {
@@ -56,6 +61,8 @@ function BusinessEmployees() {
     }
   }
 
+
+
   return (
     <MainLayout
       sidebar={<BusinessSideBar />}
@@ -74,6 +81,7 @@ function BusinessEmployees() {
         </p>
       </section>
 
+      {(decoded?.User_Role === "BUSINESS" ? <></> :
       <section className="mt-8 rounded-[32px] border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
         <form className="flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={handleInvite}>
           <div className="w-full sm:max-w-md">
@@ -97,7 +105,7 @@ function BusinessEmployees() {
             {inviting ? "Inviting..." : "Invite Employee"}
           </button>
         </form>
-      </section>
+      </section>)}
 
       <section className="mt-8 grid gap-4">
         {loading ? (

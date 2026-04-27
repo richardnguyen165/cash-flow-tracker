@@ -3,11 +3,12 @@ from django.core.management.base import BaseCommand
 from api.models import *
 from datetime import date
 
+
+# sample ai generated data
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
 
-        # ── USERS ──────────────────────────────────────────────
         user_individual1 = User.objects.create_user(
             username="john@gmail.com",
             password="Pass1234!",
@@ -48,8 +49,7 @@ class Command(BaseCommand):
             password="Pass1234!",
             User_Role="EMPLOYEE"
         )
-
-        # ── INDIVIDUALS ────────────────────────────────────────
+        
         john = Individual.objects.create(
             User_ID=user_individual1,
             Individual_Balance=15000.00,
@@ -65,7 +65,6 @@ class Command(BaseCommand):
             Individual_Name="Sara Lenz"
         )
 
-        # ── BUSINESSES ─────────────────────────────────────────
         northshore = Business.objects.create(
             User_ID=user_business1,
             Business_Name="Northshore Capital",
@@ -78,8 +77,7 @@ class Command(BaseCommand):
             Business_Balance=320000.00,
             Business_PhoneNumber="+1 403-555-2002",
         )
-
-        # ── BUSINESS ADMIN ─────────────────────────────────────
+        
         Business_Admin.objects.create(
             User_ID=user_admin,
             Business_ID=northshore,
@@ -88,7 +86,6 @@ class Command(BaseCommand):
             BusinessAdmin_PhoneNumber="+1 403-555-3001"
         )
 
-        # ── EXPENSE PLANS ──────────────────────────────────────
         plan_northshore = Expense_Plan.objects.create(
             Business_ID=northshore,
             Plan_Title="Q2 Advisory Operations",
@@ -102,7 +99,6 @@ class Command(BaseCommand):
             Occurance_Number=2
         )
 
-        # ── EXPENSES ───────────────────────────────────────────
         expense1 = Expense.objects.create(
             Expense_Plan_ID=plan_northshore,
             Cost=5200.00,
@@ -128,7 +124,6 @@ class Command(BaseCommand):
             Expense_Due_By=date(2026, 5, 31)
         )
 
-        # ── EMPLOYEES ──────────────────────────────────────────
         Employee.objects.create(
             User_ID=user_employee1,
             Business_ID=northshore,
@@ -154,7 +149,6 @@ class Command(BaseCommand):
             Role="Client Relations"
         )
 
-        # ── COUNTERPARTIES ─────────────────────────────────────
         cp_john = CounterParty.objects.create(
             CounterParty_Type="INDIVIDUAL",
             CounterParty_Email="john@gmail.com"
@@ -168,7 +162,6 @@ class Command(BaseCommand):
             CounterParty_Email="ops@atlascap.com"
         )
 
-        # ── CONTRACTS ──────────────────────────────────────────
         Contract.objects.create(
             Business_ID=northshore,
             Contract_CounterParty_ID=cp_john,
@@ -202,8 +195,7 @@ class Command(BaseCommand):
             Contract_Type="BUSINESS",
             Contract_Cost=42500.00
         )
-
-        # ── TRANSACTIONS ───────────────────────────────────────
+        
         txn_john = Transaction.objects.create(
             Business_ID=northshore,
             Individual_ID=john,
@@ -217,7 +209,6 @@ class Command(BaseCommand):
             Individual_ID=None,
         )
 
-        # ── INVOICES ───────────────────────────────────────────
         invoice_john = Invoice.objects.create(
             Transaction_ID=txn_john,
             Name="April Advisory Invoice",
@@ -243,7 +234,6 @@ class Command(BaseCommand):
             Invoice_Type="BUSINESS"
         )
 
-        # ── INVOICE LINE ITEMS ─────────────────────────────────
         InvoiceLineItem.objects.create(
             Invoice_ID=invoice_john,
             Line_Number=1,

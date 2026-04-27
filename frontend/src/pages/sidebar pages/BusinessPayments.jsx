@@ -20,19 +20,19 @@ function BusinessPayments() {
   const [expensePlans, setExpensePlans] = useState(fallbackExpensePlans);
   const [latestPaymentDate, setLatestPaymentDate] = useState("No recorded payment yet");
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     async function loadBusinessPayments() {
       try {
 
-
-        const token = decodeTokens();
-        const businessId = token?.business_id ?? null;
-        if (!businessId) {
-          setTransactions([]);
-          setInvoices([]);
-          setExpensePlans([]);
-          return;
+        const result = decodeTokens();
+        setUserRole(result.User_Role);
+        let businessId;
+        if (result.User_Role === "BUSINESS") {
+          businessId = result.id;
+        } else {
+          businessId = result.business_id;
         }
 
         const [transResponse, invoiceData, expensePlanResponse] = await Promise.all([
@@ -99,7 +99,7 @@ function BusinessPayments() {
       invoices={invoices}
       expensePlans={expensePlans}
       allowExpense
-      userRole="BUSINESS_ADMIN"
+      userRole={userRole}
       businessId={businessId}
     />
   );

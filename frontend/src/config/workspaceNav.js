@@ -35,4 +35,5 @@ export const signinRedirects = {
   "business-admin": "/business/dashboard",
   employee: "/employee/dashboard",
   "site-admin": "/admin/dashboard",
+  "business": "/business/dashboard",
 };

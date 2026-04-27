@@ -36,6 +36,7 @@ class TokenSerializer(TokenObtainPairSerializer):
         sign_in_mapping = {
             "individual-client": "INDIVIDUAL",
             "business-admin":    "BUSINESS_ADMIN",
+            "business":   "BUSINESS",
             "employee":          "EMPLOYEE",
             "site-admin":        "SITE_ADMIN",
         }

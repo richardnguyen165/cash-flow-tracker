@@ -21,7 +21,7 @@ const emptyInvoiceLine = {
   Cost: "",
 };
 
-function CreateInvoiceModal({ isOpen, onClose }) {
+function CreateInvoiceModal({ isOpen, onClose, allowCreateInvoice }) {
   const [formData, setFormData] = useState(emptyInvoice);
   const [invoiceLines, setInvoiceLines] = useState([{ ...emptyInvoiceLine }]);
 

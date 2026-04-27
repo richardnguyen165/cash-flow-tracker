@@ -112,6 +112,7 @@ function Invoices({
           />
         ))}
       </section> */}
+      { allowCreateInvoice ? (
       <InvoiceCard
         title={tableTitle}
         invoices={invoiceList}
@@ -125,10 +126,15 @@ function Invoices({
             + New Invoice
           </button>
         }
-      />
+      />) : <InvoiceCard
+      title={tableTitle}
+      invoices={invoiceList}
+      onRowClick={(invoice) => setSelectedInvoice(invoice)}
+    />}
       <CreateInvoiceModal
         isOpen={isCreateInvoiceOpen}
         onClose={() => setIsCreateInvoiceOpen(false)}
+        allowCreateInvoice={allowCreateInvoice}
       />
 
       <InvoiceDetailsModal

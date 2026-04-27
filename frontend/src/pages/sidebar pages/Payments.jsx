@@ -177,6 +177,7 @@ function Payments({
             Recent Transactions
           </h2>
 
+          {userRole === "BUSINESS" ? <></> :
           <button
             type="button"
             onClick={() => setIsTransactionModalOpen(true)}
@@ -184,6 +185,7 @@ function Payments({
           >
             + New Transaction
           </button>
+          }
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">

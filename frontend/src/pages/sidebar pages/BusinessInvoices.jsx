@@ -17,11 +17,14 @@ function BusinessInvoices() {
     async function loadBusinessInvoices() {
       try {
         const decodedToken = decodeTokens();
-        const { business_id, User_Role  } = decodedToken;
-
-        setRole(User_Role);
-
-        const invoiceData = await fetchBusinessInvoices(business_id);
+        const result = decodedToken;
+        setRole(result.User_Role);
+        let invoiceData;
+        if (result.User_Role === "BUSINESS") {
+          invoiceData = await fetchBusinessInvoices(result.id);
+        } else {
+          invoiceData = await fetchBusinessInvoices(result.business_id);
+        }
 
         setInvoices(invoiceData);
       } catch (error) {

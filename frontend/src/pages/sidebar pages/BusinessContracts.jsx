@@ -16,11 +16,15 @@ function BusinessContracts() {
     async function loadBusinessContracts() {
       try {
         const decodedToken = decodeTokens();
-        const { id, User_Role  } = decodedToken;
+        const result = decodedToken;
+        let contractData;
+        setRole(result.User_Role);
 
-        setRole(User_Role);
-
-        const contractData = await fetchBusinessContracts(id);
+        if (result.User_Role === "BUSINESS") {
+          contractData = await fetchBusinessContracts(result.id);
+        } else {
+          contractData = await fetchBusinessContracts(result.business_id);
+        }
 
         setAgreements(contractData.data);
       } catch (error) {

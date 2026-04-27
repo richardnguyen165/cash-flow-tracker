@@ -53,11 +53,13 @@ function BusinessExpenses() {
   useEffect(() => {
     async function loadPlans() {
       try {
-        if (!businessId) {
-          setPlans([]);
-          return;
+        let result = decodeTokens();
+        let rows;
+        if (result.User_Role === "BUSINESS") {
+          rows = await fetchBusinessExpensePlans(result.id);
+        } else {
+          rows = await fetchBusinessExpensePlans(result.business_id);
         }
-        const rows = await fetchBusinessExpensePlans(businessId);
         setPlans((Array.isArray(rows) ? rows : []).map(normalizePlan));
       } catch (error) {
         console.error("Could not load business expense plans.", error);
