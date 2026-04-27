@@ -21,7 +21,37 @@ export async function sendBusinessContract(businessContractInfo){
   return true;
 }
 
-export async function fetchBusinessInvoices(userId){
-    const response = await api.get(`api/business/invoices/get/${userId}`);
+export async function fetchBusinessInvoices(businessId){
+    const response = await api.get(`api/business/invoices/get/${businessId}`);
     return response.data;
+}
+
+export async function fetchBusinessExpensePlans(businessId) {
+  const response = await api.get(`api/business/expense-plans/${businessId}/`);
+  return response.data;
+}
+
+export async function createBusinessExpensePlan(businessId, payload) {
+  const response = await api.post(`api/business/expense-plans/${businessId}/`, payload);
+  return response.data;
+}
+
+export async function createBusinessExpense(businessId, expensePlanId, payload) {
+  const response = await api.post(
+    `api/business/expense-plans/${businessId}/${expensePlanId}/expenses/`,
+    payload
+  );
+  return response.data;
+}
+
+export async function fetchBusinessEmployees(businessId) {
+  const response = await api.get(`api/business/admin/${businessId}/employees/`);
+  return response.data;
+}
+
+export async function inviteBusinessEmployee(businessId, email) {
+  const response = await api.post(`api/business/admin/${businessId}/employees/invite/`, {
+    email,
+  });
+  return response.data;
 }

@@ -20,7 +20,7 @@ import BusinessSideBar from "./components/sidebar/BusinessSideBar";
 import EmployeeSideBar from "./components/sidebar/EmployeeSideBar";
 import AdminSideBar from "./components/sidebar/AdminSideBar";
 import Employees from "./pages/sidebar pages/Employees";
-import Expenses from "./pages/sidebar pages/EmployeeExpenses";
+import Expenses from "./pages/sidebar pages/Expenses";
 import ManageUsers from "./pages/sidebar pages/ManageUsers";
 import ManageBusinesses from "./pages/sidebar pages/ManageBusinesses";
 import EmployeeContracts from "./pages/sidebar pages/EmployeeContracts";
@@ -37,6 +37,11 @@ import IndividualContracts from "./pages/sidebar pages/IndividualContracts";
 import EmployeeExpenses from "./pages/sidebar pages/EmployeeExpenses";
 import IndividualInvoices from "./pages/sidebar pages/IndividualInvoices";
 import IndividualPayments from "./pages/sidebar pages/IndividualPayments";
+import BusinessPayments from "./pages/sidebar pages/BusinessPayments";
+import BusinessContracts from "./pages/sidebar pages/BusinessContracts";
+import BusinessInvoices from "./pages/sidebar pages/BusinessInvoices";
+import BusinessEmployees from "./pages/sidebar pages/BusinessEmployees";
+import BusinessExpenses from "./pages/sidebar pages/BusinessExpenses";
 
 function App() {
   return (
@@ -62,11 +67,7 @@ function App() {
           path="/business/expenses"
           element={
             <ProtectedRoute>
-              <Expenses
-                sidebar={<BusinessSideBar />}
-                navItems={businessAdminNav}
-                brandLink="/business/dashboard"
-              />
+              <BusinessExpenses />
             </ProtectedRoute>
           }
         />
@@ -74,7 +75,7 @@ function App() {
           path="/business/contracts"
           element={
             <ProtectedRoute>
-              <Contracts
+              <BusinessContracts
                 sidebar={<BusinessSideBar />}
                 navItems={businessAdminNav}
                 brandLink="/business/dashboard"
@@ -99,7 +100,7 @@ function App() {
           path="/business/invoices"
           element={
             <ProtectedRoute>
-              <Invoices
+              <BusinessInvoices 
                 sidebar={<BusinessSideBar />}
                 navItems={businessAdminNav}
                 brandLink="/business/dashboard"
@@ -132,44 +133,18 @@ function App() {
           path="/business/payments"
           element={
             <ProtectedRoute>
-              <Payments
-                sidebar={<BusinessSideBar />}
-                navItems={businessAdminNav}
-                brandLink="/business/dashboard"
-                eyebrow="Treasury"
-                title="Business Payments"
-                description="Monitor payments collected from clients and outgoing settlements tied to business obligations."
-                totalOutstanding="$96,240.00"
-                nextDueDate="Apr 24, 2026"
-                lastPayment="$24,500.00"
-                actionTitle="Review Payment Queue"
-                actionCopy="Approve, schedule, or investigate payments that affect company cash flow."
-                actionButton="Open Review Queue"
-                transactions={[
-                  [
-                    "Apr 10, 2026",
-                    "Client Settlement - INV-2401",
-                    "Wire Transfer",
-                    "+$24,500.00",
-                  ],
-                  [
-                    "Apr 08, 2026",
-                    "Recurring Vendor Payout",
-                    "ACH Transfer",
-                    "-$5,200.00",
-                  ],
-                  [
-                    "Apr 03, 2026",
-                    "Expense Plan Pay-Off",
-                    "Bank Transfer",
-                    "-$12,800.00",
-                  ],
-                ]}
-              />
+              <BusinessPayments />
             </ProtectedRoute>
           }
         />
-        <Route path="/business/employees" element={<Employees />} />
+        <Route
+          path="/business/employees"
+          element={
+            <ProtectedRoute>
+              <BusinessEmployees />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/business/profile"
           element={

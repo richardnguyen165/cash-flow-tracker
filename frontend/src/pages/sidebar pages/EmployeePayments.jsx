@@ -60,6 +60,9 @@ function EmployeePayments() {
       actionCopy="Use this page to review wage and reimbursement history recorded for your employee account."
       actionButton="View Payroll Detail"
       transactions={transactions}
+      invoices={[]}
+      allowExpense={false}
+      userRole="EMPLOYEE"
     />
   );
 }

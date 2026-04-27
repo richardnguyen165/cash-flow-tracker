@@ -22,16 +22,7 @@ function BusinessContracts() {
 
         const contractData = await fetchBusinessContracts(id);
 
-        const normalizedContracts = contractData.map((contract) => ({
-          agreementId: `CONTRACT-${contract.id}`,
-          name: contract.Contract_Name,
-          dueDate: contract.Contract_Completion_Date,
-          amount: `$${contract.Contract_Cost}`,
-          status: contract.Contract_Status ? "Active" : "Pending",
-          description: contract.Contract_Terms,
-        }));
-
-        setAgreements(normalizedContracts);
+        setAgreements(contractData.data);
       } catch (error) {
         console.error("Could not load individual contracts.", error);
         setAgreements([]);

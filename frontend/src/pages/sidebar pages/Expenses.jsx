@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ClientSidebar from "../../components/sidebar/ClientSideBar";
 import EmployeeSideBar from "../../components/sidebar/EmployeeSideBar";
 import MainLayout from "../../layout/MainLayout";
@@ -123,6 +123,9 @@ function Expenses({
   description = "Review expense plans and the expenses assigned under each plan.",
   tableTitle = "Expense Plans",
   expensePlans = employeeExpensePlans,
+  allowCreatePlan = true,
+  onCreateExpensePlan = null,
+  onCreateExpense = null,
 }) {
   const [plans, setPlans] = useState(expensePlans);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
@@ -130,16 +133,36 @@ function Expenses({
   const [isCreatePlanOpen, setIsCreatePlanOpen] = useState(false);
   const [isCreateExpenseOpen, setIsCreateExpenseOpen] = useState(false);
 
+  useEffect(() => {
+    setPlans(Array.isArray(expensePlans) ? expensePlans : []);
+  }, [expensePlans]);
+
   const selectedPlan = plans.find((plan) => plan.id === selectedPlanId);
 
-  function handleCreateExpense(newExpense) {
+  async function handleCreateExpense(newExpense) {
+    let expenseToAdd = newExpense;
+    if (onCreateExpense && selectedPlan) {
+      const created = await onCreateExpense(selectedPlan, newExpense);
+      if (created) expenseToAdd = created;
+    }
+
     setPlans((prev) =>
-      prev.map((plan) =>
-        plan.id === selectedPlanId
-          ? { ...plan, expenses: [newExpense, ...(plan.expenses || [])] }
-          : plan
-      )
+      prev.map((plan) => {
+        const samePlan = String(plan.id) === String(selectedPlanId);
+        return samePlan
+          ? { ...plan, expenses: [expenseToAdd, ...(plan.expenses || [])] }
+          : plan;
+      })
     );
+  }
+
+  async function handleCreatePlan(newPlan) {
+    let planToAdd = newPlan;
+    if (onCreateExpensePlan) {
+      const created = await onCreateExpensePlan(newPlan);
+      if (created) planToAdd = created;
+    }
+    setPlans((prev) => [planToAdd, ...prev]);
   }
 
   return (
@@ -162,13 +185,15 @@ function Expenses({
             {tableTitle}
           </h2>
 
-          <button
-            type="button"
-            onClick={() => setIsCreatePlanOpen(true)}
-            className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
-          >
-            + New Expense Plan
-          </button>
+          {allowCreatePlan && (
+            <button
+              type="button"
+              onClick={() => setIsCreatePlanOpen(true)}
+              className="rounded-2xl bg-[#111827] px-6 py-3 text-sm font-semibold text-white transition hover:bg-black"
+            >
+              + New Expense Plan
+            </button>
+          )}
         </div>
 
         <div className="mt-6 overflow-hidden rounded-[28px] border border-[#eef2f6]">
@@ -208,7 +233,7 @@ function Expenses({
       <CreateExpensePlanModal
         isOpen={isCreatePlanOpen}
         onClose={() => setIsCreatePlanOpen(false)}
-        onSubmit={(newPlan) => setPlans((prev) => [newPlan, ...prev])}
+        onSubmit={handleCreatePlan}
       />
 
       <CreateExpenseModal

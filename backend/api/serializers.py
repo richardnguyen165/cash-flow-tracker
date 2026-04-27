@@ -14,6 +14,7 @@ class TokenSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['User_Role'] = user.User_Role
         token['User_ID'] = user.id
+        print(user)
         
         if user.User_Role == "INDIVIDUAL":
             token['id'] = user.individual.id
@@ -21,7 +22,7 @@ class TokenSerializer(TokenObtainPairSerializer):
             token['id'] = user.business.id
         elif user.User_Role == "BUSINESS_ADMIN":
             token['id'] = user.business_admin.id
-            token['business_id'] = user.business_admin.business_id.id
+            token['business_id'] = user.business_admin.Business_ID.id
         elif user.User_Role == "SITE_ADMIN":
             token['id'] = user.site_admin.id
         else:
@@ -350,6 +351,15 @@ class TransactionSerializer(serializers.ModelSerializer):
           "Individual_ID", 
           "Transaction_Date"
         ]
+
+        # https://dev.to/hyun_hyun/extrakwargs-358e
+        # https://www.django-rest-framework.org/api-guide/serializers/#specifying-read-only-fields
+        extra_kwargs = {
+            "Business_ID": {"required": False, "allow_null": True},
+            "Individual_ID": {"required": False, "allow_null": True},
+            "Transaction_Date": {"read_only": True}
+        }
+
     
     def create(self, data):
         return Transaction.objects.create(**data)
@@ -413,13 +423,43 @@ class InvoiceSerializer(serializers.ModelSerializer):
 
         return invoice
 
-class ExpensePayOffSerializer(serializers.ModelSerializer):
+class Expense_Plan_Pay_Off_Serializer(serializers.ModelSerializer):
+    Transaction_ID = TransactionSerializer()
+    # We need to create a new transaction -> serializer 
+
     class Meta:
-        model = Expense_Pay_Off
+        model = Expense_Plan_Pay_Off
         fields = [
-          "Transaction_ID",
-          "Expense_ID", 
-          "Total_Pay"]
+            'Transaction_ID', 
+            'Expense_Plan_ID', 
+            'Total_Pay'
+        ]
+
+    def create(self, data):
+        transaction_data = data.pop('Transaction_ID')
+        transaction = Transaction.objects.create(**transaction_data)
+        expense_plan_pay_off = Expense_Plan_Pay_Off.objects.create(
+            Transaction_ID=transaction,
+            **data
+        )
+        return expense_plan_pay_off
+
+class Invoice_Pay_Off_Serializer(serializers.ModelSerializer):
+    Transaction_ID = TransactionSerializer()
+    class Meta:
+        model = Invoice_Pay_Off
+        fields = ['Transaction_ID', 
+                'Invoice_ID', 
+                'Total_Pay']
+
+    def create(self, data):
+        transaction_data = data.pop('Transaction_ID')
+        transaction = Transaction.objects.create(**transaction_data)
+        invoice_pay_off = Invoice_Pay_Off.objects.create(
+            Transaction_ID=transaction,
+            **data
+        )
+        return invoice_pay_off
 
 class EmployeeSerializer(serializers.ModelSerializer):
     def validate(self, data):

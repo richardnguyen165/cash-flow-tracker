@@ -39,7 +39,7 @@ class Business(models.Model):
   Business_PhoneNumber = models.CharField(max_length=20)
   Business_AccessCode = models.CharField(max_length=6, unique = True, blank = True)
   
-  # https://stackoverflow.com/questions/72371106/how-to-auto-generate-a-field-value-with-the-input-field-value-in-django-model
+  # https://stackoverfFlow.com/questions/72371106/how-to-auto-generate-a-field-value-with-the-input-field-value-in-django-model
   # Creates 6 letter access code for business automatically
   def save(self, *args, **kwargs):
     if not self.Business_AccessCode:
@@ -86,14 +86,6 @@ class Transaction(models.Model):
   # adds date automatically
   Transaction_Date = models.DateField(auto_now_add=True)
   
-  # https://dev.to/hyun_hyun/extrakwargs-358e
-  # https://www.django-rest-framework.org/api-guide/serializers/#specifying-read-only-fields
-  extra_kwargs = {
-    "Business_ID": {"required": False, "allow_null": True},
-    "Individual_ID": {"required": False, "allow_null": True},
-    "Transaction_Date": {"read_only": True}
-  }
-
   def create(self, data):
     return Transaction.objects.create(**data)
 
@@ -122,9 +114,15 @@ class Expense(models.Model):
   Expense_Date_Issued = models.DateField(auto_now_add = True)
   Expense_Due_By = models.DateField(null = False, blank = False)
   
-class Expense_Pay_Off(models.Model):
+class Expense_Plan_Pay_Off(models.Model):
   Transaction_ID = models.OneToOneField(Transaction, on_delete = models.CASCADE, null = True, blank = True, related_name="expense_pay_off")
-  Expense_ID = models.OneToOneField(Expense, on_delete = models.CASCADE, null = True, blank = True, related_name="expense_pay_off")
+  Expense_Plan_ID = models.OneToOneField(Expense_Plan, on_delete = models.CASCADE, null = True, blank = True, related_name="expense_pay_off")
+  Total_Pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+# New table, since we have a new type of expense
+class Invoice_Pay_Off(models.Model):
+  Transaction_ID = models.OneToOneField(Transaction, on_delete = models.CASCADE, null = True, blank = True, related_name="invoice_pay_off")
+  Invoice_ID = models.OneToOneField(Invoice, on_delete = models.CASCADE, null = True, blank = True, related_name="invoice_pay_off")
   Total_Pay = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
 class Employee(models.Model):

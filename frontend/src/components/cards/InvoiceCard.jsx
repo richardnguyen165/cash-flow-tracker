@@ -41,7 +41,7 @@ function InvoiceCard({
           <tbody className="divide-y divide-[#eef2f6] bg-white">
             {invoices.map((invoice) => (
               <tr
-                key={invoice.invoiceId || invoice.id}
+                key={invoice.id}
                 onClick={() => onRowClick?.(invoice)}
                 className={`text-sm text-[#0f172a] transition ${
                   onRowClick ? "cursor-pointer hover:bg-[#f8fafc]" : ""
@@ -50,7 +50,7 @@ function InvoiceCard({
                 <td className="px-6 py-6 font-semibold">
                   {invoice.id}
                 </td>
-                <td className="px-6 py-6 text-[#475569]">{invoice.Transaction_ID.Transaction_Date}</td>
+                <td className="px-6 py-6 text-[#475569]">{invoice.Transaction_ID?.Transaction_Date || "N/A"}</td>
                 <td className="px-6 py-6 font-semibold">{invoice.Name}</td>
                 <td className="px-6 py-6">
                   <InvoiceStatusBadge status={invoice.Invoice_Status} />

@@ -4,6 +4,7 @@ import MainLayout from "../../layout/MainLayout";
 import { clientNav } from "../../config/workspaceNav";
 import CreateTransactionModal from "../../modals/CreateTransactionModal";
 import TransactionDetailsModal from "../../modals/TransactionDetailsModal";
+import api from "../../services/api";
 
 const defaultTransactions = [
   ["Sep 28, 2023", "Invoice #8821 Payment", "Wire Transfer", "+$12,400.00"],
@@ -15,6 +16,8 @@ const defaultTransactions = [
     "+$50,000.00",
   ],
 ];
+
+const defaultInvoices = [];
 
 const defaultExpensePlans = [
   {
@@ -86,7 +89,12 @@ function Payments({
   actionCopy = "Use your saved method or initiate a transfer to clear the next due invoice.",
   actionButton = "Open Payment Modal",
   transactions = [],
-  expensePlans = [],
+  expensePlans = defaultExpensePlans,
+  invoices = defaultInvoices,
+  allowExpense = true,
+  userRole = null,
+  businessId = null, // Prevents massive recomputation
+  individualId = null,
 }) {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -227,11 +235,46 @@ function Payments({
       </section>
 
       <CreateTransactionModal
+        allowExpense={allowExpense}
+        invoices={invoices}
+        userRole={userRole}
+        businessId={businessId}
+        individualId={individualId}
         isOpen={isTransactionModalOpen}
         onClose={() => setIsTransactionModalOpen(false)}
         expensePlans={expensePlans}
-        onSubmit={(newTransaction) => {
-          setTransactionList((prev) => [newTransaction, ...prev]);
+        onSubmit={async (payload) => {
+          const isExpensePayOff = payload && Object.hasOwn(payload, "expense_plan_id");
+          const isInvoicePayOff = payload && Object.hasOwn(payload, "invoice_id");
+
+          try {
+            if (isExpensePayOff) {
+              await api.post("api/transactions/expense-plan-pay-off/", payload);
+            } else if (isInvoicePayOff) {
+              await api.post("api/transactions/invoice-pay-off/", payload);
+            } else {
+              return;
+            }
+
+            setTransactionList((prev) => [
+              {
+                id: `local-${Date.now()}`,
+                date: new Date().toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                }),
+                description: isExpensePayOff
+                  ? `Expense Plan Pay-Off #${payload.expense_plan_id}`
+                  : `Invoice Pay-Off #${payload.invoice_id}`,
+                method: isExpensePayOff ? "Expense-Pay Off" : "Invoice Pay Off",
+                amount: `-$${Number(payload.total_pay || 0).toFixed(2)}`,
+              },
+              ...prev,
+            ]);
+          } catch (error) {
+            console.error("Could not create payment.", error);
+          }
         }}
       />
 

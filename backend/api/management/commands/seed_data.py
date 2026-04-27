@@ -33,6 +33,21 @@ class Command(BaseCommand):
             password="Pass1234!",
             User_Role="BUSINESS_ADMIN"
         )
+        user_employee1 = User.objects.create_user(
+            username="maya@northshore.com",
+            password="Pass1234!",
+            User_Role="EMPLOYEE"
+        )
+        user_employee2 = User.objects.create_user(
+            username="james@northshore.com",
+            password="Pass1234!",
+            User_Role="EMPLOYEE"
+        )
+        user_employee3 = User.objects.create_user(
+            username="priya@northshore.com",
+            password="Pass1234!",
+            User_Role="EMPLOYEE"
+        )
 
         # ── INDIVIDUALS ────────────────────────────────────────
         john = Individual.objects.create(
@@ -111,6 +126,32 @@ class Command(BaseCommand):
             Expense_Type="Travel",
             Description="Travel expenses for Q2 client meetings",
             Expense_Due_By=date(2026, 5, 31)
+        )
+
+        # ── EMPLOYEES ──────────────────────────────────────────
+        Employee.objects.create(
+            User_ID=user_employee1,
+            Business_ID=northshore,
+            Expense_Plan_ID=plan_northshore,
+            Expense_ID=expense1,
+            Pay=2100.00,
+            Role="Operations Analyst"
+        )
+        Employee.objects.create(
+            User_ID=user_employee2,
+            Business_ID=northshore,
+            Expense_Plan_ID=plan_northshore,
+            Expense_ID=expense2,
+            Pay=2400.00,
+            Role="Financial Advisor"
+        )
+        Employee.objects.create(
+            User_ID=user_employee3,
+            Business_ID=northshore,
+            Expense_Plan_ID=plan_northshore,
+            Expense_ID=expense1,
+            Pay=1900.00,
+            Role="Client Relations"
         )
 
         # ── COUNTERPARTIES ─────────────────────────────────────
@@ -243,5 +284,3 @@ class Command(BaseCommand):
             Quantity=2,
             Cost=1000.00
         )
-
-        self.stdout.write(self.style.SUCCESS("Sample data created successfully!"))

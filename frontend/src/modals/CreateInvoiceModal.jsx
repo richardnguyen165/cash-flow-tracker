@@ -21,7 +21,7 @@ const emptyInvoiceLine = {
   Cost: "",
 };
 
-function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
+function CreateInvoiceModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState(emptyInvoice);
   const [invoiceLines, setInvoiceLines] = useState([{ ...emptyInvoiceLine }]);
 
@@ -95,7 +95,6 @@ function CreateInvoiceModal({ isOpen, onClose, onSubmit }) {
     let response = await api.put("api/put/create_invoice/", newModifiedInvoice);
 
     if (response.status === 201){
-      onSubmit(newModifiedInvoice);
       setFormData(emptyInvoice);
       onClose();
     } else {

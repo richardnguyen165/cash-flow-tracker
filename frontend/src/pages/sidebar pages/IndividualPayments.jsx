@@ -4,19 +4,33 @@ import Payments from "./Payments";
 import { clientNav } from "../../config/workspaceNav";
 import decodeTokens from "../../services/decode-tokens";
 import api from "../../services/api";
+import { fetchIndividualInvoices } from "../../services/individualWorkspace";
 
 function IndividualPayments() {
   const [transactions, setTransactions] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [latestPaymentDate, setLatestPaymentDate] = useState("No recorded payment yet");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadIndividualPayments() {
       try {
-        const {User_ID, id} = decodeTokens();
+        const decoded = decodeTokens();
+        if (!decoded) {
+          setTransactions([]);
+          setInvoices([]);
+          return;
+        }
+        const userId = decoded.User_ID ?? decoded.user_id;
+        const individualId = decoded.id ?? decoded.user_id;
 
-        const response = await api.get(`api/indiv/transactions/get/${id}`);
-        const transactionData = Array.isArray(response.data) ? response.data : [];
+        const [txnResponse, invoiceData] = await Promise.all([
+          api.get(`api/indiv/transactions/get/${individualId}`),
+          fetchIndividualInvoices(userId),
+        ]);
+
+        const transactionData = Array.isArray(txnResponse.data) ? txnResponse.data : [];
+        setInvoices(Array.isArray(invoiceData) ? invoiceData : []);
 
         const normalizedTransactions = transactionData.map((transaction) => [
           transaction.Transaction_Date || "N/A",
@@ -34,6 +48,7 @@ function IndividualPayments() {
       } catch (error) {
         console.error("Could not load individual payment history.", error);
         setTransactions([]);
+        setInvoices([]);
       } finally {
         setLoading(false);
       }
@@ -41,6 +56,10 @@ function IndividualPayments() {
 
     loadIndividualPayments();
   }, []);
+
+  const decoded = decodeTokens();
+  const userRole = decoded?.User_Role ?? null;
+  const individualId = decoded?.id ?? null;
 
   return (
     <Payments
@@ -61,6 +80,10 @@ function IndividualPayments() {
       actionCopy="Use this page to review payment records and manually log new transaction entries."
       actionButton="Open Payment Modal"
       transactions={transactions}
+      invoices={invoices}
+      allowExpense={false}
+      userRole={userRole}
+      individualId={individualId}
     />
   );
 }

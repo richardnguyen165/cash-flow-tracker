@@ -8,6 +8,7 @@ function ContractsCard({
   onRowClick,
   actionButton,
 }) {
+  console.log(contracts);
   return (
     <section className="mt-8 rounded-4xl border border-[#e7edf5] bg-white p-8 shadow-[0_16px_45px_rgba(15,23,42,0.04)]">
       <div className="flex items-start justify-between gap-4">
